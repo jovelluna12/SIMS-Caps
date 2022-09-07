@@ -1,6 +1,11 @@
+import dbConnector
 class Employee:
-    def __init__(self, AccID):
-        self.AccId = AccID
+    def __init__(self):
+        self.username=""
+        self.password=""
+        self.AccID=""
+        self.name=""
+        self.role=""
 
     def login(self,username,password):
         print(username," ",password)

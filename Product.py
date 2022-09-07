@@ -1,3 +1,4 @@
+import dbConnector
 class product:
     def __init__(self,productName,itemCode,quantity,status,Price):
         self.productName = productName

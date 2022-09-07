@@ -1,4 +1,5 @@
-import Employee
-import Product
+import Employee, Manager, Owner, Product
 
-print("Hello World")
+x=Manager.Manager()
+x.AddEmployees(12,'christer','chris','password','Cashier')
+

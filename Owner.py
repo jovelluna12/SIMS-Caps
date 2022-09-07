@@ -1,6 +1,7 @@
 import Employee
+import dbConnector
 
-class Owner(Employee):
+class Owner(Employee.Employee):
 
     def generateSalesReport(self):
         print("Now Viewing Latest Sales Report")
