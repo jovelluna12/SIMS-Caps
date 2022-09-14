@@ -1,16 +1,35 @@
 import Employee
+import dbConnector
+class Manager (Employee.Employee):
 
-class Manager (Employee):
+    def approveEmp(self,AppID,status):
+        print("approve employee")
 
-    def approveEmployee(self,AppID,status):
-        print(AppID,status)
-
-    def viewInventory(self):
+    def viewInv(self):
         print("Viewing Inventory")
 
-    def viewSalesTransaction(self):
+    def viewSales(self):
         print("viewing Sales Transaction")
 
-    def AddEmployees(self,name, username, password, role):
-        print("new Employee Added")
+    def AddEmp(self,EmpID,name, username, password, role):
+        dbcursor =  dbConnector.db.cursor()
+        query="INSERT INTO employees (EmpID,name,username,password,role) VALUES(%s,%s,%s,%s,%s)"
+        value=(EmpID,name,username,password,role)
+        dbcursor.execute(query,value)
+        dbcursor.close()
+        dbConnector.db.commit()
+        dbConnector.db.close()
 
+    def AddEmpMany(self,val):
+        dbcursor = dbConnector.db.cursor()
+        query = "INSERT INTO employees (EmpID,name,username,password,role) VALUES(%s,%s,%s,%s,%s)"
+        dbcursor.executemany(query,val)
+        dbcursor.close()
+        dbConnector.db.commit()
+        dbConnector.db.close()
+
+    def EditEmp(self):
+        print("Editing Employee")
+
+    def deleteEmp(self):
+        print("Deleting Employee")
