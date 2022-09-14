@@ -8,7 +8,9 @@ class Employee:
         self.role=""
 
     def login(self,username,password):
-        print(username," ",password)
+        print("Login Logic")
+
+        username , password
 
     def attendance(self,date, timeIn, timeOut):
         print(date," ", timeIn," ",timeOut)

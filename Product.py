@@ -1,4 +1,6 @@
 import dbConnector
+
+# Add , Edit, Delete and View Product
 class product:
     def __init__(self,productName,quantity,status,Price):
         self.productName = productName

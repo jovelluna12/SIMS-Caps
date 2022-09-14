@@ -27,3 +27,9 @@ class Manager (Employee.Employee):
         dbcursor.close()
         dbConnector.db.commit()
         dbConnector.db.close()
+
+    def EditEmp(self):
+        print("Editing Employee")
+
+    def deleteEmp(self):
+        print("Deleting Employee")
