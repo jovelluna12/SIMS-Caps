@@ -15,8 +15,8 @@ class Employee:
     def attendance(self,date, timeIn, timeOut):
         print(date," ", timeIn," ",timeOut)
 
-    def addNewTransaction(self,item,quantity,transactedBy,totalPrice,discount):
-        print(item,quantity,transactedBy,totalPrice,discount)
+    def addNewTransaction(self):
+        print("")
 
     def viewDeliveryList(self,itemName,datePurchased,expectedArrivalDate,quantity,status):
         print(itemName,datePurchased,expectedArrivalDate,quantity,status)
