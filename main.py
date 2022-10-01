@@ -1,10 +1,10 @@
-import Employee, Manager, Owner, Product
+import Employee, Manager, Owner, Product, randomNumGen
 
 x=Manager.Manager()
 
 # x.AddEmp(13,'jovel','chriss','password12','Cashier')
 
-# x.login("username","password") call login function and supply parameters
+#print(x.login("username","password"))  #call login function and supply parameters
 # x.attendance("september 14,2022", "12:15pm", "3:05pm") call attendance function and supply parameters
 
 
@@ -28,8 +28,16 @@ x=Manager.Manager()
 #
 #
 
-print(x.viewSales())
+# print(x.viewSales())
 # view Inventory
 # ProductID, ItemCode, ProductName, Quantity, status, price
 # print(x.viewInv())
 
+y=Employee.Employee()
+
+items=[
+    ("Paracetamol",2),
+    ("Mefenamic Acid",3)
+]
+
+print(y.addNewTransaction(150.00,0.0,11,"2008-11-11",items))

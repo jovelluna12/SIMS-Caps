@@ -1,36 +1,68 @@
-import Employee, EmployeeCRUD
+import Employee
 import dbConnector
 class Manager (Employee.Employee):
-
+    def __init__(self):
+        self.dbcursor = dbConnector.dbcursor
     def approveEmp(self,AppID,status):
         print("approve employee")
 
     def viewInv(self):
-        dbcursor = dbConnector.db.cursor()
+        dbcursor = self.dbcursor
         query="SELECT * FROM products"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result
 
     def viewSales(self):
-        dbcursor = dbConnector.db.cursor()
+        dbcursor = self.dbcursor
         query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item, purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.attendedBy,salestransaction.DatePurchased FROM salestransaction,purchasedproducts"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result
 
-    def selectEmp(self,id):
-        result=EmployeeCRUD.ViewEmp(id)
+    def selectEmp(self,EmpID):
+        query = "SELECT * FROM employees where EmpID=%s"
+        id = EmpID
+        cursor=self.dbcursor
+        cursor.execute(query, id)
+        result = cursor.fetchall()
+
+        dbConnector.db.commit()
+        dbConnector.db.close()
         return result
 
     def AddEmp(self,EmpID,name, username, password, role):
-        EmployeeCRUD.AddEmp(EmpID,name,username,password,role)
+        dbcursor = self.dbcursor
+        query = "INSERT INTO employees (EmpID,name,username,password,role) VALUES(%s,%s,%s,%s,%s)"
+        value = (EmpID, name, username, password, role)
+        dbcursor.execute(query, value)
+
+        dbConnector.db.commit()
+        dbConnector.db.close()
 
     def AddEmpMany(self,val):
-        EmployeeCRUD.AddEmpMany(val)
+        dbcursor = self.dbcursor
+        query = "INSERT INTO employees (EmpID,name,username,password,role) VALUES(%s,%s,%s,%s,%s)"
+        dbcursor.executemany(query, val)
+
+        dbConnector.db.commit()
+        dbConnector.db.close()
+
 
     def EditEmp(self,id,name,username,password,role):
-        EmployeeCRUD.EditEmp(id,name,username,password,role)
+        dbcursor = self.dbcursor
+        query = "UPDATE employees SET Name='%s', username='%s', password='%s',role='%s' WHERE EmpID=%s"
+        value = (name, username, password, role, id)
+        dbcursor.execute(query, value)
+
+        dbConnector.db.commit()
+        dbConnector.db.close()
 
     def deleteEmp(self,id):
-        EmployeeCRUD.deleteEmp(id)
+        dbcursor = dbConnector.db.cursor()
+        query = "DELETE FROM employees where EmpID=%s"
+        value = (id)
+        dbcursor.execute(query, value)
+
+        dbConnector.db.commit()
+        dbConnector.db.close()
