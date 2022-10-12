@@ -8,9 +8,18 @@ class Employee:
         self.role=""
 
     def login(self,username,password):
-        print("Login Logic")
+        dbcursor =  dbConnector.db.cursor(buffered=True)
+        query="SELECT * FROM employees where username = %s and password = %s limit 1"
+        value=(username,password)
+        dbcursor.execute(query,value)
 
-        username , password
+        if dbcursor.rowcount > 0:
+            row = dbcursor.fetchone()
+            print("User found; returning 1")
+            return {'result': 1, 'user': row}
+        else:
+            print("Not found; returning 0")
+            return {'result': 0, 'user': None}
 
     def attendance(self,date, timeIn, timeOut):
         print(date," ", timeIn," ",timeOut)
