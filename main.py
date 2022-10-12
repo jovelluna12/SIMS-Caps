@@ -1,6 +1,6 @@
 import Employee, Manager, Owner, Product, randomNumGen
 
-x=Manager.Manager()
+# x=Manager.Manager()
 
 # x.AddEmp(13,'jovel','chriss','password12','Cashier')
 
@@ -25,19 +25,26 @@ x=Manager.Manager()
 
 # y=Product.product("Paracetamol","50","Fresh",5.00)
 # y.add("Paracetamol","50","Fresh",5.00)
-#
-#
 
 # print(x.viewSales())
 # view Inventory
 # ProductID, ItemCode, ProductName, Quantity, status, price
 # print(x.viewInv())
 
-y=Employee.Employee()
+# y=Employee.Employee()
+#
+# items=[
+#      ("paracetamol",5),
+#      ("mefenamic acid",4)
+#  ]
 
-items=[
-    ("Paracetamol",2),
-    ("Mefenamic Acid",3)
-]
+# TotalPrice,Discount,attendedBy,DatePurchased,items
+# TotalAmountTendered , Change , VAT , Quantity
 
-print(y.addNewTransaction(150.00,0.0,11,"2008-11-11",items))
+# print(y.addNewTransaction(150.00,0.0,11,"2008-11-11",items))
+
+# y=Owner.Owner()
+# y.forecastSales()
+
+
+

@@ -1,5 +1,8 @@
 import Employee
 import dbConnector
+import pandas as pd
+import forecast
+
 
 class Owner(Employee.Employee):
     def __init__(self):
@@ -9,7 +12,20 @@ class Owner(Employee.Employee):
         print("Now Viewing Latest Sales Report")
 
     def forecastSales(self):
-        print("now Forecasting Data")
+        query="SELECT products.ProductID,products.Quantity+SUM(purchasedproducts.Quantity ) as Quantity,products.price,SUM(purchasedproducts.Quantity ) AS NumberOfItemsSold FROM products, purchasedproducts WHERE STRCMP(purchasedproducts.Item , products.ProductName)=0 GROUP BY purchasedproducts.Item;"
+        cursor=self.dbcursor
+        cursor.execute(query)
+
+        result=cursor.fetchall()
+        dbConnector.db.commit()
+        dbConnector.db.close()
+
+        df=pd.DataFrame(result,columns=["ProductID","Quantity","Price","NumberOfItemsSold"])
+
+        X=df[["Quantity","Price"]]
+        y=df["NumberOfItemsSold"]
+        forecast.forecast(X,y)
+
 
     def selectEmp(self,id):
         query = "SELECT * FROM employees where EmpID=%s"
