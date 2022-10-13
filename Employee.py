@@ -21,8 +21,37 @@ class Employee:
             print("Not found; returning 0")
             return {'result': 0, 'user': None}
 
-    def attendance(self,date, timeIn, timeOut):
-        print(date," ", timeIn," ",timeOut)
+    def getAttendance(self, employeeID):
+        dbcursor =  dbConnector.db.cursor(buffered=True)
+        query=f"""
+            SELECT 
+                AttendanceCode, 
+                t2.name, 
+                cast(Date as CHAR), 
+                cast(DATE_FORMAT(TimeIn, "%H:%i:%S") as CHAR), 
+                cast(DATE_FORMAT(TimeOut, "%H:%i:%S") as CHAR) 
+            FROM `attendance` t1 
+            left join employees t2 on t1.employee = t2.EmpID 
+            WHERE employee = {employeeID}
+            """
+        dbcursor.execute(query)
+        rows = dbcursor.fetchall()
+
+        return rows
+
+    def attendance(self,date, timeIn, timeOut,employeeID):
+        dbcursor =  dbConnector.db.cursor()
+        query="INSERT INTO attendance (Date, TimeIn, TimeOut, employee) VALUES(%s,%s,%s,%s)"
+        value=(date,timeIn, timeOut, employeeID)
+        dbcursor.execute(query,value)
+        dbcursor.close()
+        print(date," ", timeIn," ",timeOut, " ",employeeID)
+
+        print(dbcursor.lastrowid)
+        
+        dbConnector.db.commit()
+        return dbcursor.lastrowid
+
 
     def addNewTransaction(self,item,quantity,transactedBy,totalPrice,discount):
         print(item,quantity,transactedBy,totalPrice,discount)
