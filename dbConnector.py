@@ -6,3 +6,4 @@ db=mysql.connector.connect(
     password="",
     database="simscaps"
 )
+dbcursor=db.cursor()
