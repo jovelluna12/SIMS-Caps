@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import sqlite3
+# import sqlite3
 
 root = Tk()
 root.title('Point Of Sales!!')
@@ -25,23 +25,23 @@ def reverse(tuples):
     return New_Tup
 
 
-def data_delete():
-    con = sqlite3.connect("data.db")
-    cursor = con.cursor()
+# def data_delete():
+#     con = sqlite3.connect("data.db")
+#     cursor = con.cursor()
+#
+#     # cursor.execute("Delete FROM Product WHERE product_ID="'"+str(data)+"'"")
+#     con.commit()
 
-    # cursor.execute("Delete FROM Product WHERE product_ID="'"+str(data)+"'"")
-    con.commit()
 
-
-def Search():
-    conn = sqlite3.connect("data.db")
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM inventory")
-    results = cursor.fetchall()
-    conn.commit()
-    return results
-
+# def Search():
+#     conn = sqlite3.connect("data.db")
+#     cursor = conn.cursor()
+#
+#     cursor.execute("SELECT * FROM inventory")
+#     results = cursor.fetchall()
+#     conn.commit()
+#     return results
+#
 
 # Frame Receipt
 frame_Receipt = Frame(root, width=250, height=500)
@@ -180,11 +180,12 @@ def Click_Enter():
         Errror_Message = messagebox.showerror("Product Search", "Please Enter the Product ID or Name")
     else:
         # Logic
-        INSERT(str(Product_CODE_EN))
-
-    for result in reverse(Search()):
-        frame_Table.insert(parent='', index='end', iid=result, text="", values=(result))
-    result += 1
+        print("logic here")
+    #     INSERT(str(Product_CODE_EN))
+    #
+    # for result in reverse(Search()):
+    #     frame_Table.insert(parent='', index='end', iid=result, text="", values=(result))
+    # result += 1
 
 
 # Button Delete
