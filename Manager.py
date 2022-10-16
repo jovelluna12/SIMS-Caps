@@ -8,7 +8,7 @@ class Manager (Employee.Employee):
 
     def viewInv(self):
         dbcursor = self.dbcursor
-        query="SELECT * FROM products"
+        query="SELECT ProductID,ProductName,price,Quantity FROM products"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result

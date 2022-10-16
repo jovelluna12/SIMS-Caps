@@ -1,8 +1,11 @@
-import Employee, Manager, Owner, Product, GUI
+import Employee, Manager, Owner, Product, GUI, POS_GUI
 #
-interface = GUI.GUI()
+# interface = GUI.GUI()
+#
+# interface.start()
 
-interface.start()
+POS=POS_GUI
+
 
 # x=Manager.Manager()
 #
