@@ -1,14 +1,14 @@
 import Employee, Manager, Owner, Product, GUI
-
+#
 interface = GUI.GUI()
 
 interface.start()
+
 # x=Manager.Manager()
 #
-# x.AddEmp(13,'jovel','chriss','password12','Cashier')
+# x.AddEmp(15,'juan','jdcruz','jzruz','Cashier')
 
-# x.login("username","password") call login function and supply parameters
-# x.attendance("september 14,2022", "12:15pm", "3:05pm") call attendance function and supply parameters
+
 
 # add two or more employees
 # val = [
