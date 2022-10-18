@@ -50,4 +50,14 @@ class product:
         else:
             return result
 
+    def viewALL(self,val):
+        dbcursor = self.dbcursor
+        query = "SELECT ProductID,ProductName,price,Quantity FROM products WHERE ProductName LIKE {}".format("\'%"+val+"%\'")
+        dbcursor.execute(query)
+        result = dbcursor.fetchall()
+        dbConnector.db.commit()
 
+        if (dbcursor.rowcount == 0):
+            return "empty"
+        else:
+            return result

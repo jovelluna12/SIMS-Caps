@@ -77,7 +77,7 @@ class Employee:
             dbcursor.execute(query3,query3val)
 
         dbConnector.db.commit()
-        dbConnector.db.close()
+
         return "done"
 
     def viewDeliveryList(self,itemName,datePurchased,expectedArrivalDate,quantity,status):

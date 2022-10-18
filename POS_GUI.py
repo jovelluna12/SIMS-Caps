@@ -73,27 +73,16 @@ def Button_LOGIC(Number):
     Product_CODE_EN.delete(0, END)
     Product_CODE_EN.insert(0, str(current) + str(Number))
 
-
 # Button List
 def Click_List():
+    global Entry_Search
+    global Search_Table
     window_list = Toplevel()
     window_list.title("PRODUCT LISTS!")
     window_list.geometry("400x320")
 
-    def search():
-        search_field = Entry_Search.get()
-
-
     window_Frame = Frame(window_list, width=400, height=100)
     window_Frame.grid(row=0, column=0)
-
-    Label_Search = Label(window_Frame, text="Search:")
-    Entry_Search = Entry(window_Frame, width=50, borderwidth=3)
-    button_Search = Button(window_Frame, text="Search", padx=5, pady=0, command=search())
-
-    Label_Search.grid(row=0, column=0, sticky=W)
-    Entry_Search.grid(row=0, column=1)
-    button_Search.grid(row=0, column=3)
 
     window_Frame2 = Frame(window_list, width=400, height=250, bg="blue")
     window_Frame2.grid(row=1, column=0)
@@ -113,19 +102,62 @@ def Click_List():
     Search_Table.heading("Stack", text="Stack", anchor=W)
     Search_Table.grid(row=0, column=0)
 
+    Label_Search = Label(window_Frame, text="Search:")
+    Entry_Search = Entry(window_Frame, width=50, borderwidth=3)
+    button_Search = Button(window_Frame, text="Search", padx=5, pady=0, command=search)
+
+    Label_Search.grid(row=0, column=0, sticky=W)
+    Entry_Search.grid(row=0, column=1)
+    button_Search.grid(row=0, column=3)
+
     window_Frame3 = Frame(window_list, width=400, height=50, bg="blue")
     window_Frame3.grid(row=2, column=0)
 
-    m=Manager.Manager()
-    m1=m.viewInv()
-    count=0
-    for x in m1:
-        count+=1
-        Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-
+    m = Manager.Manager()
+    m1 = m.viewInv()
+    count = 0
+    if len(m1) == 0:
+        for item in Search_Table.get_children():
+            Search_Table.delete(item)
+    else:
+        for x in m1:
+            count += 1
+            Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
     button_Close = Button(window_Frame3, text="Close", command=window_list.destroy)
     button_Close.pack()
+
+def search():
+    search_field = Entry_Search.get()
+    search = Product.product()
+
+    if (not(search_field and search_field.strip())):
+        for item in Search_Table.get_children():
+            Search_Table.delete(item)
+
+        m = Manager.Manager()
+        m1 = m.viewInv()
+        count = 0
+        if len(m1)==0:
+            for item in Search_Table.get_children():
+                Search_Table.delete(item)
+        else:
+            for x in m1:
+                count += 1
+                Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+    else:
+        for item in Search_Table.get_children():
+            Search_Table.delete(item)
+
+        result = search.viewALL(search_field)
+        count = 0
+        if result=="empty":
+            for item in Search_Table.get_children():
+                Search_Table.delete(item)
+        else:
+            for x in result:
+                count += 1
+                Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
 def SearchItem(buttonpress):
     ProdCode = Product_CODE_EN
