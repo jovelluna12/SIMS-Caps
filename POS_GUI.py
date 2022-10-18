@@ -280,10 +280,10 @@ def payment():
         window.pack()
 
         totalpricelabel=Label(windowASK,text=totalprice)
-        Labell = Label(windowASK, text="Enter Payment")
-        Entry_Amount = Entry(windowASK, width=30, borderwidth=3)
+        Labell = Label(windowASK, text="Total Price")
+        Entry_Amount = Entry(windowASK, width=30, borderwidth=3,state="disabled")
         global button_Quantity
-        button_Quantity = Button(windowASK, text="ENTER", padx=5, pady=5, command=calculatechange)
+        button_Quantity = Button(windowASK, text="Compute Discount", padx=5, pady=5, command=discount)
 
         Discount_LBL=Label(windowASK, text="Enter Discount, Leave Blank if None")
         Discount_Entry=Entry(windowASK, width=30, borderwidth=3)
@@ -295,49 +295,68 @@ def payment():
         Discount_LBL.pack()
         Discount_Entry.pack()
         button_Quantity.pack()
-def calculatechange():
-        totalamounttendered=Entry_Amount.get()
-        try:
-            total = int(float(totalamounttendered))
 
-            if not Discount_Entry.get():
-                Labell.config(text="Setting Discount Value to 0")
-                discount=0
-            else:
-                discount = int(float(Discount_Entry.get()))
+def discount():
+    if not Discount_Entry.get():
+        discount = 0
+        calculatechange(discount)
+    else:
 
-            price = int(totalprice)
-            change = total - price
+        disc=int(float(Discount_Entry.get()))/100
 
-            if (total < price):
-                Labell.config(text="Entered Amount Not Enough!")
-            else:
-                Labell.config(text="Change: " + str(change))
+        discount=totalprice*disc
 
-                # get treeview data in list of tuple
-                item_tuple = list(zip(itemsLIST, quantityLIST))
-                attendedBy = "11"
+        calculatechange(discount)
+def calculatechange(discount):
+    disc=discount
 
-                e = Employee.Employee()
-                e.addNewTransaction(price, discount, attendedBy, item_tuple)
+    Entry_Amount.config(state="normal")
+    Discount_Entry.config(state="disabled")
+    button_Quantity.config(text="Enter", command=lambda m=disc: record(disc))
 
-                #close this window here
-                Entry_Amount.config(state="disabled")
-                Discount_Entry.config(state="disabled")
+    global total
+    global finalprice
 
-                button_Quantity.config(text="Done",command=windowASK.destroy)
-                # windowASK.destroy()
+    fprice = StringVar()
+    finalprice=totalprice-discount
+
+    fprice.set(str(finalprice))
+    Labell.config(text=fprice.get())
 
 
-        except:
-            Labell.config(text="Invalid Value Entered")
+def record(discount):
 
+    totalamounttendered = Entry_Amount.get()
+    # try:
+    total = int(float(totalamounttendered.strip()))
+    change = total - finalprice
+
+
+    if (total < finalprice):
+        Labell.config(text="Entered Amount Not Enough!")
+    else:
+        Labell.config(text="Change: " + "{:.2f}".format(change))
+
+        # get treeview data in list of tuple
+        item_tuple = list(zip(itemsLIST, quantityLIST))
+        attendedBy = "11"
+
+        e = Employee.Employee()
+        e.addNewTransaction(finalprice, discount, attendedBy, item_tuple)
+
+        # close this window here
+        Entry_Amount.config(state="disabled")
+        Discount_Entry.config(state="disabled")
+
+        button_Quantity.config(text="Done", command=windowASK.destroy)
+
+        for x in frame_Table.get_children():
+            frame_Table.delete(x)
 
 # Button Delete
 def Click_Delete():
-    selected_Product = frame_Table()[0]
-    data_delete = str(frame_Table.item(selected_Product)['values'][0])
-    data_delete(data_delete)
+    selected_Product = frame_Table.get_children()
+    frame_Table.delete(selected_Product)
 
 
 # Button List
