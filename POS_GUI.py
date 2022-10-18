@@ -216,9 +216,9 @@ def Click_Enter(result):
     window_Frame.pack()
 
     Label_Quantity = Label(window_Frame, text="Enter the Quantity of the Products!")
+
     Entry_Quantity = Entry(window_Frame, width=30, borderwidth=3)
     button_Quantity = Button(window_Frame, text="ENTER", padx=5, pady=5, command=lambda m=Entry_Quantity.get():setQTY(Entry_Quantity.get()))
-
 
     ProdID=result[0]
     ProdName=result[1]
@@ -226,33 +226,42 @@ def Click_Enter(result):
     ProdQTY=result[3]
     RemainingQTY=result[4]
     def setQTY(val):
+        call=0
         global ProdQTY
-        ProdQTY=int(val)
-        if (ProdQTY>RemainingQTY):
-            messagebox.showerror("POS Transaction", "Not Enough QTY in Stock")
-        else:
-            itemsLIST.append(ProdName)
-            quantityLIST.append(ProdQTY)
-            Product_ID = str(ProductCODE.get())
-            Product_Name = str(Product_Name_EN.get())
-            if Product_ID == "" or Product_Name == "":
-                messagebox.showerror("Product Search", "Please Enter the Product ID or Name")
+        try:
+            ProdQTY=int(val)
+        except ValueError:
+            call=1
+            messagebox.showerror("Product Search", "Invalid Input")
+            Click_Enter(result)
+            window_Qty.destroy()
+
+        if call==0:
+            if (ProdQTY>RemainingQTY):
+                messagebox.showerror("POS Transaction", "Not Enough QTY in Stock")
             else:
-                try:
-                    frame_Table.insert(parent='', index='end', iid=ProdID, text=(ProdID, ProdName, ProdPrice, ProdQTY),
-                                       values=(ProdID, ProdName, ProdPrice, ProdQTY))
+                itemsLIST.append(ProdName)
+                quantityLIST.append(ProdQTY)
+                Product_ID = str(ProductCODE.get())
+                Product_Name = str(Product_Name_EN.get())
+                if Product_ID == "" or Product_Name == "":
+                    messagebox.showerror("Product Search", "Please Enter the Product ID or Name")
+                else:
+                    try:
+                        frame_Table.insert(parent='', index='end', iid=ProdID, text=(ProdID, ProdName, ProdPrice, ProdQTY),
+                                           values=(ProdID, ProdName, ProdPrice, ProdQTY))
 
-                except:
-                    messagebox.showerror("Product Search", "Item Already Existed")
+                    except:
+                        messagebox.showerror("Product Search", "Item Already Existed")
 
-                subtotal=[]
-                for x in frame_Table.get_children():
-                    subtotal.append(frame_Table.item(x)["values"][2]*frame_Table.item(x)["values"][3])
-                global totalprice
-                totalprice = sum(subtotal)
-                button_final_payment.config(state='active')
+                    subtotal=[]
+                    for x in frame_Table.get_children():
+                        subtotal.append(frame_Table.item(x)["values"][2]*frame_Table.item(x)["values"][3])
+                    global totalprice
+                    totalprice = sum(subtotal)
+                    button_final_payment.config(state='active')
 
-                window_Qty.destroy()
+                    window_Qty.destroy()
 
     Label_Quantity.pack()
     Entry_Quantity.pack()
@@ -273,6 +282,7 @@ def payment():
         totalpricelabel=Label(windowASK,text=totalprice)
         Labell = Label(windowASK, text="Enter Payment")
         Entry_Amount = Entry(windowASK, width=30, borderwidth=3)
+        global button_Quantity
         button_Quantity = Button(windowASK, text="ENTER", padx=5, pady=5, command=calculatechange)
 
         Discount_LBL=Label(windowASK, text="Enter Discount, Leave Blank if None")
@@ -312,7 +322,12 @@ def calculatechange():
                 e.addNewTransaction(price, discount, attendedBy, item_tuple)
 
                 #close this window here
-                windowASK.destroy()
+                Entry_Amount.config(state="disabled")
+                Discount_Entry.config(state="disabled")
+
+                button_Quantity.config(text="Done",command=windowASK.destroy)
+                # windowASK.destroy()
+
 
         except:
             Labell.config(text="Invalid Value Entered")
