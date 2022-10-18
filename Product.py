@@ -2,22 +2,21 @@ import dbConnector
 
 # Add , Edit, Delete and View Product
 class product:
-    def __init__(self,productName,quantity,status,Price):
-        self.productName = productName
-        self.quantity = quantity
-        self.status = status
-        self.Price = Price
-
+    def __init__(self):
+    #     self.productName = productName
+    #     self.quantity = quantity
+    #     self.status = status
+    #     self.Price = Price
+        self.dbcursor = dbConnector.db.cursor()
     def viewAll(self):
         print("Viewing Product List")
 
 
     def add(self,ProductName,Quantity,status,price):
-        dbcursor = dbConnector.db.cursor()
+        dbcursor = self.dbcursor
         query="INSERT INTO products (ProductName,Quantity,status,price) VALUES(%s,%s,%s,%s)"
         value=(ProductName,Quantity,status,price)
         dbcursor.execute(query, value)
-        dbcursor.close()
         dbConnector.db.commit()
         dbConnector.db.close()
 
@@ -37,6 +36,18 @@ class product:
 
 
     def view(self,productID):
-        print("Viewing details for ",productID)
+        dbcursor = self.dbcursor
+        query = "SELECT ProductID,ProductName,price,Quantity FROM products WHERE ProductID=%s"
+        value=[productID]
+        value=tuple(value)
+
+        dbcursor.execute(query,value)
+        result=dbcursor.fetchone()
+        dbConnector.db.commit()
+
+        if (dbcursor.rowcount==0):
+            return "empty"
+        else:
+            return result
 
 

@@ -54,12 +54,12 @@ class Employee:
         return dbcursor.lastrowid
 
 
-    def addNewTransaction(self,TotalPrice,Discount,attendedBy,DatePurchased,items):
+    def addNewTransaction(self,TotalPrice,Discount,attendedBy,items):
         PurchaseID, InvoiceNumber = randomNumGen.generateNum()
 
         dbcursor=self.cursor
-        query1="insert into salestransaction values (%s,%s,%s,%s,%s)"
-        values=(InvoiceNumber,TotalPrice,Discount,attendedBy,DatePurchased)
+        query1="insert into salestransaction (InvoiceNumber,TotalPrice,Discount,attendedBy) values (%s,%s,%s,%s)"
+        values=(InvoiceNumber,TotalPrice,Discount,attendedBy)
         dbcursor.execute(query1,values)
 
         query2="insert into purchasedproducts values (%s,%s,%s,%s)"

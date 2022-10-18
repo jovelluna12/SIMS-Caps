@@ -7,8 +7,10 @@ from datetime import date, datetime
 ## pip install pillow
 from PIL import Image, ImageTk
 
+import POS_GUI
 
-#decalre GUI var
+
+#declare GUI var
 class GUI():
 
     def __init__(self):
@@ -18,6 +20,7 @@ class GUI():
         self.outTime = None
 
     def login(self):
+        global result
         usernameVal = self.username.get()
         passwordVal = self.password.get()
         print(usernameVal, passwordVal)
@@ -95,6 +98,14 @@ class GUI():
         self.startButton = Button(self.dashboardGUI, text="Start", width=10, font=("Arial", 15), bg='#54FA9B')
         self.startButton['command'] = lambda idx="Start", binst=self.startButton: self.timeIn(idx, binst)
         self.startButton.place(x=850, y=535)  
+        self.POSButton=Button(self.dashboardGUI, text="Point of Sale", width=10, font=("Arial", 15), bg='#54FA9B',command = POS_GUI.start(result['user'][0]))
+
+
+
+        print("userID ",result['user'][0])
+
+        self.POSButton.place(x=50, y=400)
+
 
         self.load = Image.open("user.png")
         self.load = self.load.resize((150, 150), Image.ANTIALIAS)
