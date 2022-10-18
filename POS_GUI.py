@@ -5,48 +5,15 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-# import sqlite3
+
 
 root = Tk()
 root.title('Point Of Sales!!')
 tab = ttk.Treeview(root)
 
 global user_id
-
 def start(id):
     user_id=id
-
-# root.geometry("400x520")
-
-# data=[
-#    [1,"l",3,4,52]
-#    [2,"w",3,7,521]
-#    [3,"d",32,8,51]
-#    [4,"f",3,49,52]
-# ]
-
-def reverse(tuples):
-    New_Tup = tuples[::-1]
-    return New_Tup
-
-
-# def data_delete():
-#     con = sqlite3.connect("data.db")
-#     cursor = con.cursor()
-#
-#     # cursor.execute("Delete FROM Product WHERE product_ID="'"+str(data)+"'"")
-#     con.commit()
-
-
-# def Search():
-#     conn = sqlite3.connect("data.db")
-#     cursor = conn.cursor()
-#
-#     cursor.execute("SELECT * FROM inventory")
-#     results = cursor.fetchall()
-#     conn.commit()
-#     return results
-#
 
 # Frame Receipt
 frame_Receipt = Frame(root, width=250, height=500)
@@ -85,8 +52,6 @@ Product_Name_EN = Entry(frame_Detail,width=40, borderwidth=3,state="disabled")
 Product_Prices_LA = Label(frame_Detail, text="Product Prices:")
 Product_Prices_EN = Entry(frame_Detail, width=40, borderwidth=3,state="disabled")
 
-ProductQTY_LA=Label(frame_Detail, text="Quantity")
-ProductQTY=Entry(frame_Detail,width=40,textvariable="1" ,borderwidth=3,state="disabled")
 
 Product_CODE_LA = Label(frame_Detail, text="Enter Product Name/Code:")
 Product_CODE_EN = Entry(frame_Detail, width=40, borderwidth=3)
@@ -102,14 +67,9 @@ Product_CODE_EN.grid(row=10, column=0, columnspan=5)
 ProductCODE_LA.grid(row=1, column=0, columnspan=3, sticky=W)
 ProductCODE.grid(row=2, column=0, columnspan=5, sticky=W)
 
-ProductQTY_LA.grid(row=7, column=0, columnspan=3, sticky=W)
-ProductQTY.grid(row=8, column=0, columnspan=5)
-
-
 # Button logic
 def Button_LOGIC(Number):
     current = Product_CODE_EN.get()
-    # Quantity = Product_Quantity.get()
     Product_CODE_EN.delete(0, END)
     Product_CODE_EN.insert(0, str(current) + str(Number))
 
@@ -121,7 +81,8 @@ def Click_List():
     window_list.geometry("400x320")
 
     def search():
-        result = Entry_Search.get()
+        search_field = Entry_Search.get()
+
 
     window_Frame = Frame(window_list, width=400, height=100)
     window_Frame.grid(row=0, column=0)
@@ -166,35 +127,6 @@ def Click_List():
     button_Close = Button(window_Frame3, text="Close", command=window_list.destroy)
     button_Close.pack()
 
-
-# Button quantity
-def Click_QTY():
-    global Entry_Quantity
-    
-    window_Qty = Toplevel()
-    window_Qty.title("Quantity!")
-    window_Qty.geometry("300x120")
-
-    window_Frame = Frame(window_Qty, width=400, height=100)
-    window_Frame.pack()
-
-    Label_Quantity = Label(window_Frame, text="Enter the Quantity of the Products!")
-    Entry_Quantity = Entry(window_Frame, width=30, borderwidth=3)
-    button_Quantity = Button(window_Frame, text="ENTER", padx=5, pady=5,command=changeQTY)
-
-    Label_Quantity.pack()
-    Entry_Quantity.pack()
-    button_Quantity.pack()
-
-
-
-def changeQTY():
-    qty=Entry_Quantity.get()
-    quantity=StringVar()
-    quantity.set(qty)
-    ProductQTY.config(textvariable=quantity)
-
-
 def SearchItem(buttonpress):
     ProdCode = Product_CODE_EN
     if ProdCode.index("end")!=0:
@@ -217,61 +149,94 @@ def SearchItem(buttonpress):
                 messagebox.showerror("Product Search", "Item not in Inventory")
                 Product_CODE_EN.delete(0, END)
             if (result != "empty"):
+
                 result = prod.view(ProdCode)
                 Product_CODE_EN.delete(0, END)
                 name = StringVar()
                 price = StringVar()
-                qty=StringVar()
                 name.set(result[1])
                 price.set(result[2])
-                qty.set("1")
+
 
                 code=StringVar()
                 code.set(ProdCode)
                 ProductCODE.config(textvariable=code)
                 Product_Name_EN.config(textvariable=name)
                 Product_Prices_EN.config(textvariable=price)
-                ProductQTY.config(textvariable=qty)
-                quantity = ProductQTY.get()
 
 
-                result1=(result[0],result[1],result[2],quantity)
-
-
-                itemsLIST.append(result[1])
-                quantityLIST.append(quantity)
+                quantity = 1
+                result1=(result[0],result[1],result[2],quantity,result[3])
 
                 button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(result1))
+
 
     else: messagebox.showerror("Product Search", "Product Code Empty")
 
 # Button Enter/search the item
 def Click_Enter(result):
-    Product_ID = str(ProductCODE.get())
-    Product_Name = str(Product_Name_EN.get())
-    if Product_ID == "" or Product_Name == "":
-        messagebox.showerror("Product Search", "Please Enter the Product ID or Name")
-    else:
-        try:
-            frame_Table.insert(parent='', index='end', iid=result[0], text=(result), values=(result))
-        except:
-            messagebox.showerror("Product Search", "Item Already Existed")
-        price=[]
-        for x in frame_Table.get_children():
-            price.append(frame_Table.item(x)["values"][2])
-        global totalprice
-        totalprice=sum(price)
-        button_final_payment.config(state='active')
+
+    window_Qty = Toplevel()
+    window_Qty.title("Quantity!")
+    window_Qty.geometry("300x120")
+
+    window_Frame = Frame(window_Qty, width=400, height=100)
+    window_Frame.pack()
+
+    Label_Quantity = Label(window_Frame, text="Enter the Quantity of the Products!")
+    Entry_Quantity = Entry(window_Frame, width=30, borderwidth=3)
+    button_Quantity = Button(window_Frame, text="ENTER", padx=5, pady=5, command=lambda m=Entry_Quantity.get():setQTY(Entry_Quantity.get()))
+
+
+    ProdID=result[0]
+    ProdName=result[1]
+    ProdPrice=result[2]
+    ProdQTY=result[3]
+    RemainingQTY=result[4]
+    def setQTY(val):
+        global ProdQTY
+        ProdQTY=int(val)
+        if (ProdQTY>RemainingQTY):
+            messagebox.showerror("POS Transaction", "Not Enough QTY in Stock")
+        else:
+            itemsLIST.append(ProdName)
+            quantityLIST.append(ProdQTY)
+            Product_ID = str(ProductCODE.get())
+            Product_Name = str(Product_Name_EN.get())
+            if Product_ID == "" or Product_Name == "":
+                messagebox.showerror("Product Search", "Please Enter the Product ID or Name")
+            else:
+                try:
+                    frame_Table.insert(parent='', index='end', iid=ProdID, text=(ProdID, ProdName, ProdPrice, ProdQTY),
+                                       values=(ProdID, ProdName, ProdPrice, ProdQTY))
+
+                except:
+                    messagebox.showerror("Product Search", "Item Already Existed")
+
+                subtotal=[]
+                for x in frame_Table.get_children():
+                    subtotal.append(frame_Table.item(x)["values"][2]*frame_Table.item(x)["values"][3])
+                global totalprice
+                totalprice = sum(subtotal)
+                button_final_payment.config(state='active')
+
+                window_Qty.destroy()
+
+    Label_Quantity.pack()
+    Entry_Quantity.pack()
+    button_Quantity.pack()
+
 def payment():
         global Entry_Amount
         global Labell
         global Discount_Entry
+        global windowASK
 
         windowASK=Toplevel()
         windowASK.title("Payment")
         windowASK.geometry("200x180")
-        windowASK = Frame(windowASK)
-        windowASK.pack()
+        window = Frame(windowASK)
+        window.pack()
 
         totalpricelabel=Label(windowASK,text=totalprice)
         Labell = Label(windowASK, text="Enter Payment")
@@ -292,7 +257,13 @@ def calculatechange():
         totalamounttendered=Entry_Amount.get()
         try:
             total = int(float(totalamounttendered))
-            discount = int(float(Discount_Entry.get()))
+
+            if not Discount_Entry.get():
+                Labell.config(text="Setting Discount Value to 0")
+                discount=0
+            else:
+                discount = int(float(Discount_Entry.get()))
+
             price = int(totalprice)
             change = total - price
 
@@ -307,6 +278,10 @@ def calculatechange():
 
                 e = Employee.Employee()
                 e.addNewTransaction(price, discount, attendedBy, item_tuple)
+
+                #close this window here
+                windowASK.destroy()
+
         except:
             Labell.config(text="Invalid Value Entered")
 
@@ -345,7 +320,7 @@ button_9.grid(row=11, column=2, sticky="ew")
 # FOR Button
 button_Enter = Button(frame_Detail, text="ENTER", padx=16, pady=10, bg="green", command=lambda m="enter":SearchItem(m))
 button_DEL = Button(frame_Detail, text="DELETE", padx=14, pady=10, bg="green", command=Click_Delete)
-button_Quan = Button(frame_Detail, text="Quantity", padx=10, pady=10, bg="green", command=Click_QTY)
+
 button_List = Button(frame_Detail, text="List", padx=25, pady=10, bg="green", command=Click_List)
 button_confirm = Button(frame_Detail, text="Confirm", padx=5, pady=10, state="disabled")
 button_final_payment= Button(frame_Detail, text="Finish", padx=8, pady=10,command=payment, state="disabled")
@@ -353,7 +328,7 @@ button_final_payment= Button(frame_Detail, text="Finish", padx=8, pady=10,comman
 # Button Grid frame_CAL
 button_Enter.grid(row=14, column=3)
 button_DEL.grid(row=13, column=3)
-button_Quan.grid(row=12, column=3)
+
 button_List.grid(row=11, column=3)
 button_confirm.grid(row=14, column=2)
 button_final_payment.grid(row=14, column=1)
