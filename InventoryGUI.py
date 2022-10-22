@@ -120,8 +120,3 @@ class InvortoryGUI:
     
     def start(self):
         self.InvorGUI()
-
-
-root= Tk()
-e=start(root)
-root.mainloop()

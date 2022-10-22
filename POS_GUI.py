@@ -112,7 +112,7 @@ class PointOfSale_GUI:
         ProdCode = self.Product_CODE_EN
         if ProdCode.index("end")!=0:
             ProdCode=self.Product_CODE_EN.get()
-
+            print(ProdCode)
             prod = Product.product()
 
             var="itemsLIST"
@@ -137,18 +137,18 @@ class PointOfSale_GUI:
                     price = StringVar()
                     name.set(result[1])
                     price.set(result[2])
-
+                    print(result)
 
                     code=StringVar()
                     code.set(ProdCode)
-                    self.ProductCODE.config(textvariable=code)
-                    self.Product_Name_EN.config(textvariable=name)
-                    self.Product_Prices_EN.config(textvariable=price)
+                    self.ProductCODE.config(textvariable=code.get())
+                    self.Product_Name_EN.config(textvariable=name.get())
+                    self.Product_Prices_EN.config(textvariable=price.get())
 
-
+                    print(name.get())
                     quantity = 1
                     result1=(result[0],result[1],result[2],quantity,result[3])
-
+                    print(result1)
                     self.button_confirm.config(state="active",command=lambda m="confirm":self.Click_Enter(result1))
 
 
@@ -406,5 +406,6 @@ class PointOfSale_GUI:
 
         self.POSGUI.mainloop()
         
-    def start(self):
-        self.POS_Window
+    def start(self,m,id):
+        if (m=="pos"):
+            self.POS_Window()

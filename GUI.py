@@ -99,7 +99,8 @@ class GUI():
         self.startButton['command'] = lambda idx="Start", binst=self.startButton: self.timeIn(idx, binst)
         self.startButton.place(x=850, y=535)  
 
-        self.POSButton=Button(self.dashboardGUI, text="Point of Sale", width=10, font=("Arial", 15), bg='#54FA9B',command = POS_GUI.start(result['user'][0]))
+        pos=POS_GUI.PointOfSale_GUI()
+        self.POSButton=Button(self.dashboardGUI, text="Point of Sale", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda m="pos": pos.start(m,result['user'][0]))
 
 
 
