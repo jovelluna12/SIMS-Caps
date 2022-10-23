@@ -5,10 +5,11 @@ from tkinter import ttk
 from tkinter import messagebox
 import sqlite3
 from tracemalloc import start
+import Manager
 
 class InvortoryGUI:
 
-    def __init__(self,master):
+    def __init__(self):
         self.InvorVal = None
         
         
@@ -107,7 +108,12 @@ class InvortoryGUI:
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
         self.frame_Table.heading("Stack",text="Stack",anchor=E)
         self.frame_Table.place(x=0,y=0)
-
+        m1=Manager.Manager()
+        result=m1.inventoryList()
+        count=0
+        for x in result:
+            count+=1
+            self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x)
 
         #For the Side
         self.Frame_Side=Frame(self.InvorVal,width=200,height=520)

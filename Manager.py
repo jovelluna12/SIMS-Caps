@@ -5,7 +5,12 @@ class Manager (Employee.Employee):
         self.dbcursor = dbConnector.dbcursor
     def approveEmp(self,AppID,status):
         print("approve employee")
-
+    def inventoryList(self):
+        dbcursor = self.dbcursor
+        query = "SELECT ProductID,ProductName,status,price,Quantity FROM products"
+        dbcursor.execute(query)
+        result = dbcursor.fetchall()
+        return result
     def viewInv(self):
         dbcursor = self.dbcursor
         query="SELECT ProductID,ProductName,price,Quantity FROM products"
