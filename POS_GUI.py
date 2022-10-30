@@ -16,23 +16,30 @@ def start(m,id):
         root = Tk()
         root.title('Point Of Sales!!')
         tab = ttk.Treeview(root)
+        width= root.winfo_screenwidth()
+        height=root.winfo_screenheight()
+        root.geometry("%dx%d"%(width,height))
 
         # Frame Receipt
         global frame_Receipt
-        frame_Receipt = Frame(root, width=250, height=500)
+        frame_Receipt = Frame(root, width=1000,height=750)
         frame_Receipt.grid(row=0, column=0)
         myLabel1 = Label(frame_Receipt, text="PRODUCT RECORD!")
-        myLabel1.grid(row=0, column=0)
+        myLabel1.place(x=0,y=0)
 
         # Table
+        style=ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview")
         global frame_Table
-        frame_Table = ttk.Treeview(frame_Receipt, height=17)
+        frame_Table = ttk.Treeview(frame_Receipt, height=30)
         frame_Table['columns'] = ("ID", "Name", "Price", "QTY", "Total")
         frame_Table.column("#0", width=0, stretch=NO)
-        frame_Table.column("ID", anchor=W, width=50, minwidth=300, stretch=NO)
-        frame_Table.column("Name", anchor=W, width=300, minwidth=300, stretch=NO)
-        frame_Table.column("Price", anchor=E, width=80, stretch=NO)
-        frame_Table.column("QTY", anchor=CENTER, width=50, stretch=NO)
+        frame_Table.column("ID",anchor=W,stretch=NO)
+        frame_Table.column("Name",anchor=W,width=500,stretch=NO)
+        frame_Table.column("Price",anchor=E,width=100,stretch=NO)
+        frame_Table.column("QTY",anchor=CENTER,width=100,stretch=NO)
+        frame_Table.column("Total",anchor=E,width=95,stretch=NO)
 
         # Table Head
         frame_Table.heading("#0")
@@ -41,7 +48,8 @@ def start(m,id):
         frame_Table.heading("Price", text="Prices", anchor=E)
         frame_Table.heading("QTY", text="QTY", anchor=CENTER)
         frame_Table.heading("Total", text="TOTAL", anchor=E)
-        frame_Table.grid(row=1, column=0)
+        frame_Table.pack(expand=True,fill=X)
+        frame_Table.place(x=1,y=60)
 
         # Frame Detail & Button of ProductList
         global frame_Detail
@@ -53,34 +61,37 @@ def start(m,id):
         global Product_Prices_EN
         global Product_Prices_LA
 
-        frame_Detail = Frame(root, width=250, height=200)
-        frame_Detail.grid(row=0, column=1)
+        frame_Detail = Frame(root, width=360, height=750)
+        frame_Detail.place(x=1001,y=0)
+
         Product_PIMG = Label(frame_Detail, text="IMAGE")
         Product_Name_LA = Label(frame_Detail, text="Product Name:")
 
-
-
         ProductCODE_LA=Label(frame_Detail, text="Product Code")
-        ProductCODE=Entry(frame_Detail,width=40, borderwidth=3,state="disabled")
+        ProductCODE=Entry(frame_Detail,width=50, borderwidth=5,state="disabled")
 
-        Product_Name_EN = Entry(frame_Detail,width=40, borderwidth=3,state="disabled")
+        Product_Name_EN = Entry(frame_Detail,width=50, borderwidth=5,state="disabled")
         Product_Prices_LA = Label(frame_Detail, text="Product Prices:")
-        Product_Prices_EN = Entry(frame_Detail, width=40, borderwidth=3,state="disabled")
+        Product_Prices_EN = Entry(frame_Detail, width=50, borderwidth=5,state="disabled")
 
 
         Product_CODE_LA = Label(frame_Detail, text="Enter Product Code:")
-        Product_CODE_EN = Entry(frame_Detail, width=40, borderwidth=3)
+        Product_CODE_EN = Entry(frame_Detail, width=50, borderwidth=5)
         # Frame Detail & Button of ProductList grid
-        Product_PIMG.grid(row=0, column=0, columnspan=3)
-        Product_Name_LA.grid(row=3, column=0, columnspan=3, sticky=W)
-        Product_Name_EN.grid(row=4, column=0, columnspan=5)
-        Product_Prices_LA.grid(row=5, column=0, columnspan=3, sticky=W)
-        Product_Prices_EN.grid(row=6, column=0, columnspan=5)
-        Product_CODE_LA.grid(row=9, column=0, columnspan=3, sticky=W)
-        Product_CODE_EN.grid(row=10, column=0, columnspan=5)
+        #Disabled entry
+        Product_PIMG.place(x=150,y=40)
+        Product_Name_LA.place(x=20,y=140)
+        Product_Name_EN.place(x=20,y=170)
+        Product_Prices_LA.place(x=20,y=210)
+        Product_Prices_EN.place(x=20,y=240)
+        ProductCODE_LA.place(x=20,y=280)
+        ProductCODE.place(x=20,y=310)
 
-        ProductCODE_LA.grid(row=1, column=0, columnspan=3, sticky=W)
-        ProductCODE.grid(row=2, column=0, columnspan=5, sticky=W)
+        #Able Entry
+        Product_CODE_LA.place(x=20,y=360)
+        Product_CODE_EN.place(x=20,y=390)
+
+
 
         # Button List
         button_1 = Button(frame_Detail, text="1", padx=20, pady=10, command=lambda: Button_LOGIC(1))
@@ -95,16 +106,17 @@ def start(m,id):
         button_0 = Button(frame_Detail, text="0", padx=20, pady=10, command=lambda: Button_LOGIC(0))
 
         # Button Grid frame_CAL
-        button_0.grid(row=14, column=0, sticky="ew")
-        button_1.grid(row=13, column=0, sticky="ew")
-        button_2.grid(row=13, column=1, sticky="ew")
-        button_3.grid(row=13, column=2, sticky="ew")
-        button_4.grid(row=12, column=0, sticky="ew")
-        button_5.grid(row=12, column=1, sticky="ew")
-        button_6.grid(row=12, column=2, sticky="ew")
-        button_7.grid(row=11, column=0, sticky="ew")
-        button_8.grid(row=11, column=1, sticky="ew")
-        button_9.grid(row=11, column=2, sticky="ew")
+        button_0.place(x=50,y=600)
+        button_1.place(x=50,y=550)
+        button_2.place(x=110,y=550)
+        button_3.place(x=170,y=550)
+        button_4.place(x=50,y=500)
+        button_5.place(x=110,y=500)
+        button_6.place(x=170,y=500)
+        button_7.place(x=50,y=450)
+        button_8.place(x=110,y=450)
+        button_9.place(x=170,y=450)
+
 
         # FOR Button
         global button_confirm
@@ -116,16 +128,15 @@ def start(m,id):
         button_DEL = Button(frame_Detail, text="DELETE", padx=14, pady=10, bg="green", command=Click_Delete)
 
         button_List = Button(frame_Detail, text="List", padx=25, pady=10, bg="green", command=Click_List)
-        button_confirm = Button(frame_Detail, text="Confirm", padx=5, pady=10, state="disabled")
+        button_confirm = Button(frame_Detail, text="Confirm", padx=2, pady=10, state="disabled")
         button_final_payment = Button(frame_Detail, text="Finish", padx=8, pady=10, command=payment, state="disabled")
 
         # Button Grid frame_CAL
-        button_Enter.grid(row=14, column=3)
-        button_DEL.grid(row=13, column=3)
-
-        button_List.grid(row=11, column=3)
-        button_confirm.grid(row=14, column=2)
-        button_final_payment.grid(row=14, column=1)
+        button_Enter.place(x=230,y=600)
+        button_DEL.place(x=230,y=550)
+        button_List.place(x=230,y=500)
+        button_confirm.place(x=110,y=600)
+        button_final_payment.place(x=170,y=600)
 
         root.mainloop()
 
@@ -442,5 +453,3 @@ def record(discount):
 def Click_Delete():
     selected_Product = frame_Table.get_children()
     frame_Table.delete(selected_Product)
-
-

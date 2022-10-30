@@ -1,5 +1,8 @@
 import Employee, Manager, Owner, Product, GUI, POS_GUI,InventoryGUI
 
+# POS=POS_GUI
+# INVOR=InventoryGUI
+
 interface = GUI.GUI()
 interface.start()
 
@@ -7,8 +10,9 @@ interface.start()
 # INVOR.start()
 
 
+
+
 # x=Manager.Manager()
-#
 # x.AddEmp(15,'juan','jdcruz','jzruz','Cashier')
 
 

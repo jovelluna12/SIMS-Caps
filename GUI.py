@@ -2,11 +2,10 @@ from tkinter import *
 from tkinter import messagebox
 from functools import partial
 from tkinter.ttk import Treeview
-import Employee
+import Employee, InventoryGUI
 from datetime import date, datetime
 ## pip install pillow
 from PIL import Image, ImageTk
-
 import POS_GUI
 
 
@@ -26,12 +25,11 @@ class GUI():
         print(usernameVal, passwordVal)
 
         self.employee = Employee.Employee()
-
         result = self.employee.login(usernameVal, passwordVal)
 
         if (result['user']):
             print("Setting Session")
-            self.setSession('setUser', {"username": usernameVal, "password": passwordVal, "userID" : result['user'][0]})
+            self.setSession('setUser', {"username": usernameVal, "password": passwordVal, "userID" : result['user'][0],"role":result["user"][5]})
             print("Session Set:")
             print(self.getSession('getUser'))
             messagebox.showinfo(title="Success", message="Login Successful!")
@@ -39,13 +37,13 @@ class GUI():
         else:
             messagebox.showerror(title="No User found", message="Incorrect user or password!")
 
-
     def setSession(self, action, *arg):
         if (action == 'setUser'):
             self.session_user = {
                 "user" : arg[0]['username'],
                 "password": arg[0]['password'],
-                "userID": arg[0]['userID']
+                "userID": arg[0]['userID'],
+                "role":arg[0]["role"]
             }
     
     def getSession(self, action):
@@ -101,13 +99,14 @@ class GUI():
 
         pos=POS_GUI
         self.POSButton=Button(self.dashboardGUI, text="Point of Sale", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda m="pos": pos.start(m,result['user'][0]))
-
-
-
-        print("userID ",result['user'][0])
-
         self.POSButton.place(x=50, y=400)
 
+        if result['user'][5]=="Manager" or result['user'][5]=="Owner":
+            inventory=InventoryGUI
+            self.inventoryButton=Button(self.dashboardGUI, text="Inventory", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda: self.startInventory(result['user'][0]))
+            self.inventoryButton.place(x=50, y=450)
+
+        print("userID ",result['user'][0])
 
         self.load = Image.open("user.png")
         self.load = self.load.resize((150, 150), Image.ANTIALIAS)
@@ -126,6 +125,10 @@ class GUI():
 
 
         self.dashboardGUI.mainloop()
+
+    def startInventory(self, id):
+        INVOR=InventoryGUI.InvortoryGUI()
+        INVOR.start(result['user'][0])
 
     def timeIn(self, idx, binst):
         print(idx)
