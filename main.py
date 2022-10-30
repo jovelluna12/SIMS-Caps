@@ -1,15 +1,10 @@
 import Employee, Manager, Owner, Product, GUI, POS_GUI,InventoryGUI
 
+interface = GUI.GUI()
+interface.start()
 
-
-
-# interface = GUI.GUI()
-
-# interface.start()
-
-
-INVOR=InventoryGUI.InvortoryGUI()
-INVOR.start()
+# INVOR=InventoryGUI.InvortoryGUI()
+# INVOR.start()
 
 
 # x=Manager.Manager()
