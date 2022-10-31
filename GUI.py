@@ -57,7 +57,7 @@ class GUI():
 
         attendanceRows = self.employee.getAttendance(self.getSession('getUser')['userID'])
 
-       
+
         self.dashboardGUI = Tk()
         #set title
         self.dashboardGUI.title('Mafaith')

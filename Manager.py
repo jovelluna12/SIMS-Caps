@@ -25,6 +25,13 @@ class Manager (Employee.Employee):
         result=dbcursor.fetchall()
         return result
 
+    def viewEMPList(self):
+        dbcursor = self.dbcursor
+        query="SELECT EmpID,Name,role,username FROM employees"
+        dbcursor.execute(query)
+        result = dbcursor.fetchall()
+        return result
+
     def selectEmp(self,EmpID):
         query = "SELECT * FROM employees where EmpID=%s"
         id = EmpID

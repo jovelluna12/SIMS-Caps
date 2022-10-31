@@ -3,7 +3,6 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import sqlite3
 from tracemalloc import start
 import Manager
 
@@ -61,20 +60,20 @@ class InvortoryGUI:
         style.theme_use("default")
         style.configure("Treeview")
         self.frame_Table=ttk.Treeview(self.Frame_List,height=25)
-        self.frame_Table['columns']=("ID","Name","Detail","Price","Stack")
+        self.frame_Table['columns']=("ID","Name","Status","Price","Quantity")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=200,stretch=NO)
-        self.frame_Table.column("Detail",anchor=E,width=200,stretch=NO)
+        self.frame_Table.column("Status",anchor=E,width=200,stretch=NO)
         self.frame_Table.column("Price",anchor=CENTER,width=200,stretch=NO)
-        self.frame_Table.column("Stack",anchor=E,width=198,stretch=NO)
+        self.frame_Table.column("Quantity",anchor=E,width=198,stretch=NO)
         #Table Head
         self.frame_Table.heading("#0")
-        self.frame_Table.heading("ID",text="List-ID",anchor=W)
+        self.frame_Table.heading("ID",text="ID",anchor=W)
         self.frame_Table.heading("Name",text="Product Name",anchor=W)
-        self.frame_Table.heading("Detail",text="Detail",anchor=E)
+        self.frame_Table.heading("Status",text="Status",anchor=E)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
-        self.frame_Table.heading("Stack",text="Stack",anchor=E)
+        self.frame_Table.heading("Quantity",text="Quantity",anchor=E)
         self.frame_Table.pack()
         m1=Manager.Manager()
         result=m1.inventoryList()
@@ -159,23 +158,23 @@ class InvortoryGUI:
         style.theme_use("default")
         style.configure("Treeview")
         self.frame_Table=ttk.Treeview(self.Frame_Empl,height=25)
-        self.frame_Table['columns']=("ID","Name","Detail","Price","Stack")
+        self.frame_Table['columns']=("ID","Name","Detail","Username")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=200,stretch=NO)
         self.frame_Table.column("Detail",anchor=E,width=200,stretch=NO)
-        self.frame_Table.column("Price",anchor=CENTER,width=200,stretch=NO)
-        self.frame_Table.column("Stack",anchor=E,width=198,stretch=NO)
+        self.frame_Table.column("Username",anchor=CENTER,width=200,stretch=NO)
+
         #Table Head
         self.frame_Table.heading("#0")
-        self.frame_Table.heading("ID",text="Employee-ID",anchor=W)
-        self.frame_Table.heading("Name",text="Product Name",anchor=W)
-        self.frame_Table.heading("Detail",text="Detail",anchor=E)
-        self.frame_Table.heading("Price",text="Price",anchor=CENTER)
-        self.frame_Table.heading("Stack",text="Stack",anchor=E)
+        self.frame_Table.heading("ID",text="Employee ID",anchor=W)
+        self.frame_Table.heading("Name",text="Name",anchor=W)
+        self.frame_Table.heading("Detail",text="Role",anchor=E)
+        self.frame_Table.heading("Username",text="Username",anchor=CENTER)
+
         self.frame_Table.pack()
         m1=Manager.Manager()
-        result=m1.inventoryList()
+        result=m1.viewEMPList()
         count=0
         for x in result:
             count+=1
