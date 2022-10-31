@@ -1,4 +1,4 @@
-import Employee, Manager, Owner, Product, GUI, POS_GUI,InventoryGUI
+import GUI
 
 # POS=POS_GUI
 # INVOR=InventoryGUI
