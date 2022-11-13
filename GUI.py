@@ -2,11 +2,12 @@ from tkinter import *
 from tkinter import messagebox
 from functools import partial
 from tkinter.ttk import Treeview
-import Employee, InventoryGUI
+import Employee
 from datetime import date, datetime
 ## pip install pillow
 from PIL import Image, ImageTk
-import POS_GUI
+
+import POS_GUI,InventoryGUI
 
 
 #declare GUI var
@@ -25,17 +26,19 @@ class GUI():
         print(usernameVal, passwordVal)
 
         self.employee = Employee.Employee()
+
         result = self.employee.login(usernameVal, passwordVal)
 
         if (result['user']):
             print("Setting Session")
-            self.setSession('setUser', {"username": usernameVal, "password": passwordVal, "userID" : result['user'][0],"role":result["user"][5]})
+            self.setSession('setUser', {"username": usernameVal, "password": passwordVal, "userID" : result['user'][0]})
             print("Session Set:")
             print(self.getSession('getUser'))
             messagebox.showinfo(title="Success", message="Login Successful!")
             self.showDashboard()
         else:
             messagebox.showerror(title="No User found", message="Incorrect user or password!")
+
 
     def setSession(self, action, *arg):
         if (action == 'setUser'):
@@ -57,7 +60,7 @@ class GUI():
 
         attendanceRows = self.employee.getAttendance(self.getSession('getUser')['userID'])
 
-
+       
         self.dashboardGUI = Tk()
         #set title
         self.dashboardGUI.title('Mafaith')
@@ -140,6 +143,9 @@ class GUI():
         self.stopButton = Button(self.dashboardGUI, text="Stop", command=self.timeOut, width=10, font=("Arial", 15), bg='#54FA9B')
         self.stopButton['command'] = lambda idx="Stop", binst=self.stopButton: self.timeOut(idx, binst)
         self.stopButton.place(x=850, y=535)  
+        pos=POS_GUI
+        m="pos"
+        pos.start(m,result['user'][0])
 
     def timeOut(self,idx,binst):
         today = date.today()

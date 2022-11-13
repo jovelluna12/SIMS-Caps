@@ -1,18 +1,14 @@
-import GUI
-
-# POS=POS_GUI
-# INVOR=InventoryGUI
-
-interface = GUI.GUI()
-interface.start()
-
-# INVOR=InventoryGUI.InvortoryGUI()
-# INVOR.start()
+import Employee, Manager, Owner, Product, GUI, POS_GUI,InventoryGUI
 
 
+#interface = GUI.GUI()
+#interface.start()
 
+INVOR=InventoryGUI.InvortoryGUI()
+INVOR.start()
 
 # x=Manager.Manager()
+#
 # x.AddEmp(15,'juan','jdcruz','jzruz','Cashier')
 
 
