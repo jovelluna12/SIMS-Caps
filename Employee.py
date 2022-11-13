@@ -80,13 +80,24 @@ class Employee:
 
         return "done"
 
-    def viewDeliveryList(self,itemName,datePurchased,expectedArrivalDate,quantity,status):
-        print(itemName,datePurchased,expectedArrivalDate,quantity,status)
+    def viewDeliveryList(self):
+        dbcursor=self.cursor
+        query="SELECT deliverylist.BatchCode, productsindelivery.ProductCode, productsindelivery.ProductName,productsindelivery.Quantity,deliverylist.status FROM deliverylist,productsindelivery"
+        dbcursor.execute(query)
 
+        result=dbcursor.fetchall()
+        print(result)
+        return result
 
+    def addProducttoDeliveryList(self,productName,itemCode,Quantity,status,Price,ExpiryDate):
+        dbcursor = self.cursor
+        ProductCode=randomNumGen.generateID()
+        query="INSERT INTO productsindelivery VALUES (%s,%s,%s,%s,%s,%s)"
+        values=(ProductCode,productName,itemCode,Quantity,status,Price,ExpiryDate)
 
-    def addProducttoDeliveryList(self,productName,itemCode,Quantity,status,Price):
-        print(productName,itemCode,Quantity,status,Price)
+        dbcursor.execute(query,values)
+        dbConnector.db.commit()
 
-
-
+    def addManyDeliveryList(self):
+        # interface for many product here
+        print("")

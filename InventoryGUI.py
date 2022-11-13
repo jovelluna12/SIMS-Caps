@@ -4,6 +4,8 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from tracemalloc import start
+
+import Employee
 import Manager
 
 class InvortoryGUI:
@@ -141,8 +143,8 @@ class InvortoryGUI:
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
         self.frame_Table.heading("Stack",text="Stack",anchor=E)
         self.frame_Table.pack()
-        m1=Manager.Manager()
-        result=m1.inventoryList()
+        m1=Employee.Employee()
+        result=m1.viewDeliveryList()
         count=0
         for x in result:
             count+=1
