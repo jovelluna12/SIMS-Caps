@@ -31,7 +31,7 @@ class GUI():
 
         if (result['user']):
             print("Setting Session")
-            self.setSession('setUser', {"username": usernameVal, "password": passwordVal, "userID" : result['user'][0]})
+            self.setSession('setUser', {"username": usernameVal, "password": passwordVal, "userID" : result['user'][0],"role":result["user"][5]})
             print("Session Set:")
             print(self.getSession('getUser'))
             messagebox.showinfo(title="Success", message="Login Successful!")
