@@ -6,6 +6,7 @@ from tkinter import messagebox
 import sqlite3
 from tracemalloc import start
 import Manager
+from tkcalendar import DateEntry
 
 class InvortoryGUI:
 
@@ -81,7 +82,8 @@ class InvortoryGUI:
         count=0
         for x in result:
             count+=1
-            self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x)    
+            self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x)   
+
     def Click_Stack(self):
         #Table
         self.Frame_List.pack_forget()
@@ -180,12 +182,71 @@ class InvortoryGUI:
         for x in result:
             count+=1
             self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x)
+
+    
+    def Click_AddP(self):
+        print("this")
+
+    def Click_Add(self):
+        self.Add_Delivery= Toplevel()
+        self.Add_Delivery.title("Quantity!")
+        self.Add_Delivery.geometry("800x550")
+
+        self.Frame_Add=Frame(self.Add_Delivery,width=800,height=200)
+        self.Frame_Add.place(x=0,y=0)
+        self.Product_CODE_LA=Label(self.Frame_Add,text="Enter Product Name/Code:")
+        self.Product_CODE_EN= Entry(self.Frame_Add,width=60,borderwidth=4)
+        self.Product_CODE_LA.place(x=20,y=20)
+        self.Product_CODE_EN.place(x=20,y=40)
+
+        self.Product_date_LA=Label(self.Frame_Add,text="Date")
+        self.Product_date_EN=DateEntry(self.Frame_Add,selectmode='day',width=20)
+        self.Product_date_LA.place(x=20,y=80)
+        self.Product_date_EN.place(x=20,y=100)
+
+        self.Product_Exdate_LA=Label(self.Frame_Add,text="Expiration Date")
+        self.Product_EXdate_EN=DateEntry(self.Frame_Add,selectmode='day',width=20)
+        self.Product_Exdate_LA.place(x=200,y=80)
+        self.Product_EXdate_EN.place(x=200,y=100)
+        
+        self.Product_Stack_LA=Label(self.Frame_Add,text="Stack")
+        self.Product_Stack_EN= Entry(self.Frame_Add,width=20,borderwidth=4)
+        self.Product_Stack_LA.place(x=400,y=20)
+        self.Product_Stack_EN.place(x=400,y=40)
+
+        self.button_Add=Button(self.Frame_Add,text="Add",padx=20,pady=5,command=self.Click_AddP)
+        self.button_Add.place(x=700,y=150)
+
+
+        self.Frame_List=Frame(self.Add_Delivery,width=800,height=320)
+        self.Frame_List.place(x=0,y=200)
+        #Table
+        self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
+        self.frame_Table['columns']=("ID","Name","Detail","Price","Stack")
+        self.frame_Table.column("#0",width=0,stretch=NO)
+        self.frame_Table.column("ID",anchor=W,width=100)
+        self.frame_Table.column("Name",anchor=W,width=200)
+        self.frame_Table.column("Detail",anchor=E,width=200)
+        self.frame_Table.column("Price",anchor=CENTER,width=150)
+        self.frame_Table.column("Stack",anchor=E,width=149)
+        #Table Head
+        self.frame_Table.heading("#0")
+        self.frame_Table.heading("ID",text="ID",anchor=W)
+        self.frame_Table.heading("Name",text="Product Name",anchor=W)
+        self.frame_Table.heading("Detail",text="Detail",anchor=E)
+        self.frame_Table.heading("Price",text="Price",anchor=CENTER)
+        self.frame_Table.heading("Stack",text="Stack",anchor=E)
+        self.frame_Table.pack(fill='both')
+        self.frame_Table.grid(row=1,column=0)
+
+
     def InvorGUI(self):
         self.InvorVal = Tk()
         self.InvorVal.title("Inventory System")
         width= self.InvorVal.winfo_screenwidth()
         height=self.InvorVal.winfo_screenheight()
         self.InvorVal.geometry("%dx%d"%(width,height))
+        
         #For the Page 1 Detail
         self.Frame_Detail=Frame(self.InvorVal,width=900,height=200,)
         self.Frame_Detail.place(x=0,y=0)
@@ -194,6 +255,7 @@ class InvortoryGUI:
         self.button_Stack=Button(self.Frame_Detail,text="Stack",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Stack).place(x=690,y=40)
         self.button_Delivery=Button(self.Frame_Detail,text="Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Delivery).place(x=480,y=120)
         self.button_Employee=Button(self.Frame_Detail,text="Employeee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Employee).place(x=690,y=120)
+        
         #For the Page LIST
         self.Frame_main=Frame(self.InvorVal,width=900,height=520)
         self.Frame_main.place(x=2,y=210)
@@ -203,9 +265,11 @@ class InvortoryGUI:
         self.Frame_Del=Frame(self.Frame_main,width=900,height=520)
         
         #For the Side
-        self.Frame_Side=Frame(self.InvorVal,width=300,height=120,)
-        self.Frame_Side.place(x=900,y=0)
-        label=Label(self.Frame_Side,text="IMAGE").place(x=80,y=10)
+        self.Frame_Side=Frame(self.InvorVal,width=300,height=740)
+        self.Frame_Side.place(x=910,y=0)
+        label=Label(self.Frame_Side,text="IMAGE").place(x=100,y=10)
+
+        self.Add_Del=Button(self.Frame_Side,text="Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add).place(x=100,y=100)
         #button_List=Button(Frame_Side,text="List",padx=20,pady=10,width=10,height=1,command=self.Click_List()).place(x=40,y=50)
         
         self.InvorVal.mainloop()

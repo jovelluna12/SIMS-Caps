@@ -51,6 +51,9 @@ def start(m,id):
         frame_Table.pack(expand=True,fill=X)
         frame_Table.place(x=1,y=60)
 
+        button_Out= Button(frame_Receipt,text="Time.OUT",padx=9,pady=5,bg="green",command=root.destroy)
+        button_Out.place(x=920,y=15)
+
         # Frame Detail & Button of ProductList
         global frame_Detail
         global ProductCODE_LA
@@ -126,10 +129,10 @@ def start(m,id):
         button_Enter = Button(frame_Detail, text="ENTER", padx=16, pady=10, bg="green",
                               command=lambda m="enter": SearchItem(m))
         button_DEL = Button(frame_Detail, text="DELETE", padx=14, pady=10, bg="green", command=Click_Delete)
-
         button_List = Button(frame_Detail, text="List", padx=25, pady=10, bg="green", command=Click_List)
         button_confirm = Button(frame_Detail, text="Confirm", padx=2, pady=10, state="disabled")
         button_final_payment = Button(frame_Detail, text="Finish", padx=8, pady=10, command=payment, state="disabled")
+        
 
         # Button Grid frame_CAL
         button_Enter.place(x=230,y=600)
@@ -137,6 +140,7 @@ def start(m,id):
         button_List.place(x=230,y=500)
         button_confirm.place(x=110,y=600)
         button_final_payment.place(x=170,y=600)
+        
 
         root.mainloop()
 

@@ -7,7 +7,7 @@ from datetime import date, datetime
 ## pip install pillow
 from PIL import Image, ImageTk
 
-import POS_GUI
+import POS_GUI,InventoryGUI
 
 
 #declare GUI var
@@ -34,7 +34,6 @@ class GUI():
             self.setSession('setUser', {"username": usernameVal, "password": passwordVal, "userID" : result['user'][0]})
             print("Session Set:")
             print(self.getSession('getUser'))
-            messagebox.showinfo(title="Success", message="Login Successful!")
             self.showDashboard()
         else:
             messagebox.showerror(title="No User found", message="Incorrect user or password!")
@@ -46,6 +45,7 @@ class GUI():
                 "user" : arg[0]['username'],
                 "password": arg[0]['password'],
                 "userID": arg[0]['userID']
+
             }
     
     def getSession(self, action):
@@ -99,15 +99,11 @@ class GUI():
         self.startButton['command'] = lambda idx="Start", binst=self.startButton: self.timeIn(idx, binst)
         self.startButton.place(x=850, y=535)  
 
-        pos=POS_GUI
-        self.POSButton=Button(self.dashboardGUI, text="Point of Sale", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda m="pos": pos.start(m,result['user'][0]))
-
-
-
-        print("userID ",result['user'][0])
-
+        INVOR=InventoryGUI
+        self.POSButton=Button(self.dashboardGUI, text="Inventory", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda m="INVOR": INVOR.start(m,result['user'][0]))
         self.POSButton.place(x=50, y=400)
-
+        
+        print("userID ",result['user'][0])
 
         self.load = Image.open("user.png")
         self.load = self.load.resize((150, 150), Image.ANTIALIAS)
@@ -115,6 +111,7 @@ class GUI():
         self.img = Label(self.dashboardGUI, image=self.render)
         self.img.image = self.render
         self.img.place(x=35, y=90)
+
 
         
         self.employeeName = Label(self.dashboardGUI, text=f"{self.session_user['user']}", font=("Arial", 15)).place(x=50, y=250)
@@ -137,6 +134,9 @@ class GUI():
         self.stopButton = Button(self.dashboardGUI, text="Stop", command=self.timeOut, width=10, font=("Arial", 15), bg='#54FA9B')
         self.stopButton['command'] = lambda idx="Stop", binst=self.stopButton: self.timeOut(idx, binst)
         self.stopButton.place(x=850, y=535)  
+        pos=POS_GUI
+        m="pos" 
+        pos.start(m,result['user'][0])
 
     def timeOut(self,idx,binst):
         today = date.today()
