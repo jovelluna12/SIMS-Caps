@@ -1,8 +1,8 @@
-import Employee
-import dbConnector
+import Employee, dbConnector, ROP
 class Manager (Employee.Employee):
     def __init__(self):
         self.dbcursor = dbConnector.dbcursor
+        self.ROP=ROP
     def inventoryList(self):
         dbcursor = self.dbcursor
         query = "SELECT ProductID,ProductName,status,price,Quantity FROM products"
@@ -15,6 +15,16 @@ class Manager (Employee.Employee):
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result
+
+    def notify_low_quantity(self):
+        ROP=self.ROP.calculate_ROP()
+        quantity=0
+        if quantity<=ROP:
+            return "Low Product"
+
+    def notify_expiry_warning(self):
+
+        return "expriry warning"
 
     def viewSales(self):
         dbcursor = self.dbcursor
