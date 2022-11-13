@@ -34,11 +34,9 @@ class GUI():
             self.setSession('setUser', {"username": usernameVal, "password": passwordVal, "userID" : result['user'][0],"role":result["user"][5]})
             print("Session Set:")
             print(self.getSession('getUser'))
-            messagebox.showinfo(title="Success", message="Login Successful!")
             self.showDashboard()
         else:
             messagebox.showerror(title="No User found", message="Incorrect user or password!")
-
 
     def setSession(self, action, *arg):
         if (action == 'setUser'):
@@ -105,9 +103,12 @@ class GUI():
         self.POSButton.place(x=50, y=400)
 
         if result['user'][5]=="Manager" or result['user'][5]=="Owner":
-            inventory=InventoryGUI
             self.inventoryButton=Button(self.dashboardGUI, text="Inventory", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda: self.startInventory(result['user'][0]))
             self.inventoryButton.place(x=50, y=450)
+
+           # buttons for employee here
+
+
 
         print("userID ",result['user'][0])
 
@@ -176,7 +177,6 @@ class GUI():
             self.session_user = None
             self.dashboardGUI.destroy()
             self.showLogin()
-
 
 
     def showLogin(self):

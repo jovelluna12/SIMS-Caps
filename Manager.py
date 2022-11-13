@@ -3,8 +3,6 @@ import dbConnector
 class Manager (Employee.Employee):
     def __init__(self):
         self.dbcursor = dbConnector.dbcursor
-    def approveEmp(self,AppID,status):
-        print("approve employee")
     def inventoryList(self):
         dbcursor = self.dbcursor
         query = "SELECT ProductID,ProductName,status,price,Quantity FROM products"
