@@ -31,3 +31,33 @@ def generateID():
         else:
             continue
     return ID
+
+def generateProductID():
+    ID = random.randint(1, 9999)
+    query = "SELECT ProductID from products"
+    dbcursor = dbConnector.db.cursor()
+    dbcursor.execute(query)
+    result = dbcursor.fetchall()
+
+    for x in result:
+        if ID == x :
+            ID = random.randint(1, 9999)
+            break
+        else:
+            continue
+    return ID
+
+def generateBatchCode():
+    ID = random.randint(1, 9999)
+    query = "SELECT BatchCode from productsindelivery"
+    dbcursor = dbConnector.db.cursor()
+    dbcursor.execute(query)
+    result = dbcursor.fetchall()
+
+    for x in result:
+        if ID == x :
+            ID = random.randint(1, 9999)
+            break
+        else:
+            continue
+    return ID

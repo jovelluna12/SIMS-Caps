@@ -77,7 +77,6 @@ class Employee:
             dbcursor.execute(query3,query3val)
 
         dbConnector.db.commit()
-
         return "done"
 
     def viewDeliveryList(self):
@@ -98,6 +97,45 @@ class Employee:
         dbcursor.execute(query,values)
         dbConnector.db.commit()
 
-    def addManyDeliveryList(self):
-        # interface for many product here
-        print("")
+    def addManyDeliveryList(self,items,batch_code,order_date,arrival_date,var):
+        dbcursor = self.cursor
+
+        query_list="INSERT INTO deliverylist VALUES(%s,%s,%s,%s)"
+        dbcursor.execute(query_list, (batch_code,order_date,arrival_date,var))
+
+        query = "INSERT INTO productsindelivery VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        values = items
+        dbcursor.executemany(query, values)
+        dbConnector.db.commit()
+
+        return "success"
+
+    def ListAllBatches(self):
+        dbcursor = self.cursor
+        query="SELECT BatchCode,datepurchased,expectedarrivaldate FROM deliverylist WHERE status='Under Delivery'"
+        dbcursor.execute(query)
+        result=dbcursor.fetchall()
+        return result
+
+    def MarkBatchArrived(self,batchcode):
+        dbcursor=self.cursor
+        code=[batchcode]
+        query="UPDATE deliverylist SET status='arrived' WHERE BatchCode=%s"
+        dbcursor.execute(query,(tuple(code)))
+
+        query_product="SELECT ProductCode,Quantity from productsindelivery WHERE BatchCode=%s"
+        dbcursor.execute(query_product,(tuple(code)))
+
+        result=dbcursor.fetchall()
+        x=0
+
+        query_list = "UPDATE products SET quantity=quantity+%s WHERE ProductID=%s"
+
+        for i in range(0,len(result)):
+            id=result[x][0]
+            quantity=result[x][1]
+            x+=1
+            dbcursor.execute(query_list,(quantity,id))
+        dbConnector.db.commit()
+
+

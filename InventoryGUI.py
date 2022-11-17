@@ -9,6 +9,10 @@ import Employee
 import Manager
 from tkcalendar import DateEntry
 
+import Product
+import randomNumGen
+
+
 class InvortoryGUI:
 
     def __init__(self):
@@ -186,12 +190,107 @@ class InvortoryGUI:
 
     
     def Click_AddP(self):
-        print("this")
+        ProdName = self.Product_CODE_EN.get()
+
+        m = Product.product()
+        if isinstance(ProdName,str):
+            result=m.viewName(ProdName)
+        if isinstance(ProdName,int):
+            result=m.viewCode(ProdName)
+        count=0
+
+        if result=="empty":
+
+            self.Product_Price_LA = Label(self.Frame_Add, text="Price")
+            self.Product_Price_EN = Entry(self.Frame_Add, width=20, borderwidth=4)
+            self.Product_Price_LA.place(x=530, y=20)
+            self.Product_Price_EN.place(x=530, y=40)
+
+            self.button_Add.config(command=self.add_to_products)
+
+            self.Label = Label(self.Frame_Add, text="Product Not Found in Database, It will be Added Upon Clicking Add Button", fg='Red')
+            self.Label.place(x=100, y=150)
+
+
+
+        else:
+            for x in result:
+                count += 1
+                self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+    def add_to_products(self):
+        ProdName = self.Product_CODE_EN.get()
+        date = self.Product_date_EN.get_date()
+        expiry_date = self.Product_EXdate_EN.get_date()
+        quantity = self.Product_Stack_EN.get()
+        ProductID = randomNumGen.generateProductID()
+        price = float(int(self.Product_Price_EN.get()))
+
+
+        var1="ProductID_list"
+        var2="ProdName_list"
+        var3 = "quantity_list"
+        var4 = "price_list"
+        var5 = "date_list"
+        var6 = "expiry_date_list"
+        if var1 not in globals() and var2 not in globals() and var3 not in globals() and var4 not in globals() and var5 not in globals() and var6 not in globals():
+            global ProductID_list, ProdName_list, quantity_list, price_list, date_list, expiry_date_list
+
+            ProductID_list = []
+            ProdName_list = []
+            quantity_list = []
+            price_list = []
+            date_list = []
+            expiry_date_list = []
+
+        ProductID_list.append(int(ProductID))
+        ProdName_list.append(ProdName)
+        quantity_list.append(int(quantity))
+        price_list.append(price)
+        date_list.append(date)
+        expiry_date_list.append(expiry_date)
+
+        a=Product.product()
+        a.add(ProductID,ProdName,0,price)
+
+        self.frame_Table.insert(parent='', index='end', iid=ProductID, text=(ProductID,ProdName,price,quantity,date,expiry_date), values=(ProductID,ProdName,price,quantity,date,expiry_date))
+
+        self.Product_CODE_EN.delete(0,'end')
+        self.Product_Stack_EN.delete(0, 'end')
+        self.Product_EXdate_EN.delete(0, 'end')
+        self.Product_Price_EN.delete(0,'end')
+
+        self.AddDeliveries = Button(self.Frame_Add, text="Add to Delivery List", padx=20, pady=5,command=self.Add_Deliveries)
+        self.AddDeliveries.place(x=500, y=150)
+
+        self.Product_Price_LA.place_forget()
+        self.Product_Price_EN.place_forget()
+        self.button_Add.config(command=self.Click_AddP)
+
+
+    def Add_Deliveries(self):
+        batch_code = []
+        code = randomNumGen.generateBatchCode()
+        for i in range(len(ProductID_list)):
+            batch_code.append(code)
+
+        item_tuple = list(zip(ProductID_list,ProdName_list,batch_code,quantity_list,price_list,expiry_date_list,'Under Delivery'))
+
+        order_date=self.Product_date_EN.get_date()
+        arrival_date=self.Product_Arrive_EN.get_date()
+
+
+        a=Employee.Employee()
+        print(a.addManyDeliveryList(item_tuple,code,order_date,arrival_date,'Under Delivery'))
+
+        # b=Product.product()
+        # print(b.updateProductQuantity(ProductID_list,quantity_list))
+
 
     def Click_Add(self):
         self.Add_Delivery= Toplevel()
-        self.Add_Delivery.title("Quantity!")
-        self.Add_Delivery.geometry("800x550")
+        self.Add_Delivery.title("Add Products on Delivery")
+        self.Add_Delivery.geometry("900x550")
 
         self.Frame_Add=Frame(self.Add_Delivery,width=800,height=200)
         self.Frame_Add.place(x=0,y=0)
@@ -209,36 +308,46 @@ class InvortoryGUI:
         self.Product_EXdate_EN=DateEntry(self.Frame_Add,selectmode='day',width=20)
         self.Product_Exdate_LA.place(x=200,y=80)
         self.Product_EXdate_EN.place(x=200,y=100)
+
+        self.Product_Arrive_LA = Label(self.Frame_Add, text="Arrival Date")
+        self.Product_Arrive_EN = DateEntry(self.Frame_Add, selectmode='day', width=20)
+        self.Product_Arrive_LA.place(x=390, y=80)
+        self.Product_Arrive_EN.place(x=390, y=100)
         
         self.Product_Stack_LA=Label(self.Frame_Add,text="Stack")
         self.Product_Stack_EN= Entry(self.Frame_Add,width=20,borderwidth=4)
         self.Product_Stack_LA.place(x=400,y=20)
         self.Product_Stack_EN.place(x=400,y=40)
 
-        self.button_Add=Button(self.Frame_Add,text="Add",padx=20,pady=5,command=self.Click_AddP)
+        self.button_Add=Button(self.Frame_Add,text="Add",padx=20,pady=5,command= self.Click_AddP)
         self.button_Add.place(x=700,y=150)
-
 
         self.Frame_List=Frame(self.Add_Delivery,width=800,height=320)
         self.Frame_List.place(x=0,y=200)
         #Table
         self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
-        self.frame_Table['columns']=("ID","Name","Detail","Price","Stack")
+        self.frame_Table['columns']=("ID","Name","Price","Quantity","Order Date","Expiration Date")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100)
         self.frame_Table.column("Name",anchor=W,width=200)
-        self.frame_Table.column("Detail",anchor=E,width=200)
+
         self.frame_Table.column("Price",anchor=CENTER,width=150)
-        self.frame_Table.column("Stack",anchor=E,width=149)
+        self.frame_Table.column("Quantity",anchor=W,width=149)
+        self.frame_Table.column("Order Date", anchor=W, width=149)
+        self.frame_Table.column("Expiration Date", anchor=W, width=149)
         #Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID",text="ID",anchor=W)
         self.frame_Table.heading("Name",text="Product Name",anchor=W)
-        self.frame_Table.heading("Detail",text="Detail",anchor=E)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
-        self.frame_Table.heading("Stack",text="Stack",anchor=E)
+        self.frame_Table.heading("Quantity",text="Quantity",anchor=W)
+        self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
+        self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
+
         self.frame_Table.pack(fill='both')
         self.frame_Table.grid(row=1,column=0)
+
+
 
 
     def InvorGUI(self):
@@ -254,7 +363,7 @@ class InvortoryGUI:
         label=Label(self.Frame_Detail,text="IMAGE",width=37,height=13).place(x=0,y=0)
         self.button_List=Button(self.Frame_Detail,text="List",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_List1).place(x=480,y=40)
         self.button_Stack=Button(self.Frame_Detail,text="Stack",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Stack).place(x=690,y=40)
-        self.button_Delivery=Button(self.Frame_Detail,text="Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Delivery).place(x=480,y=120)
+        self.button_Delivery=Button(self.Frame_Detail,text="Delivery List",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Delivery).place(x=480,y=120)
         self.button_Employee=Button(self.Frame_Detail,text="Employeee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Employee).place(x=690,y=120)
         
         #For the Page LIST
@@ -270,10 +379,63 @@ class InvortoryGUI:
         self.Frame_Side.place(x=910,y=0)
         label=Label(self.Frame_Side,text="IMAGE").place(x=100,y=10)
 
-        self.Add_Del=Button(self.Frame_Side,text="Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add).place(x=100,y=100)
+        self.Add_Del=Button(self.Frame_Side,text="Add to Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add).place(x=100,y=100)
+        self.Add_Del = Button(self.Frame_Side, text="Delivery Batches", padx=10, pady=10, width=10, height=1,
+                              bg='#54FA9B', command=self.Click_List).place(x=100, y=150)
         #button_List=Button(Frame_Side,text="List",padx=20,pady=10,width=10,height=1,command=self.Click_List()).place(x=40,y=50)
         
         self.InvorVal.mainloop()
-    
+    def Click_List(self):
+        global Entry_Search
+        global Search_Table
+        window_list = Toplevel()
+        window_list.title("Delivery Batch")
+        window_list.geometry("500x430")
+
+        window_Frame = Frame(window_list, width=400, height=100)
+        window_Frame.grid(row=0, column=0)
+
+        window_Frame2 = Frame(window_list, width=400, height=250, bg="blue")
+        window_Frame2.grid(row=1, column=0)
+
+        Search_Table = ttk.Treeview(window_Frame2, height=12)
+        Search_Table['column'] = ("Batch Code", "Order Date", "Arrival Date")
+        Search_Table.column("#0", width=0, stretch=NO, anchor=W)
+        Search_Table.column("Batch Code", width=100, stretch=NO, anchor=W)
+        Search_Table.column("Order Date", width=148, stretch=NO, anchor=W)
+        Search_Table.column("Arrival Date", width=100, stretch=NO, anchor=E)
+
+
+        Search_Table.heading("#0")
+        Search_Table.heading("Batch Code", text="Batch Code", anchor=W)
+        Search_Table.heading("Order Date", text="Order Date", anchor=W)
+        Search_Table.heading("Arrival Date", text="Arrival Date", anchor=W)
+
+        Search_Table.grid(row=0, column=0)
+
+        Label_Search = Label(window_Frame, text="Search Batch:")
+        Entry_Search = Entry(window_Frame, width=50, borderwidth=3)
+        button_Search = Button(window_Frame, text="Mark Arrived", padx=5, pady=0, command=self.search)
+
+        Label_Search.grid(row=0, column=0, sticky=W)
+        Entry_Search.grid(row=0, column=1)
+        button_Search.grid(row=0, column=3)
+
+        m = Employee.Employee()
+        m1 = m.ListAllBatches()
+        count = 0
+
+        for x in m1:
+            count += 1
+            Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+
+
+    def search(self):
+        search_field = Entry_Search.get()
+
+        e=Employee.Employee()
+        e.MarkBatchArrived(search_field)
+
     def start(self,id):
         self.InvorGUI()

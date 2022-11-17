@@ -1,4 +1,4 @@
-# Reorder Point (ROP) refers to the minimul level of inventory that determines when it is time to reorder.
+# Reorder Point (ROP) refers to the minimum level of inventory that determines when it is time to reorder.
 # https://www.shipbob.com/blog/reorder-point-formula/
 # DEMO Implementation Only. Information from CLient Required for Full Implementation
 
@@ -16,3 +16,4 @@ def calculate_ROP():
 
     ROP=lead_time_demand+safety_stock # ROP Formula
     return ROP
+
