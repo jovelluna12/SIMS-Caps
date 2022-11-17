@@ -68,7 +68,7 @@ class Employee:
         item=[x[n1] for x in items]
         quantity=[x[n2] for x in items]
 
-        query3="update products set Quantity=Quantity-%s where ProductName LIKE %s"
+        query3="update products set quantity=quantity-%s where ProductName LIKE %s"
         for x in range(len(item)):
             PurchaseID=randomNumGen.generatePurchaseID()
             items=(PurchaseID,item[x],quantity[x],InvoiceNumber)

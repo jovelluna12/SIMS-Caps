@@ -253,7 +253,7 @@ def SearchItem(buttonpress):
                 itemsLIST=[]
                 quantityLIST=[]
 
-        result = prod.view(ProdCode)
+        result = prod.viewCode(ProdCode)
 
         if (buttonpress=="enter"):
             if (result == "empty"):
@@ -261,7 +261,7 @@ def SearchItem(buttonpress):
                 Product_CODE_EN.delete(0, END)
             if (result != "empty"):
 
-                result = prod.view(ProdCode)
+                result = prod.viewCode(ProdCode)
                 Product_CODE_EN.delete(0, END)
 
                 name = StringVar()

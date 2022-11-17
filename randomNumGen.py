@@ -47,6 +47,21 @@ def generateProductID():
             continue
     return ID
 
+def generatePurchaseID():
+    ID = random.randint(1, 9999)
+    query = "SELECT PurchaseID from purchasedproducts"
+    dbcursor = dbConnector.db.cursor()
+    dbcursor.execute(query)
+    result = dbcursor.fetchall()
+
+    for x in result:
+        if ID == x :
+            ID = random.randint(1, 9999)
+            break
+        else:
+            continue
+    return ID
+
 def generateBatchCode():
     ID = random.randint(1, 9999)
     query = "SELECT BatchCode from productsindelivery"
