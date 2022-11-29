@@ -62,7 +62,7 @@ class GUI():
        
         self.dashboardGUI = Tk()
         #set title
-        self.dashboardGUI.title('Mafaith')
+        self.dashboardGUI.title('Cresdel Pharmacy!!')
         #set size
         self.dashboardGUI.geometry("1000x600")
         self.employeePage = Label(self.dashboardGUI, text=f"Employee Page", font=("Arial", 25)).place(x=10, y=5)
@@ -169,11 +169,10 @@ class GUI():
             self.showLogin()
 
 
-
     def showLogin(self):
         self.loginGui = Tk()
         #set title
-        self.loginGui.title('Mafaith')
+        self.loginGui.title('Cresdel Pharmacy!!')
         #set size
         self.loginGui.geometry("1000x600")
 

@@ -14,7 +14,7 @@ def start(m,id):
 
         global root
         root = Tk()
-        root.title('Point Of Sales!!')
+        root.title('Cresdel Pharmacy!!')
         tab = ttk.Treeview(root)
         width= root.winfo_screenwidth()
         height=root.winfo_screenheight()
@@ -22,9 +22,9 @@ def start(m,id):
 
         # Frame Receipt
         global frame_Receipt
-        frame_Receipt = Frame(root, width=1000,height=750)
+        frame_Receipt = Frame(root, width=1000,height=560,highlightbackground="black", highlightthickness=3)
         frame_Receipt.grid(row=0, column=0)
-        myLabel1 = Label(frame_Receipt, text="PRODUCT RECORD!")
+        myLabel1 = Label(frame_Receipt, text="Cresdel Pharmacy!!",font=("Arial",30,'bold'))
         myLabel1.place(x=0,y=0)
 
         # Table
@@ -32,14 +32,14 @@ def start(m,id):
         style.theme_use("default")
         style.configure("Treeview")
         global frame_Table
-        frame_Table = ttk.Treeview(frame_Receipt, height=30)
+        frame_Table = ttk.Treeview(frame_Receipt, height=24)
         frame_Table['columns'] = ("ID", "Name", "Price", "QTY", "Total")
         frame_Table.column("#0", width=0, stretch=NO)
         frame_Table.column("ID",anchor=W,stretch=NO)
         frame_Table.column("Name",anchor=W,width=500,stretch=NO)
         frame_Table.column("Price",anchor=E,width=100,stretch=NO)
         frame_Table.column("QTY",anchor=CENTER,width=100,stretch=NO)
-        frame_Table.column("Total",anchor=E,width=95,stretch=NO)
+        frame_Table.column("Total",anchor=E,width=93,stretch=NO)
 
         # Table Head
         frame_Table.heading("#0")
@@ -49,10 +49,35 @@ def start(m,id):
         frame_Table.heading("QTY", text="QTY", anchor=CENTER)
         frame_Table.heading("Total", text="TOTAL", anchor=E)
         frame_Table.pack(expand=True,fill=X)
-        frame_Table.place(x=1,y=60)
+        frame_Table.place(x=1,y=49)
 
         button_Out= Button(frame_Receipt,text="Time.OUT",padx=9,pady=5,bg="green",command=root.destroy)
-        button_Out.place(x=920,y=15)
+        button_Out.place(x=910,y=8)
+
+        #Detailed("This the new Update of the POS")
+        frame_Total=Frame(root,width=1000,height=130,highlightbackground="black", highlightthickness=3)
+        frame_Total.place(x=0,y=563)
+
+        user_Em=Label(frame_Total,text="NAME:",width=0,height=0,font=("Arial",16,'bold')).place(x=10,y=10)
+        user_FD=Label(frame_Total,text="UserName",width=25,height=0,anchor=W,font=("Arial",16,'bold')).place(x=80,y=10)
+
+        user_Timein=Label(frame_Total,text="TIME IN:",width=10,height=0,anchor=W,font=("Arial",10,'bold')).place(x=10,y=50)
+        user_FD=Label(frame_Total,text="Time",width=50,height=0,anchor=W,font=("Arial",10,'bold')).place(x=90,y=50)
+
+        def temp_text(e):
+            Totalprince_Entry.delete(0,"end")
+        
+        Totalprince_Label=Label(frame_Total,text="Total:",font=("Arial", 20,'bold')).place(x=676,y=40)
+        Totalprince_Entry=Entry(frame_Total,width=8,borderwidth=3,fg='green',font=("Arial",30,'bold'))
+        Totalprince_Entry.place(x=800,y=40,height=35)
+        Totalprince_Entry.insert(END,'0.00')
+        Totalprince_Entry.bind("<FocusIn>",temp_text)
+        Totalchange_Label=Label(frame_Total,text="Change:",font=("Arial", 20,'bold')).place(x=676,y=80)
+        Totalchange_Entry=Entry(frame_Total,width=8,borderwidth=3,fg='green',font=("Arial",30,'bold'))
+        Totalchange_Entry.place(x=800,y=80,height=35)
+        Totalchange_Entry.insert(END,'0.00')
+        Totalchange_Entry.bind("<FocusIn>",temp_text)
+        #END
 
         # Frame Detail & Button of ProductList
         global frame_Detail
@@ -64,7 +89,7 @@ def start(m,id):
         global Product_Prices_EN
         global Product_Prices_LA
 
-        frame_Detail = Frame(root, width=360, height=750)
+        frame_Detail = Frame(root, width=360, height=693,highlightbackground="black", highlightthickness=3)
         frame_Detail.place(x=1001,y=0)
 
         Product_PIMG = Label(frame_Detail, text="IMAGE")
@@ -84,29 +109,29 @@ def start(m,id):
         #Disabled entry
         Product_PIMG.place(x=150,y=40)
         Product_Name_LA.place(x=20,y=140)
-        Product_Name_EN.place(x=20,y=170)
+        Product_Name_EN.place(x=20,y=160)
         Product_Prices_LA.place(x=20,y=210)
-        Product_Prices_EN.place(x=20,y=240)
+        Product_Prices_EN.place(x=20,y=230)
         ProductCODE_LA.place(x=20,y=280)
-        ProductCODE.place(x=20,y=310)
+        ProductCODE.place(x=20,y=300)
 
         #Able Entry
         Product_CODE_LA.place(x=20,y=360)
-        Product_CODE_EN.place(x=20,y=390)
+        Product_CODE_EN.place(x=20,y=380)
 
 
 
         # Button List
-        button_1 = Button(frame_Detail, text="1", padx=20, pady=10, command=lambda: Button_LOGIC(1))
-        button_2 = Button(frame_Detail, text="2", padx=20, pady=10, command=lambda: Button_LOGIC(2))
-        button_3 = Button(frame_Detail, text="3", padx=20, pady=10, command=lambda: Button_LOGIC(3))
-        button_4 = Button(frame_Detail, text="4", padx=20, pady=10, command=lambda: Button_LOGIC(4))
-        button_5 = Button(frame_Detail, text="5", padx=20, pady=10, command=lambda: Button_LOGIC(5))
-        button_6 = Button(frame_Detail, text="6", padx=20, pady=10, command=lambda: Button_LOGIC(6))
-        button_7 = Button(frame_Detail, text="7", padx=20, pady=10, command=lambda: Button_LOGIC(7))
-        button_8 = Button(frame_Detail, text="8", padx=20, pady=10, command=lambda: Button_LOGIC(8))
-        button_9 = Button(frame_Detail, text="9", padx=20, pady=10, command=lambda: Button_LOGIC(9))
-        button_0 = Button(frame_Detail, text="0", padx=20, pady=10, command=lambda: Button_LOGIC(0))
+        button_1 = Button(frame_Detail, text="1", padx=22, pady=12, command=lambda: Button_LOGIC(1))
+        button_2 = Button(frame_Detail, text="2", padx=22, pady=12, command=lambda: Button_LOGIC(2))
+        button_3 = Button(frame_Detail, text="3", padx=22, pady=12, command=lambda: Button_LOGIC(3))
+        button_4 = Button(frame_Detail, text="4", padx=22, pady=12, command=lambda: Button_LOGIC(4))
+        button_5 = Button(frame_Detail, text="5", padx=22, pady=12, command=lambda: Button_LOGIC(5))
+        button_6 = Button(frame_Detail, text="6", padx=22, pady=12, command=lambda: Button_LOGIC(6))
+        button_7 = Button(frame_Detail, text="7", padx=22, pady=12, command=lambda: Button_LOGIC(7))
+        button_8 = Button(frame_Detail, text="8", padx=22, pady=12, command=lambda: Button_LOGIC(8))
+        button_9 = Button(frame_Detail, text="9", padx=22, pady=12, command=lambda: Button_LOGIC(9))
+        button_0 = Button(frame_Detail, text="0", padx=22, pady=12, command=lambda: Button_LOGIC(0))
 
         # Button Grid frame_CAL
         button_0.place(x=50,y=600)
@@ -126,23 +151,23 @@ def start(m,id):
         global button_final_payment
         global button_List
         global button_Enter
-        button_Enter = Button(frame_Detail, text="ENTER", padx=16, pady=10, bg="green",
+        button_Enter = Button(frame_Detail, text="ENTER", padx=16, pady=12, bg="green",
                               command=lambda m="enter": SearchItem(m))
-        button_DEL = Button(frame_Detail, text="DELETE", padx=14, pady=10, bg="green", command=Click_Delete)
-        button_List = Button(frame_Detail, text="List", padx=25, pady=10, bg="green", command=Click_List)
-        button_confirm = Button(frame_Detail, text="Confirm", padx=2, pady=10, state="disabled")
-        button_final_payment = Button(frame_Detail, text="Finish", padx=8, pady=10, command=payment, state="disabled")
+        button_DEL = Button(frame_Detail, text="DELETE", padx=14, pady=12, bg="green", command=Click_Delete)
+        button_List = Button(frame_Detail, text="List", padx=25, pady=12, bg="green", command=Click_List)
+        button_confirm = Button(frame_Detail, text="Confirm", padx=3, pady=12, state="disabled")
+        button_final_payment = Button(frame_Detail, text="Finish", padx=9, pady=12, command=payment, state="disabled")
         
-
         # Button Grid frame_CAL
         button_Enter.place(x=230,y=600)
         button_DEL.place(x=230,y=550)
         button_List.place(x=230,y=500)
         button_confirm.place(x=110,y=600)
         button_final_payment.place(x=170,y=600)
-        
 
         root.mainloop()
+
+
 
 # Button logic
 def Button_LOGIC(Number):
