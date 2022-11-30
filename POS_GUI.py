@@ -7,7 +7,7 @@ from tkinter import ttk
 from tkinter import messagebox
 
 
-def start(m,id):
+def start(m,id,user,time):
     global user_id
     user_id = id
     if (m=='pos'):
@@ -59,10 +59,10 @@ def start(m,id):
         frame_Total.place(x=0,y=563)
 
         user_Em=Label(frame_Total,text="NAME:",width=0,height=0,font=("Arial",16,'bold')).place(x=10,y=10)
-        user_FD=Label(frame_Total,text="UserName",width=25,height=0,anchor=W,font=("Arial",16,'bold')).place(x=80,y=10)
+        user_FD=Label(frame_Total,text=user,width=25,height=0,anchor=W,font=("Arial",16,'bold')).place(x=80,y=10)
 
         user_Timein=Label(frame_Total,text="TIME IN:",width=10,height=0,anchor=W,font=("Arial",10,'bold')).place(x=10,y=50)
-        user_FD=Label(frame_Total,text="Time",width=50,height=0,anchor=W,font=("Arial",10,'bold')).place(x=90,y=50)
+        user_FD=Label(frame_Total,text=time,width=50,height=0,anchor=W,font=("Arial",10,'bold')).place(x=90,y=50)
 
         def temp_text(e):
             Totalprince_Entry.delete(0,"end")

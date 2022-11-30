@@ -16,7 +16,7 @@ class GUI():
     def __init__(self):
         self.loginGui = None
         self.session_user = None
-        self.inTime = None
+        self.inTime = "Not Yet Timed In"
         self.outTime = None
 
     def login(self):
@@ -99,7 +99,7 @@ class GUI():
         self.startButton.place(x=850, y=535)  
 
         pos=POS_GUI
-        self.POSButton=Button(self.dashboardGUI, text="Point of Sale", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda m="pos": pos.start(m,result['user'][0]))
+        self.POSButton=Button(self.dashboardGUI, text="Point of Sale", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda m="pos": pos.start(m,result['user'][0],result['user'][1],self.inTime))
         self.POSButton.place(x=50, y=400)
 
         if result['user'][4]=="Manager" or result['user'][4]=="Owner":
@@ -146,7 +146,7 @@ class GUI():
         self.stopButton.place(x=850, y=535)  
         pos=POS_GUI
         m="pos"
-        pos.start(m,result['user'][0])
+        pos.start(m,result['user'][1],self.inTime)
 
     def timeOut(self,idx,binst):
         today = date.today()
