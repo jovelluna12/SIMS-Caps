@@ -31,7 +31,7 @@ class GUI():
 
         if (result['user']):
             print("Setting Session")
-            self.setSession('setUser', {"username": usernameVal, "password": passwordVal, "userID" : result['user'][0],"role":result["user"][5]})
+            self.setSession('setUser', {"username": usernameVal, "password": passwordVal, "userID" : result['user'][0],"role":result["user"][4]})
             print("Session Set:")
             print(self.getSession('getUser'))
             self.showDashboard()
@@ -102,11 +102,11 @@ class GUI():
         self.POSButton=Button(self.dashboardGUI, text="Point of Sale", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda m="pos": pos.start(m,result['user'][0]))
         self.POSButton.place(x=50, y=400)
 
-        if result['user'][5]=="Manager" or result['user'][5]=="Owner":
+        if result['user'][4]=="Manager" or result['user'][4]=="Owner":
             self.inventoryButton=Button(self.dashboardGUI, text="Inventory", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda: self.startInventory(result['user'][0]))
             self.inventoryButton.place(x=50, y=450)
 
-           # buttons for employee here
+           # buttons for employee here``
 
 
 

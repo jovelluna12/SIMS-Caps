@@ -5,6 +5,8 @@ from tkinter import ttk
 from tkinter import messagebox
 from tracemalloc import start
 
+from click import option
+
 import Employee
 import Manager
 from tkcalendar import DateEntry
@@ -214,8 +216,6 @@ class InvortoryGUI:
             self.Label = Label(self.Frame_Add, text="Product Not Found in Database, It will be Added Upon Clicking Add Button", fg='Red')
             self.Label.place(x=100, y=150)
 
-
-
         else:
             for x in result:
                 count += 1
@@ -407,74 +407,144 @@ class InvortoryGUI:
         self.button_Add=Button(self.Frame_Add_Em,text="Add",padx=20,pady=5,command=self.Click_AddS_Em)
         self.button_Add.place(x=715,y=420)
 
+    def AddProduct(self):
+        self.frame_Table.delete(*self.frame_Table.get_children())
+
+        Prod = Product.product()
+        Prod.addMany(vals)
+
     #stack
     def DoneAdd_Product(self):
-        print("this")
+
+        ProductName = self.Stack_Product_Name_EN.get()
+        
+        Quantity = self.Stack_Product_Size_EN.get()
+        price = price_entry.get()
+
+        id=randomNumGen.generateProductID()
+
+        if Quantity.isdigit():
+            Quantityy=int(Quantity)
+
+        pricee=float(int(float(price)))
+        global vals
+        vals=(id,ProductName,pricee,Quantityy)
+
+        global count
+
+        id=[]
+        name=[]
+        quantity=[]
+        price=[]
+        batch_code=[]
+        status=[]
+
+        if 'count' not in globals():
+            count = 0
+        else:
+            count += 1
+        self.frame_Table.insert(parent='', index='end', iid=count, text=vals,values=(vals))
+        vals=()
+        batch=randomNumGen.generateBatchCode()
+
+        for child in self.frame_Table.get_children():
+            val=self.frame_Table.item(child)["values"]
+            idd=randomNumGen.generateProductID()
+
+            id.append(idd)
+            batch_code.append(batch)
+            name.append(val[1])
+            quantity.append(val[2])
+            price.append(val[3])
+            status.append("Added")
+
+            vals=list(zip(id,name,quantity,price,batch_code,status))
+
+        self.button_Finish.config(state='normal', command=self.AddProduct)
+
+    def setPrice(self,event):
+        choice=event.widget.get()
+        res=[idx for idx, x in enumerate(lst) if x[1]==choice]
+        item=lst[res[0]]
+        price=item[2]
+        price_entry.set(price)
 
     def Click_Add_Product(self):
         self.Add_Stack= Toplevel()
-        self.Add_Stack.title("Stacks!")
+        self.Add_Stack.title("Add Product")
         self.Add_Stack.geometry("800x527")
 
         self.Frame_Add_St=Frame(self.Add_Stack,width=800,height=500,)
         self.Frame_Add_St.place(x=0,y=0)
 
-        self.Frma=Label(self.Frame_Add_St,text="Add Stack", width=20, font=("Arial", 35),anchor=W)
+        self.Frma=Label(self.Frame_Add_St,text="Add Product", width=20, font=("Arial", 35),anchor=W)
         self.Frma.place(x=10,y=10)
 
-        self.Stack_Product_ID_LA=Label(self.Frame_Add_St,text="ID:")
-        self.Stack_Product_ID_EN= Entry(self.Frame_Add_St,width=20,borderwidth=4)
-        self.Stack_Product_ID_LA.place(x=20,y=80)
-        self.Stack_Product_ID_EN.place(x=20,y=100)
+        a=Product.product()
+
+        chosen_val=tk.StringVar(self.Frame_Add_St)
+        chosen_val.set("Select Product")
+        
+        global lst
+        lst = a.returnall()
+        n=1
 
         self.Stack_Product_Name_LA=Label(self.Frame_Add_St,text="Product Name:")
-        self.Stack_Product_Name_EN= Entry(self.Frame_Add_St,width=50,borderwidth=4)
+        self.Stack_Product_Name_EN= ttk.Combobox(self.Frame_Add_St,textvariable=chosen_val)
         self.Stack_Product_Name_LA.place(x=160,y=80)
         self.Stack_Product_Name_EN.place(x=160,y=100)
+        self.Stack_Product_Name_EN.config(width=20)
+        self.Stack_Product_Name_EN['values']=([x[n] for x in lst])
+
+        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>",self.setPrice)
 
         self.Stack_Product_Price_LA=Label(self.Frame_Add_St,text="Price:")
-        self.Stack_Product_Price_EN= Entry(self.Frame_Add_St,width=20,borderwidth=4)
+        global price_entry
+        price_entry=tk.StringVar()
+        self.Stack_Product_Price_EN= Entry(self.Frame_Add_St,width=20,textvariable=price_entry,borderwidth=4,state="disabled")
         self.Stack_Product_Price_LA.place(x=480,y=80)
         self.Stack_Product_Price_EN.place(x=480,y=100)
 
-        self.Stack_Product_Detail_LA=Label(self.Frame_Add_St,text="Detail:")
-        self.Stack_Product_Detail_EN= Entry(self.Frame_Add_St,width=50,borderwidth=4)
-        self.Stack_Product_Detail_LA.place(x=20,y=130)
-        self.Stack_Product_Detail_EN.place(x=20,y=150)
-
-        self.Stack_Product_Size_LA=Label(self.Frame_Add_St,text="Sizes:")
+        self.Stack_Product_Size_LA=Label(self.Frame_Add_St,text="Quantity:")
         self.Stack_Product_Size_EN= Entry(self.Frame_Add_St,width=20,borderwidth=4)
-        self.Stack_Product_Size_LA.place(x=340,y=130)
-        self.Stack_Product_Size_EN.place(x=340,y=150)
+        self.Stack_Product_Size_LA.place(x=340,y=80)
+        self.Stack_Product_Size_EN.place(x=340,y=100)
 
         self.Frame_List=Frame(self.Add_Stack,width=800,height=320)
         self.Frame_List.place(x=0,y=200)
         #Table
         self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
-        self.frame_Table['columns']=("ID","Name","Detail","Price","Size")
+        self.frame_Table['columns']=("ID","Name","Price","Quantity")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100)
         self.frame_Table.column("Name",anchor=W,width=200)
-        self.frame_Table.column("Detail",anchor=E,width=200)
+        # self.frame_Table.column("Detail",anchor=E,width=200)
         self.frame_Table.column("Price",anchor=CENTER,width=150)
-        self.frame_Table.column("Size",anchor=E,width=149)
+        self.frame_Table.column("Quantity",anchor=E,width=149)
         #Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID",text="ID",anchor=W)
         self.frame_Table.heading("Name",text="Product Name",anchor=W)
-        self.frame_Table.heading("Detail",text="Detail",anchor=E)
+        # self.frame_Table.heading("Detail",text="Detail",anchor=E)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
-        self.frame_Table.heading("Size",text="Size",anchor=E)
+        self.frame_Table.heading("Quantity",text="Quantity",anchor=E)
         self.frame_Table.pack(fill='both')
         self.frame_Table.grid(row=1,column=0)
 
         self.button_Add=Button(self.Frame_Add_St,text="Add",padx=20,pady=5,command=self.DoneAdd_Product)
         self.button_Add.place(x=715,y=160)
 
+        self.button_Delete=Button(self.Frame_Add_St,text="Delete",padx=20,pady=5,command=self.Delete)
+        self.button_Delete.place(x=715,y=250)
+
+        self.button_Finish = Button(self.Frame_Add_St, text="Finish", padx=20, pady=5, state='disabled')
+        self.button_Finish.place(x=715, y=200)
+
+    def Delete(self):
+        select=self.frame_Table.selection()[0]
+        self.frame_Table.delete(select)
+
 #Chick ADD END!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
     def InvorGUI(self):
         self.InvorVal = Tk()
         self.InvorVal.title("Cresdel Pharmacy!!")
@@ -486,11 +556,7 @@ class InvortoryGUI:
         self.Frame_Detail=Frame(self.InvorVal,width=1063,height=200,highlightbackground="black", highlightthickness=3)
         self.Frame_Detail.place(x=0,y=0)
         label=Label(self.Frame_Detail,text="IMAGE",width=37,height=10).place(x=0,y=0)
-        # self.button_List=Button(self.Frame_Detail,text="List",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_List1).place(x=480,y=40)
-        # self.button_Stack=Button(self.Frame_Detail,text="Stack",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Stack).place(x=690,y=40)
-        # self.button_Delivery=Button(self.Frame_Detail,text="Delivery List",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Delivery).place(x=480,y=120)
-        # self.button_Employee=Button(self.Frame_Detail,text="Employeee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Employee).place(x=690,y=120)
-
+        
         #For the Page LIST
         self.Frame_main=Frame(self.InvorVal,width=1063,height=498,highlightbackground="black", highlightthickness=3)
         self.Frame_main.place(x=0,y=199)
@@ -514,8 +580,191 @@ class InvortoryGUI:
         self.Add_Del=Button(self.Frame_Side,text="ADD Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add).place(x=40,y=450)
         self.button_Add_Em=Button(self.Frame_Side,text="ADD Employee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Em).place(x=160,y=450)
         self.button_Add_Pm=Button(self.Frame_Side,text="ADD Product",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Product).place(x=40,y=500)
+        self.button_Add_prodref=Button(self.Frame_Side,text="Reference",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.ProdRef).place(x=160,y=500)
 
         self.InvorVal.mainloop()
+
+    def ProdRef(self):
+        self.Add_Stack= Toplevel()
+        self.Add_Stack.title("Product Reference")
+        
+
+        self.Frame_Add_St=Frame(self.Add_Stack)
+        self.Frame_Add_St.pack()
+
+        self.Frma=Label(self.Frame_Add_St,text="Product Reference Menu", width=20, font=("Arial", 35),anchor=W)
+        self.Frma.pack()
+
+        self.add=Button(self.Frame_Add_St, text="Add Reference", padx=20, pady=5, command=self.Click_Add_Ref).pack()
+        self.edit=Button(self.Frame_Add_St, text="Edit Reference", padx=20, pady=5, command=self.Click_Edit_Ref).pack()
+
+
+    def Click_Edit_Ref(self):
+        self.Add_Stack= Toplevel()
+        self.Add_Stack.title("Edit Product Reference")
+        # self.Add_Stack.geometry("800x527")
+
+        self.Frame_Add_St=Frame(self.Add_Stack,width=800,height=500,)
+        self.Frame_Add_St.pack()
+
+        self.Frma=Label(self.Frame_Add_St,text="Edit Product Reference", width=20, font=("Arial", 35),anchor=W)
+        self.Frma.pack()
+
+        a=Product.product()
+
+        chosen_val=tk.StringVar(self.Frame_Add_St)
+        chosen_val.set("Select Product")
+        
+        global lst
+        lst = a.returnall()
+        n=1
+
+        
+        self.Stack_Product_Name_LA=Label(self.Frame_Add_St,text="Product Reference Name:")
+        self.Stack_Product_Name_EN= ttk.Combobox(self.Frame_Add_St,textvariable=chosen_val)
+        self.Stack_Product_Name_LA.pack()
+        self.Stack_Product_Name_EN.pack()
+        self.Stack_Product_Name_EN.config(width=20)
+        self.Stack_Product_Name_EN['values']=([x[n] for x in lst])
+
+        global ref_id_entry
+        ref_id_entry=StringVar()
+        self.Stack_Product_ID_Label=Label(self.Frame_Add_St,text="Reference ID:").pack()
+        self.Stack_Product_ID_EN=Entry(self.Frame_Add_St,textvariable=ref_id_entry,state="disabled").pack()
+
+        global ref_name_entry
+        ref_name_entry=StringVar()
+        self.Stack_Product_Name_Label=Label(self.Frame_Add_St,text="New Product Reference Name:").pack()
+        self.Stack_Product_Name_ENN=Entry(self.Frame_Add_St,textvariable=ref_name_entry).pack()
+
+        global ref_price_entry
+        ref_price_entry=StringVar()
+        self.Stack_Product_Name_Label=Label(self.Frame_Add_St,text="New Product Reference Price:").pack()
+        self.Stack_Product_Price_EN=Entry(self.Frame_Add_St,textvariable=ref_price_entry).pack()
+
+        self.submit=Button(self.Frame_Add_St, text="Submit Changes", padx=20, pady=5, command=self.Click_ref_submit).pack()
+
+        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>",self.setRefVals)
+
+    def Click_ref_submit(self):
+        id=ref_id_entry.get()
+        name=ref_name_entry.get()
+        price=ref_price_entry.get()
+
+        idd=int(id)
+        
+        pricee=int(price)
+        priceee=float(pricee)
+
+        Prod=Product.product()
+        Prod.editReference(idd,name,priceee)
+
+    def setRefVals(self,event):
+        global choice
+        choice=event.widget.get()
+        res=[idx for idx, x in enumerate(lst) if x[1]==choice]
+        item=lst[res[0]]
+        price=item[2]
+        name=item[1]
+        id=item[0]
+
+        ref_price_entry.set(price)
+        ref_name_entry.set(name)
+        ref_id_entry.set(id)
+
+
+    def Click_Add_Ref(self):
+        
+        self.Add_Stack= Toplevel()
+        self.Add_Stack.title("Add Product Reference")
+        self.Add_Stack.geometry("800x527")
+
+        self.Frame_Add_St=Frame(self.Add_Stack,width=800,height=500,)
+        self.Frame_Add_St.place(x=0,y=0)
+
+        self.Frma=Label(self.Frame_Add_St,text="Add Product Reference", width=20, font=("Arial", 35),anchor=W)
+        self.Frma.place(x=10,y=10)
+
+        self.Stack_Product_Name_LA=Label(self.Frame_Add_St,text="Product Name:")
+        self.Stack_Product_Name_EN=Entry(self.Frame_Add_St,width=20,borderwidth=4)
+        self.Stack_Product_Name_LA.place(x=160,y=80)
+        self.Stack_Product_Name_EN.place(x=160,y=100)
+
+        self.Stack_Product_Price_LA=Label(self.Frame_Add_St,text="Price:")
+        global price_entry
+        price_entry=tk.StringVar()
+        self.Stack_Product_Price_EN= Entry(self.Frame_Add_St,width=20,textvariable=price_entry,borderwidth=4)
+        self.Stack_Product_Price_LA.place(x=480,y=80)
+        self.Stack_Product_Price_EN.place(x=480,y=100)
+
+        self.Frame_List=Frame(self.Add_Stack,width=800,height=320)
+        self.Frame_List.place(x=0,y=200)
+        #Table
+        self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
+        self.frame_Table['columns']=("ID","Name","Price")
+        self.frame_Table.column("#0",width=0,stretch=NO)
+        self.frame_Table.column("ID",anchor=W,width=100)
+        self.frame_Table.column("Name",anchor=W,width=200)
+        self.frame_Table.column("Price",anchor=CENTER,width=150)
+        
+        #Table Head
+        self.frame_Table.heading("#0")
+        self.frame_Table.heading("ID",text="ID",anchor=W)
+        self.frame_Table.heading("Name",text="Product Name",anchor=W)
+        self.frame_Table.heading("Price",text="Price",anchor=CENTER)
+       
+        self.frame_Table.pack(fill='both')
+        self.frame_Table.grid(row=1,column=0)
+
+        self.button_Add=Button(self.Frame_Add_St,text="Add",padx=20,pady=5,command=self.reference_Done)
+        self.button_Add.place(x=715,y=160)
+
+        self.button_Finish = Button(self.Frame_Add_St, text="Finish", padx=20, pady=5, state='disabled')
+        self.button_Finish.place(x=715, y=200)
+
+    def reference_Done(self):
+        ProductName = self.Stack_Product_Name_EN.get()
+        price = price_entry.get()
+        id=randomNumGen.generateProductID()
+        
+        pricee=int(price)
+        priceee=float(pricee)
+        
+        global vals
+        vals=(id,ProductName,priceee)
+
+        global count
+
+        id=[]
+        name=[]
+        price=[]
+
+        if 'count' not in globals():
+            count = 0
+        else:
+            count += 1
+        self.frame_Table.insert(parent='', index='end', iid=count, text=vals,values=(vals))
+        vals=()
+
+        for child in self.frame_Table.get_children():
+
+            val=self.frame_Table.item(child)["values"]
+            idd=randomNumGen.generateProductID()
+
+            id.append(idd)
+            name.append(val[1])         
+            price.append(val[2])
+          
+
+            vals=list(zip(id,name,price))
+
+        self.button_Finish.config(state='normal', command=self.AddReference)
+
+    def AddReference(self):
+        self.frame_Table.delete(*self.frame_Table.get_children())
+        Prod=Product.product()
+        Prod.addReference(vals)
+
     def Click_List(self):
         global Entry_Search
         global Search_Table

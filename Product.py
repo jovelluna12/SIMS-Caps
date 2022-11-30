@@ -15,21 +15,48 @@ class product:
         print("Viewing Product List")
 
 
-    def add(self,ProductID,ProductName,Quantity,price):
+    def add(self,value):
         dbcursor = self.dbcursor
-        query="INSERT INTO products (ProductID,ProductName,Quantity,price) VALUES(%s,%s,%s,%s)"
+        query = "INSERT INTO products (ProductID,ProductName,Quantity,price,batch_code,status) VALUES(%s,%s,%s,%s,%s,%s)"
 
-        value=(ProductID,ProductName,Quantity,price)
         dbcursor.execute(query, value)
         dbConnector.db.commit()
 
+    def addReference(self,vals):
+        dbcursor = self.dbcursor
+        query = "INSERT INTO products_directory (ref_id,product_name,price) VALUES(%s,%s,%s)"
 
-    def addMany(self):
-        print("Added new many Product")
+        vals=tuple(list(vals))
+        print(type(vals))
+        print(vals)
+
+        dbcursor.executemany(query, vals)
+        dbConnector.db.commit()
+
+    def editReference(self,id, name, price):
+        dbcursor = self.dbcursor
+        query = "UPDATE products_directory SET product_name=%s, price=%s WHERE ref_id=%s"
+
+        print (id , name, price)
+        vals=(name, price,id)
+
+        dbcursor.execute(query, vals)
+        dbConnector.db.commit()
+
+
+    def addMany(self,vals):
+        dbcursor = self.dbcursor
+        query = "INSERT INTO products (ProductID,ProductName,Quantity,price,batch_code,status) VALUES(%s,%s,%s,%s,%s,%s)"
+
+        vals=tuple(list(vals))
+        print(type(vals))
+        print(vals)
+
+        dbcursor.executemany(query, vals)
+        dbConnector.db.commit()
 
     def delete(self,productID):
         print("Deleted Product", productID)
-
 
     def decreaseProductQuantity(self):
         print()
@@ -73,6 +100,20 @@ class product:
             return "empty"
         else:
             return result
+
+    def returnall(self):
+        dbcursor=self.dbcursor
+        query="SELECT * FROM products_directory"
+        dbcursor.execute(query)
+        result = dbcursor.fetchall()
+        dbConnector.db.commit()
+
+        if (dbcursor.rowcount == 0):
+            return "empty"
+        else:
+            return result
+
+
 
     def viewALL(self,val):
         dbcursor = self.dbcursor
