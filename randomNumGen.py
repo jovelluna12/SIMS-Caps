@@ -76,3 +76,18 @@ def generateBatchCode():
         else:
             continue
     return ID
+
+def generateEmpID():
+    ID = random.randint(1, 9999)
+    query = "SELECT EmpID from employees"
+    dbcursor = dbConnector.db.cursor()
+    dbcursor.execute(query)
+    result = dbcursor.fetchall()
+
+    for x in result:
+        if ID == x :
+            ID = random.randint(1, 9999)
+            break
+        else:
+            continue
+    return ID

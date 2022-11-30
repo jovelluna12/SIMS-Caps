@@ -353,7 +353,15 @@ class InvortoryGUI:
 
     #employee
     def Click_AddS_Em(self):
-        print("this")
+        username=self.username.get()
+        password=self.password.get()
+        Fname=self.Fname.get()
+        role=self.chosen_val.get()
+
+        print(username,password,Fname,role)
+        man=Manager.Manager()
+        id=randomNumGen.generateEmpID()
+        man.AddEmp(id,Fname,username,password,role)
 
     def Click_Add_Em(self):
         self.Add_Employee= Toplevel()
@@ -378,32 +386,22 @@ class InvortoryGUI:
         self.Employee_Password_LA.place(x=540,y=230)
         self.Employee_Password_EN.place(x=540,y=250)
 
-        self.Employee_Lname_LA=Label(self.Frame_Add_Em,text="Last Name:")
-        self.Employee_Lname_EN= Entry(self.Frame_Add_Em,width=40,borderwidth=4)
+        self.Fname=StringVar()
+        self.Employee_Lname_LA=Label(self.Frame_Add_Em,text="Full Name:")
+        self.Employee_Lname_EN= Entry(self.Frame_Add_Em,width=40,borderwidth=4,textvariable=self.Fname)
         self.Employee_Lname_LA.place(x=20,y=280)
         self.Employee_Lname_EN.place(x=20,y=300)
 
-        self.Employee_Fname_LA=Label(self.Frame_Add_Em,text="First Name:")
-        self.Employee_Fname_EN= Entry(self.Frame_Add_Em,width=40,borderwidth=4)
-        self.Employee_Fname_LA.place(x=280,y=280)
-        self.Employee_Fname_EN.place(x=280,y=300)
+        self.Employee_Role_LA=Label(self.Frame_Add_Em,text="Role:")
 
-        self.Employee_Mname_LA=Label(self.Frame_Add_Em,text="Middle Name:")
-        self.Employee_Mname_EN= Entry(self.Frame_Add_Em,width=40,borderwidth=4)
-        self.Employee_Mname_LA.place(x=540,y=280)
-        self.Employee_Mname_EN.place(x=540,y=300)
-
-        self.Employee_Address_LA=Label(self.Frame_Add_Em,text="Address:")
-        self.Employee_Address_EN= Entry(self.Frame_Add_Em,width=83,borderwidth=4)
-        self.Employee_Address_LA.place(x=20,y=330)
-        self.Employee_Address_EN.place(x=20,y=350)
-
-        self.Employee_Bdate_LA=Label(self.Frame_Add_Em,text="Birth Date:")
-        self.Employee_Bdate_EN=DateEntry(self.Frame_Add_Em,selectmode='day',width=38)
-        self.Employee_Bdate_LA.place(x=540,y=330)
-        self.Employee_Bdate_EN.place(x=540,y=353)
-
-
+        self.chosen_val=tk.StringVar(self.Frame_Add_Em)
+        self.chosen_val.set("Select Role")
+        
+        self.Role= ttk.Combobox(self.Frame_Add_Em,textvariable=self.chosen_val,state='readonly')
+        self.Role['values']=('Cashier', 'Manager')
+        self.Role.place(x=280,y=300)
+        self.Employee_Role_LA.place(x=280,y=280)
+        
         self.button_Add=Button(self.Frame_Add_Em,text="Add",padx=20,pady=5,command=self.Click_AddS_Em)
         self.button_Add.place(x=715,y=420)
 
@@ -482,15 +480,15 @@ class InvortoryGUI:
 
         a=Product.product()
 
-        chosen_val=tk.StringVar(self.Frame_Add_St)
-        chosen_val.set("Select Product")
+        self.chosen_val=tk.StringVar(self.Frame_Add_St)
+        self.chosen_val.set("Select Product")
         
         global lst
         lst = a.returnall()
         n=1
 
         self.Stack_Product_Name_LA=Label(self.Frame_Add_St,text="Product Name:")
-        self.Stack_Product_Name_EN= ttk.Combobox(self.Frame_Add_St,textvariable=chosen_val)
+        self.Stack_Product_Name_EN= ttk.Combobox(self.Frame_Add_St,textvariable=self.chosen_val,state='readonly')
         self.Stack_Product_Name_LA.place(x=160,y=80)
         self.Stack_Product_Name_EN.place(x=160,y=100)
         self.Stack_Product_Name_EN.config(width=20)
@@ -612,8 +610,8 @@ class InvortoryGUI:
 
         a=Product.product()
 
-        chosen_val=tk.StringVar(self.Frame_Add_St)
-        chosen_val.set("Select Product")
+        self.chosen_val=tk.StringVar(self.Frame_Add_St)
+        self.chosen_val.set("Select Product")
         
         global lst
         lst = a.returnall()
@@ -621,7 +619,7 @@ class InvortoryGUI:
 
         
         self.Stack_Product_Name_LA=Label(self.Frame_Add_St,text="Product Reference Name:")
-        self.Stack_Product_Name_EN= ttk.Combobox(self.Frame_Add_St,textvariable=chosen_val)
+        self.Stack_Product_Name_EN= ttk.Combobox(self.Frame_Add_St,textvariable=self.chosen_val,state='readonly')
         self.Stack_Product_Name_LA.pack()
         self.Stack_Product_Name_EN.pack()
         self.Stack_Product_Name_EN.config(width=20)
