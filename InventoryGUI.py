@@ -195,40 +195,17 @@ class InvortoryGUI:
 
 #Chick ADD START!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def Click_AddP(self):
-        ProdName = self.Product_CODE_EN.get()
-
-        m = Product.product()
-        if isinstance(ProdName,str):
-            result=m.viewName(ProdName)
-        if isinstance(ProdName,int):
-            result=m.viewCode(ProdName)
-        count=0
-
-        if result=="empty":
-
-            self.Product_Price_LA = Label(self.Frame_Add, text="Price")
-            self.Product_Price_EN = Entry(self.Frame_Add, width=20, borderwidth=4)
-            self.Product_Price_LA.place(x=530, y=20)
-            self.Product_Price_EN.place(x=530, y=40)
-
-            self.button_Add.config(command=self.add_to_products)
-
-            self.Label = Label(self.Frame_Add, text="Product Not Found in Database, It will be Added Upon Clicking Add Button", fg='Red')
-            self.Label.place(x=100, y=150)
-
-        else:
-            for x in result:
-                count += 1
-                self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+        self.add_to_products
 
     def add_to_products(self):
         ProdName = self.Product_CODE_EN.get()
         date = self.Product_date_EN.get_date()
         expiry_date = self.Product_EXdate_EN.get_date()
         quantity = self.Product_Stack_EN.get()
-        ProductID = randomNumGen.generateProductID()
+        ProductIDD = randomNumGen.generateProductID()
         price = float(int(self.Product_Price_EN.get()))
-
+        order_date=self.Product_date_EN.get_date()
+        arrival_date=self.Product_Arrive_EN.get_date()
 
         var1="ProductID_list"
         var2="ProdName_list"
@@ -236,8 +213,10 @@ class InvortoryGUI:
         var4 = "price_list"
         var5 = "date_list"
         var6 = "expiry_date_list"
-        if var1 not in globals() and var2 not in globals() and var3 not in globals() and var4 not in globals() and var5 not in globals() and var6 not in globals():
-            global ProductID_list, ProdName_list, quantity_list, price_list, date_list, expiry_date_list
+        var7 = "batch_code_list"
+
+        if var1 not in globals() and var2 not in globals() and var3 not in globals() and var4 not in globals() and var5 not in globals() and var6 not in globals() and var7 not in globals():
+            global ProductID_list, ProdName_list, quantity_list, price_list, date_list, expiry_date_list, batch_code_list,status_list ,arrival_date_list, order_date_list
 
             ProductID_list = []
             ProdName_list = []
@@ -245,18 +224,26 @@ class InvortoryGUI:
             price_list = []
             date_list = []
             expiry_date_list = []
+            batch_code_list=[]
+            arrival_date_list=[]
+            order_date_list=[]
+            status_list=[]
 
-        ProductID_list.append(int(ProductID))
+        ProductID_list.append(int(ProductIDD))
         ProdName_list.append(ProdName)
         quantity_list.append(int(quantity))
         price_list.append(price)
         date_list.append(date)
         expiry_date_list.append(expiry_date)
+        batch_code_list.append(randomNumGen.generateBatchCode())
+        order_date_list.append(order_date)
+        arrival_date_list.append(arrival_date)
+        status_list.append("Under Delivery")
 
-        a=Product.product()
-        a.add(ProductID,ProdName,0,price)
+        # a=Product.product()
+        # a.add(ProductID,ProdName,0,price)
 
-        self.frame_Table.insert(parent='', index='end', iid=ProductID, text=(ProductID,ProdName,price,quantity,date,expiry_date), values=(ProductID,ProdName,price,quantity,date,expiry_date))
+        self.frame_Table.insert(parent='', index='end', iid=ProductIDD, text=(ProductIDD,ProdName,price,quantity,date,expiry_date), values=(ProductIDD,ProdName,price,quantity,date,expiry_date))
 
         self.Product_CODE_EN.delete(0,'end')
         self.Product_Stack_EN.delete(0, 'end')
@@ -266,28 +253,18 @@ class InvortoryGUI:
         self.AddDeliveries = Button(self.Frame_Add, text="Add to Delivery List", padx=20, pady=5,command=self.Add_Deliveries)
         self.AddDeliveries.place(x=500, y=150)
 
-        self.Product_Price_LA.place_forget()
-        self.Product_Price_EN.place_forget()
-        self.button_Add.config(command=self.Click_AddP)
+        self.button_Add.config(command=self.add_to_products)
+
+        
 
 
     def Add_Deliveries(self):
-        batch_code = []
-        code = randomNumGen.generateBatchCode()
-        for i in range(len(ProductID_list)):
-            batch_code.append(code)
+        item_tuple = list(zip(ProductID_list,ProdName_list,quantity_list,price_list,batch_code_list, status_list,expiry_date_list,arrival_date_list,order_date_list))
 
-        item_tuple = list(zip(ProductID_list,ProdName_list,batch_code,quantity_list,price_list,expiry_date_list,'Under Delivery'))
+        b=Product.product()
+        b.addMany_Del(item_tuple)
 
-        order_date=self.Product_date_EN.get_date()
-        arrival_date=self.Product_Arrive_EN.get_date()
-
-
-        a=Employee.Employee()
-        print(a.addManyDeliveryList(item_tuple,code,order_date,arrival_date,'Under Delivery'))
-
-        # b=Product.product()
-        # print(b.updateProductQuantity(ProductID_list,quantity_list))
+        self.frame_Table.delete(*self.frame_Table.get_children())
 
 
     def Click_Add(self):
@@ -295,12 +272,27 @@ class InvortoryGUI:
         self.Add_Delivery.title("Add Products on Delivery")
         self.Add_Delivery.geometry("800x550")
 
+        global lst
+        a=Product.product()
+        lst = a.returnall()
+        n=1
+
         self.Frame_Add=Frame(self.Add_Delivery,width=800,height=200)
         self.Frame_Add.place(x=0,y=0)
-        self.Product_CODE_LA=Label(self.Frame_Add,text="Enter Product Name/Code:")
-        self.Product_CODE_EN= Entry(self.Frame_Add,width=60,borderwidth=4)
+
+        self.chosen_val=tk.StringVar(self.Frame_Add)
+        self.chosen_val.set("Select Product")
+        global price_entry
+        price_entry=tk.StringVar()
+
+        self.Product_CODE_LA=Label(self.Frame_Add,text="Select Product Name")
+        self.Product_CODE_EN= ttk.Combobox(self.Frame_Add,textvariable=self.chosen_val,state='readonly')
         self.Product_CODE_LA.place(x=20,y=20)
         self.Product_CODE_EN.place(x=20,y=40)
+
+        self.Product_CODE_EN['values']=([x[n] for x in lst])
+
+        self.Product_CODE_EN.bind("<<ComboboxSelected>>",self.setPrice)
 
         self.Product_date_LA=Label(self.Frame_Add,text="Date")
         self.Product_date_EN=DateEntry(self.Frame_Add,selectmode='day',width=20)
@@ -317,12 +309,17 @@ class InvortoryGUI:
         self.Product_Arrive_LA.place(x=390, y=80)
         self.Product_Arrive_EN.place(x=390, y=100)
 
-        self.Product_Stack_LA=Label(self.Frame_Add,text="Stack")
+        self.Product_Stack_LA=Label(self.Frame_Add,text="Quantity")
         self.Product_Stack_EN= Entry(self.Frame_Add,width=20,borderwidth=4)
         self.Product_Stack_LA.place(x=400,y=20)
         self.Product_Stack_EN.place(x=400,y=40)
 
-        self.button_Add=Button(self.Frame_Add,text="Add",padx=20,pady=5,command= self.Click_AddP)
+        self.Product_Price_LA=Label(self.Frame_Add,text="Price")
+        self.Product_Price_EN= Entry(self.Frame_Add,width=20,borderwidth=4,textvariable=price_entry,state='disabled')
+        self.Product_Price_LA.place(x=200,y=20)
+        self.Product_Price_EN.place(x=200,y=40)
+
+        self.button_Add=Button(self.Frame_Add,text="Add",padx=20,pady=5,command= self.add_to_products)
         self.button_Add.place(x=700,y=150)
 
 

@@ -55,22 +55,12 @@ class product:
         dbcursor.executemany(query, vals)
         dbConnector.db.commit()
 
-    def delete(self,productID):
-        print("Deleted Product", productID)
+    def addMany_Del(self,vals):
+        dbcursor = self.dbcursor
+        query = "INSERT INTO products VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
-    def decreaseProductQuantity(self):
-        print()
-
-    # def updateProductQuantity(self,productID,quantity):
-    #     dbcursor = self.dbcursor
-    #     query = "UPDATE products SET Quantity=%s WHERE ProductID=%s"
-    #
-    #     for x in productID:
-    #         for y in quantity:
-    #             dbcursor.execute(query, (quantity[y],productID[x]))
-    #
-    #     dbConnector.db.commit()
-    #     return "done"
+        dbcursor.executemany(query, vals)
+        dbConnector.db.commit()
 
     def viewCode(self,productID):
         dbcursor = self.dbcursor
@@ -86,6 +76,7 @@ class product:
             return "empty"
         else:
             return result
+
     def viewName(self,productID):
         dbcursor = self.dbcursor
         query = "SELECT ProductID,ProductName,price,Quantity FROM products WHERE ProductName=%s"
