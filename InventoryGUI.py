@@ -138,20 +138,20 @@ class InvortoryGUI:
         style.theme_use("default")
         style.configure("Treeview")
         self.frame_Table=ttk.Treeview(self.Frame_Del,height=24)
-        self.frame_Table['columns']=("ID","Name","Detail","Price","Stack")
+        self.frame_Table['columns']=("ID","Name","Detail","Price","Quantity")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=400,stretch=NO)
         self.frame_Table.column("Detail",anchor=E,width=200,stretch=NO)
         self.frame_Table.column("Price",anchor=CENTER,width=155,stretch=NO)
-        self.frame_Table.column("Stack",anchor=E,width=200,stretch=NO)
+        self.frame_Table.column("Quantity",anchor=E,width=200,stretch=NO)
         #Table Head
         self.frame_Table.heading("#0")
-        self.frame_Table.heading("ID",text="Delivery-ID",anchor=W)
+        self.frame_Table.heading("ID",text="Batch Code",anchor=W)
         self.frame_Table.heading("Name",text="Product Name",anchor=W)
         self.frame_Table.heading("Detail",text="Detail",anchor=E)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
-        self.frame_Table.heading("Stack",text="Stack",anchor=E)
+        self.frame_Table.heading("Quantity",text="Quantity",anchor=E)
         self.frame_Table.pack()
         m1=Employee.Employee()
         result=m1.viewDeliveryList()
@@ -213,10 +213,10 @@ class InvortoryGUI:
         var4 = "price_list"
         var5 = "date_list"
         var6 = "expiry_date_list"
-        var7 = "batch_code_list"
+        
 
-        if var1 not in globals() and var2 not in globals() and var3 not in globals() and var4 not in globals() and var5 not in globals() and var6 not in globals() and var7 not in globals():
-            global ProductID_list, ProdName_list, quantity_list, price_list, date_list, expiry_date_list, batch_code_list,status_list ,arrival_date_list, order_date_list
+        if var1 not in globals() and var2 not in globals() and var3 not in globals() and var4 not in globals() and var5 not in globals() and var6 not in globals() :
+            global ProductID_list, ProdName_list, quantity_list, price_list, date_list, expiry_date_list,status_list ,arrival_date_list, order_date_list
 
             ProductID_list = []
             ProdName_list = []
@@ -224,7 +224,6 @@ class InvortoryGUI:
             price_list = []
             date_list = []
             expiry_date_list = []
-            batch_code_list=[]
             arrival_date_list=[]
             order_date_list=[]
             status_list=[]
@@ -235,13 +234,10 @@ class InvortoryGUI:
         price_list.append(price)
         date_list.append(date)
         expiry_date_list.append(expiry_date)
-        batch_code_list.append(randomNumGen.generateBatchCode())
+        
         order_date_list.append(order_date)
         arrival_date_list.append(arrival_date)
         status_list.append("Under Delivery")
-
-        # a=Product.product()
-        # a.add(ProductID,ProdName,0,price)
 
         self.frame_Table.insert(parent='', index='end', iid=ProductIDD, text=(ProductIDD,ProdName,price,quantity,date,expiry_date), values=(ProductIDD,ProdName,price,quantity,date,expiry_date))
 
@@ -255,11 +251,17 @@ class InvortoryGUI:
 
         self.button_Add.config(command=self.add_to_products)
 
-        
-
-
     def Add_Deliveries(self):
+        if 'batch_code' not in locals():
+            batch_code=randomNumGen.generateBatchCode()
+        if 'batch_code_list' not in locals():
+            batch_code_list=[]
+        for i in ProductID_list:
+            batch_code_list.append(batch_code)
+
         item_tuple = list(zip(ProductID_list,ProdName_list,quantity_list,price_list,batch_code_list, status_list,expiry_date_list,arrival_date_list,order_date_list))
+
+        print(item_tuple)
 
         b=Product.product()
         b.addMany_Del(item_tuple)
@@ -576,9 +578,13 @@ class InvortoryGUI:
         self.button_Add_Em=Button(self.Frame_Side,text="ADD Employee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Em).place(x=160,y=450)
         self.button_Add_Pm=Button(self.Frame_Side,text="ADD Product",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Product).place(x=40,y=500)
         self.button_Add_prodref=Button(self.Frame_Side,text="Reference",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.ProdRef).place(x=160,y=500)
+        self.btn_Notification=Button(self.Frame_Side,text="Notification",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.notify_UI).place(x=160,y=600)
 
         self.InvorVal.mainloop()
-
+    def notify_UI(self):
+        print()
+        # Need UI for Notification
+        
     def ProdRef(self):
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Product Reference")
