@@ -487,7 +487,7 @@ class InvortoryGUI:
         n=1
 
         self.Stack_Product_Name_LA=Label(self.Frame_Add_St,text="Product Name:")
-        self.Stack_Product_Name_EN= ttk.Combobox(self.Frame_Add_St,textvariable=self.chosen_val,state='readonly')
+        self.Stack_Product_Name_EN= ttk.Combobox(self.Frame_Add_St,textvariable=self.chosen_val)
         self.Stack_Product_Name_LA.place(x=160,y=80)
         self.Stack_Product_Name_EN.place(x=160,y=100)
         self.Stack_Product_Name_EN.config(width=20)
@@ -581,10 +581,12 @@ class InvortoryGUI:
         self.btn_Notification=Button(self.Frame_Side,text="Notification",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.notify_UI).place(x=160,y=600)
 
         self.InvorVal.mainloop()
+        # start UI for Notification ---------------
+    
     def notify_UI(self):
         print()
         # Need UI for Notification
-        
+        # END
     def ProdRef(self):
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Product Reference")

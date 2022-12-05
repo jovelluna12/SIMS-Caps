@@ -38,6 +38,7 @@ class Manager (Employee.Employee):
                 id.append(result[x][0])
                 name.append(result[x][1])
                 batch.append(result[x][3])
+                return f"Product {result[x][1]} is Unsellable"
             x+=1
         return list(zip(id,name,batch))
 
@@ -61,6 +62,7 @@ class Manager (Employee.Employee):
                     id.append(result[x][0])
                     name.append(result[x][1])
                     batch.append(result[x][3])
+                    return f"Product {result[x][1]} is about to Expire in 7 Days"
             x+=1
         return list(zip(id,name,batch))
 
