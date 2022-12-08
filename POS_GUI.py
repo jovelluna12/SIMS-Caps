@@ -64,20 +64,22 @@ def start(m,id,user,time):
         user_Timein=Label(frame_Total,text="TIME IN:",width=10,height=0,anchor=W,font=("Arial",10,'bold')).place(x=10,y=50)
         user_FD=Label(frame_Total,text=time,width=50,height=0,anchor=W,font=("Arial",10,'bold')).place(x=90,y=50)
 
-        def temp_text(e):
-            Totalprince_Entry.delete(0,"end")
+        # def temp_text(e):
+        #     Totalprince_Entry.delete(0,"end")
         
+        global Totalprince_Entry
         Totalprince_Label=Label(frame_Total,text="Total:",font=("Arial", 20,'bold')).place(x=676,y=40)
         Totalprince_Entry=Entry(frame_Total,width=8,borderwidth=3,fg='green',font=("Arial",30,'bold'))
         Totalprince_Entry.place(x=800,y=40,height=35)
-        Totalprince_Entry.insert(END,'0.00')
-        Totalprince_Entry.bind("<FocusIn>",temp_text)
+        # Totalprince_Entry.insert(END,'0.00')
+        # Totalprince_Entry.bind("<FocusIn>",temp_text)
         Totalchange_Label=Label(frame_Total,text="Change:",font=("Arial", 20,'bold')).place(x=676,y=80)
         Totalchange_Entry=Entry(frame_Total,width=8,borderwidth=3,fg='green',font=("Arial",30,'bold'))
         Totalchange_Entry.place(x=800,y=80,height=35)
-        Totalchange_Entry.insert(END,'0.00')
-        Totalchange_Entry.bind("<FocusIn>",temp_text)
-        #END
+
+        # Totalchange_Entry.insert(END,'0.00')
+        # Totalchange_Entry.bind("<FocusIn>",temp_text)
+        # END
 
         # Frame Detail & Button of ProductList
         global frame_Detail
@@ -155,7 +157,7 @@ def start(m,id,user,time):
                               command=lambda m="enter": SearchItem(m))
         button_DEL = Button(frame_Detail, text="DELETE", padx=14, pady=12, bg="green", command=Click_Delete)
         button_List = Button(frame_Detail, text="List", padx=25, pady=12, bg="green", command=Click_List)
-        button_confirm = Button(frame_Detail, text="Confirm", padx=3, pady=12, state="disabled")
+        button_confirm = Button(frame_Detail, text="QTY", padx=3, pady=12, state="disabled")
         button_final_payment = Button(frame_Detail, text="Finish", padx=9, pady=12, command=payment, state="disabled")
         
         # Button Grid frame_CAL
@@ -384,6 +386,10 @@ def Click_Enter(result):
                         subtotal.append(frame_Table.item(x)["values"][2]*frame_Table.item(x)["values"][3])
                     global totalprice
                     totalprice = sum(subtotal)
+                    print(totalprice)
+                    tot=StringVar()
+                    tot.set(totalprice)
+                    Totalprince_Entry.config(text=tot)
                     button_final_payment.config(state='active')
 
                     window_Qty.destroy()
