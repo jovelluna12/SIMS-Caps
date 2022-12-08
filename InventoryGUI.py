@@ -5,10 +5,6 @@ from tkinter import ttk
 from tkinter import messagebox
 from tracemalloc import start
 
-<<<<<<< HEAD
-=======
-#from click import option
->>>>>>> 5a6e4b14374efef07402756d58010f2233ed90a7
 
 import Employee
 import Manager
@@ -94,9 +90,7 @@ class InvortoryGUI:
         count=0
         for x in result:
             count+=1
-            self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x) 
-        
-         
+            self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x)   
 
     def Click_Stack(self):
         #Table
@@ -104,6 +98,7 @@ class InvortoryGUI:
         self.Frame_stack.pack_forget()
         self.Frame_Del.pack_forget()
         self.Frame_Empl.pack_forget()
+        
         self.Frame_stack.pack(fill='both')
         style=ttk.Style()
         style.theme_use("default")
