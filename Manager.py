@@ -12,7 +12,7 @@ class Manager (Employee.Employee):
         return result
     def viewInv(self):
         dbcursor = self.dbcursor
-        query="SELECT ProductID,ProductName,price,Quantity FROM products"
+        query="SELECT ProductID as ProdID,ProductName,price, SUM(quantity) AS quantity FROM products WHERE quantity!=0 GROUP BY ProductName ORDER BY (SELECT order_date from products WHERE ProductID=ProdID ORDER BY order_date DESC)"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result

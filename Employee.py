@@ -54,7 +54,7 @@ class Employee:
         return dbcursor.lastrowid
 
 
-    def addNewTransaction(self,TotalPrice,Discount,attendedBy,items):
+    def addNewTransaction(self,TotalPrice,Discount,attendedBy,items,id):
         PurchaseID, InvoiceNumber = randomNumGen.generateNum()
 
         dbcursor=self.cursor
@@ -68,12 +68,14 @@ class Employee:
         item=[x[n1] for x in items]
         quantity=[x[n2] for x in items]
 
-        query3="update products set quantity=quantity-%s where ProductName LIKE %s"
+        query3="update products set quantity=quantity-%s where ProductName LIKE %s and ProductID=%s"
         for x in range(len(item)):
+            print(quantity[x],item[x],id)
+            
             PurchaseID=randomNumGen.generatePurchaseID()
             items=(PurchaseID,item[x],quantity[x],InvoiceNumber)
             dbcursor.execute(query2,items)
-            query3val=(quantity[x],item[x])
+            query3val=(quantity[x],item[x],id)
             dbcursor.execute(query3,query3val)
 
         dbConnector.db.commit()

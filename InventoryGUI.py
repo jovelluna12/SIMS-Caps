@@ -268,6 +268,27 @@ class InvortoryGUI:
 
         self.frame_Table.delete(*self.frame_Table.get_children())
 
+        ProductID_list.clear()
+        batch_code_list.clear()
+        ProdName_list.clear()
+        quantity_list.clear()
+        price_list.clear()
+        date_list.clear()
+        expiry_date_list.clear()
+        arrival_date_list.clear()
+        order_date_list.clear()
+        status_list.clear()
+
+        # ProductID_list = []
+        #     ProdName_list = []
+        #     quantity_list = []
+        #     price_list = []
+        #     date_list = []
+        #     expiry_date_list = []
+        #     arrival_date_list=[]
+        #     order_date_list=[]
+        #     status_list=[]
+
 
     def Click_Add(self):
         self.Add_Delivery= Toplevel()
@@ -294,7 +315,8 @@ class InvortoryGUI:
         self.Product_CODE_LA.place(x=20,y=70)
         self.Product_CODE_EN.place(x=20,y=90)
 
-        self.Product_CODE_EN['values']=([x[n] for x in lst])
+        if lst != "empty":
+            self.Product_CODE_EN['values']=([x[n] for x in lst])
 
         self.Product_CODE_EN.bind("<<ComboboxSelected>>",self.setPrice)
 
@@ -495,7 +517,9 @@ class InvortoryGUI:
         self.Stack_Product_Name_LA.place(x=20,y=80)
         self.Stack_Product_Name_EN.place(x=20,y=100)
         self.Stack_Product_Name_EN.config(width=50)
-        self.Stack_Product_Name_EN['values']=([x[n] for x in lst])
+
+        if lst != 'empty':
+            self.Stack_Product_Name_EN['values']=([x[n] for x in lst])
 
         self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>",self.setPrice)
 
