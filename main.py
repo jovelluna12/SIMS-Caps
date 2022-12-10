@@ -1,4 +1,4 @@
-import GUI, Manager
+import GUI
 
 interface = GUI.GUI()
 interface.start()
