@@ -1,4 +1,5 @@
 import Employee, dbConnector, ROP
+from datetime import datetime
 class Manager (Employee.Employee):
     def __init__(self):
         self.dbcursor = dbConnector.dbcursor
@@ -22,9 +23,48 @@ class Manager (Employee.Employee):
         if quantity<=ROP:
             return "Low Product"
 
-    def notify_expiry_warning(self):
+    def notify_expired(self):
+        dbcursor=self.dbcursor
+        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired'"
+        dbcursor.execute(query)
+        result=dbcursor.fetchall()
+        id=[]
+        name=[]
+        batch=[]
+        x=0
+        
+        for i in result:
+            if result[x][2]==datetime.today().date():
+                id.append(result[x][0])
+                name.append(result[x][1])
+                batch.append(result[x][3])
+                return f"Product {result[x][1]} is Unsellable"
+            x+=1
+        return list(zip(id,name,batch))
 
-        return "expriry warning"
+    def notify_expiry(self):
+        dbcursor=self.dbcursor
+        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired'"
+        dbcursor.execute(query)
+        result=dbcursor.fetchall()
+        id=[]
+        name=[]
+        batch=[]
+        x=0
+        
+        for i in result:
+            days_left=7
+            if result[x][2]!=None:
+                
+                diff=result[x][2]-datetime.today().date()
+                
+                if diff.days==days_left:
+                    id.append(result[x][0])
+                    name.append(result[x][1])
+                    batch.append(result[x][3])
+                    return f"Product {result[x][1]} is about to Expire in 7 Days"
+            x+=1
+        return list(zip(id,name,batch))
 
     def viewSales(self):
         dbcursor = self.dbcursor
@@ -35,7 +75,7 @@ class Manager (Employee.Employee):
 
     def viewEMPList(self):
         dbcursor = self.dbcursor
-        query="SELECT EmpID,Name,role,username FROM employees"
+        query="SELECT EmpID,Name,username,role FROM employees"
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         return result

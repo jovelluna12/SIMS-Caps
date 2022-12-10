@@ -4,9 +4,6 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from tracemalloc import start
-
-#from click import option
-
 import Employee
 import Manager
 from tkcalendar import DateEntry
