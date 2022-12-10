@@ -7,7 +7,7 @@ from datetime import date, datetime
 ## pip install pillow
 from PIL import Image, ImageTk
 
-import POS_GUI,InventoryGUI
+import POS_GUI,InventoryGUI, Manager
 
 
 #declare GUI var
@@ -79,16 +79,6 @@ class GUI():
         self.tv.heading('Date', text='Date', anchor=CENTER)
         self.tv.heading('Working Time', text='Working Time', anchor=CENTER)
 
-        # self.tv.insert(parent='', index=0, iid=0, values=("vineet", "e11", 1000000.00, 'test'))
-
-        # print(self.getTreeLength(self.tv))
-
-        
-        # self.tv.insert(parent='', index=1, iid=1, values=("vineet", "e11", 1000000.00, 'test'))
-
-        
-        # print(self.getTreeLength(self.tv))
-
         self.tv.place(x=230, y=90)
 
         
@@ -98,6 +88,9 @@ class GUI():
         self.startButton['command'] = lambda idx="Start", binst=self.startButton: self.timeIn(idx, binst)
         self.startButton.place(x=850, y=535)  
 
+        self.NotifyButton=Button(self.dashboardGUI, text="Notification", width=10, font=("Arial", 15), bg='#54FA9B',command=self.Notification)
+        self.NotifyButton.place(x=50, y=350)
+
         pos=POS_GUI
         self.POSButton=Button(self.dashboardGUI, text="Point of Sale", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda m="pos": pos.start(m,result['user'][0],result['user'][1],self.inTime))
         self.POSButton.place(x=50, y=400)
@@ -105,9 +98,6 @@ class GUI():
         if result['user'][4]=="Manager" or result['user'][4]=="Owner":
             self.inventoryButton=Button(self.dashboardGUI, text="Inventory", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda: self.startInventory(result['user'][0]))
             self.inventoryButton.place(x=50, y=450)
-
-           # buttons for employee here``
-
 
 
         print("userID ",result['user'][0])
@@ -129,6 +119,11 @@ class GUI():
 
 
         self.dashboardGUI.mainloop()
+
+    def Notification(self):
+        
+        self.NotifGUI=Tk()
+        self.NotifGUI.title("Notification")
 
     def startInventory(self, id):
         INVOR=InventoryGUI.InvortoryGUI()

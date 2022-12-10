@@ -111,6 +111,9 @@ def start(m,id,user,time):
 
         Product_CODE_LA = Label(frame_Detail, text="Enter Product Code:")
         Product_CODE_EN = Entry(frame_Detail, width=50, borderwidth=5)
+
+
+
         # Frame Detail & Button of ProductList grid
         #Disabled entry
         Product_PIMG.place(x=150,y=40)
@@ -163,17 +166,32 @@ def start(m,id,user,time):
         button_List = Button(frame_Detail, text="List", padx=25, pady=12, bg="green", command=Click_List)
         button_confirm = Button(frame_Detail, text="QTY", padx=3, pady=12, state="disabled")
         button_final_payment = Button(frame_Detail, text="Finish", padx=9, pady=12, command=payment, state="disabled")
+
+        ButtonClear=Button(frame_Detail, text="Clear",padx=25, pady=12, bg="green",command=Click_Remove)
         
         # Button Grid frame_CAL
         button_Enter.place(x=230,y=600)
         button_DEL.place(x=230,y=550)
         button_List.place(x=230,y=500)
+        ButtonClear.place(x=230,y=450)
         button_confirm.place(x=110,y=600)
         button_final_payment.place(x=170,y=600)
 
         root.mainloop()
 
+def Click_Remove():
+    ProductCODE.config(state='normal')
+    Product_Name_EN.config(state='normal')
+    Product_Prices_EN.config(state='normal')
 
+    ProductCODE.delete(0, END)
+    Product_Name_EN.delete(0, END)
+    Product_Prices_EN.delete(0, END)
+    Product_CODE_EN.delete(0, END)
+
+    ProductCODE.config(state='disabled')
+    Product_Name_EN.config(state='disabled')
+    Product_Prices_EN.config(state='disabled')
 
 # Button logic
 def Button_LOGIC(Number):
@@ -245,6 +263,7 @@ def search():
 
         m = Manager.Manager()
         m1 = m.viewInv()
+
         count = 0
         if len(m1)==0:
             for item in Search_Table.get_children():
@@ -271,19 +290,23 @@ def SearchItem(buttonpress):
     ProdCode = Product_CODE_EN
     if ProdCode.index("end")!=0:
         ProdCode=Product_CODE_EN.get()
-
         prod = Product.product()
 
+        
         var="itemsLIST"
         var2="quantityLIST"
-
+        var3="ProdCodee"
         if var not in globals():
             if var2 not in globals():
-                global itemsLIST
-                global quantityLIST
-                itemsLIST=[]
-                quantityLIST=[]
+                if var3 not in globals():
+                    global ProdCodee
+                    ProdCodee=[]
+                    global itemsLIST
+                    global quantityLIST
+                    itemsLIST=[]
+                    quantityLIST=[]
 
+        ProdCodee.append(ProdCode)
         result = prod.viewCode(ProdCode)
 
         if (buttonpress=="enter"):
@@ -302,7 +325,6 @@ def SearchItem(buttonpress):
 
                 code=StringVar()
                 code.set(ProdCode)
-
 
                 ProductCODE.config(state='normal')
                 Product_Name_EN.config(state='normal')
@@ -360,6 +382,8 @@ def Click_Enter(result):
             else:
                 itemsLIST.append(ProdName)
                 quantityLIST.append(ProdQTY)
+
+
                 Product_ID = str(ProductCODE.get())
                 Product_Name = str(Product_Name_EN.get())
                 if Product_ID == "" or Product_Name == "":
@@ -391,11 +415,7 @@ def Click_Enter(result):
 
                     global totalprice
                     totalprice = sum(subtotal)
-                    # print(totalprice)
-                    # tot=StringVar()
-                    # tot.set(totalprice)
-
-                    # Totalprince_Entry.config(text=tot)
+                    
                     Totalprince_Entry.config(text=totalprice)
                     button_final_payment.config(state='active')
 
@@ -443,6 +463,7 @@ def discount():
         disc=int(float(Discount_Entry.get()))/100
         discount=totalprice*disc
         calculatechange(discount)
+
 def calculatechange(discount):
     disc=discount
 
@@ -477,9 +498,9 @@ def record(discount):
         Totalchange_Entry.config(text=change)
 
         # get treeview data in list of tuple
-        item_tuple = list(zip(itemsLIST, quantityLIST))
+        item_tuple = list(zip(itemsLIST, quantityLIST, ProdCodee))
         attendedBy = user_id
-
+        
         e = Employee.Employee()
         e.addNewTransaction(finalprice, discount, attendedBy, item_tuple)
 
@@ -487,11 +508,22 @@ def record(discount):
         Entry_Amount.config(state="disabled")
         Discount_Entry.config(state="disabled")
 
-
-        button_Quantity.config(text="Done", command=windowASK.destroy)
+        windowASK.destroy()
+        Button(frame_Total,text="Next Transaction", command=newTransact).place(x=550,y=80)
+        # button_Quantity.config(text="Done", command=windowASK.destroy)
 
         for x in frame_Table.get_children():
             frame_Table.delete(x)
+
+
+def newTransact():
+    Totalprince_Entry.config(text="")
+    Totalchange_Entry.config(text="")
+
+    itemsLIST.clear()
+    quantityLIST.clear()
+
+    Click_Remove()
 
 # Button Delete
 def Click_Delete():
