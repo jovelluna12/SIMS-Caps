@@ -287,23 +287,26 @@ def search():
                 Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
 def SearchItem(buttonpress):
-    global ProdCode
     ProdCode = Product_CODE_EN
     if ProdCode.index("end")!=0:
         ProdCode=Product_CODE_EN.get()
-
         prod = Product.product()
 
+        
         var="itemsLIST"
         var2="quantityLIST"
-
+        var3="ProdCodee"
         if var not in globals():
             if var2 not in globals():
-                global itemsLIST
-                global quantityLIST
-                itemsLIST=[]
-                quantityLIST=[]
+                if var3 not in globals():
+                    global ProdCodee
+                    ProdCodee=[]
+                    global itemsLIST
+                    global quantityLIST
+                    itemsLIST=[]
+                    quantityLIST=[]
 
+        ProdCodee.append(ProdCode)
         result = prod.viewCode(ProdCode)
 
         if (buttonpress=="enter"):
@@ -379,6 +382,8 @@ def Click_Enter(result):
             else:
                 itemsLIST.append(ProdName)
                 quantityLIST.append(ProdQTY)
+
+
                 Product_ID = str(ProductCODE.get())
                 Product_Name = str(Product_Name_EN.get())
                 if Product_ID == "" or Product_Name == "":
@@ -410,12 +415,7 @@ def Click_Enter(result):
 
                     global totalprice
                     totalprice = sum(subtotal)
-                    # print(totalprice)
-                    # tot=StringVar()
-                    # tot.set(totalprice)
-
-                    # Totalprince_Entry.config(text=tot)
-
+                    
                     Totalprince_Entry.config(text=totalprice)
                     button_final_payment.config(state='active')
 
@@ -463,6 +463,7 @@ def discount():
         disc=int(float(Discount_Entry.get()))/100
         discount=totalprice*disc
         calculatechange(discount)
+
 def calculatechange(discount):
     disc=discount
 
@@ -497,19 +498,15 @@ def record(discount):
         Totalchange_Entry.config(text=change)
 
         # get treeview data in list of tuple
-        item_tuple = list(zip(itemsLIST, quantityLIST))
+        item_tuple = list(zip(itemsLIST, quantityLIST, ProdCodee))
         attendedBy = user_id
         
-        
         e = Employee.Employee()
-        e.addNewTransaction(finalprice, discount, attendedBy, item_tuple,ProdCode)
+        e.addNewTransaction(finalprice, discount, attendedBy, item_tuple)
 
         # close this window here
         Entry_Amount.config(state="disabled")
         Discount_Entry.config(state="disabled")
-
-        itemsLIST.clear()
-        quantityLIST.clear()
 
         windowASK.destroy()
         Button(frame_Total,text="Next Transaction", command=newTransact).place(x=550,y=80)
@@ -522,6 +519,9 @@ def record(discount):
 def newTransact():
     Totalprince_Entry.config(text="")
     Totalchange_Entry.config(text="")
+
+    itemsLIST.clear()
+    quantityLIST.clear()
 
     Click_Remove()
 
