@@ -313,7 +313,7 @@ class InvortoryGUI:
         self.Add_Del.config(state='disabled')
         self.button_Add_Em.config(state='normal')
         self.button_Add_Pm.config(state='normal')
-        self.button_Add_prodref.config(state='normal')
+        # self.button_Add_prodref.config(state='normal')
         self.btn_Notification.config(state='normal')
 
         self.Add_Delivery= Toplevel()
@@ -423,7 +423,7 @@ class InvortoryGUI:
         self.Add_Del.config(state='normal')
         self.button_Add_Em.config(state='disabled')
         self.button_Add_Pm.config(state='normal')
-        self.button_Add_prodref.config(state='normal')
+        # self.button_Add_prodref.config(state='normal')
         self.btn_Notification.config(state='normal')
 
         self.Add_Employee= Toplevel()
@@ -538,7 +538,7 @@ class InvortoryGUI:
         self.Add_Del.config(state='normal')
         self.button_Add_Em.config(state='normal')
         self.button_Add_Pm.config(state='disabled')
-        self.button_Add_prodref.config(state='normal')
+        # self.button_Add_prodref.config(state='normal')
         self.btn_Notification.config(state='normal')
 
         self.Add_Stack= Toplevel()
@@ -547,7 +547,7 @@ class InvortoryGUI:
         self.Add_Stack.resizable(False,False)
 
         global btn,frame
-        btn=self.Add_Stack
+        btn=self.button_Add_Pm
         frame=self.Add_Stack
 
         self.Add_Stack.protocol("WM_DELETE_WINDOW",self.close_window)
@@ -576,28 +576,46 @@ class InvortoryGUI:
         if lst != 'empty':
             self.Stack_Product_Name_EN['values']=([x[n] for x in lst])
 
-        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>",self.setPrice)
+        
 
         self.Frame_List=Frame(self.Add_Stack,width=800,height=320,highlightbackground="black", highlightthickness=3)
         self.Frame_List.place(x=0,y=150)
         #Table
         self.frame_Table=ttk.Treeview(self.Frame_List,height=18)
-        self.frame_Table['columns']=("ID","Name","Price","Quantity")
+        self.frame_Table['columns']=("ID","Name","Price")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=90)
         self.frame_Table.column("Name",anchor=W,width=403)
         self.frame_Table.column("Price",anchor=CENTER,width=150)
-        self.frame_Table.column("Quantity",anchor=W,width=150)
         #Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID",text="ID",anchor=W)
         self.frame_Table.heading("Name",text="Product Name",anchor=W)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
-        self.frame_Table.heading("Quantity",text="Quantity",anchor=E)
         self.frame_Table.pack(fill='both')
         self.frame_Table.grid(row=1,column=0)
 
-        self.button_Find=Button(self.Frame_Add_St,text="Seacrh",padx=20,pady=5,command=self.DoneAdd_Product)
+        def AddProduct_ChangeName(event):
+            global val
+            val=self.chosen_val.get()
+            val=(val)
+
+        def search():
+            a=Product.product()
+            res=a.return_one(val)
+
+            # if 'count' not in globals():
+            #     count = 0
+            # else:
+            #     count += 1
+            
+            for i in res:
+                self.frame_Table.insert(parent='', index='end', iid=i[0], text=i,values=i)
+                
+    
+        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>",AddProduct_ChangeName)
+
+        self.button_Find=Button(self.Frame_Add_St,text="Search",padx=20,pady=5,command=search)
         self.button_Find.place(x=350,y=90)
 
         self.button_Add=Button(self.Frame_Add_St,text="Add Product",padx=20,pady=5,command=self.Click_Add_Ref)
@@ -609,9 +627,6 @@ class InvortoryGUI:
         self.button_Delete=Button(self.Frame_Add_St,text="Delete",padx=20,pady=5,command=self.Delete)
         self.button_Delete.place(x=700,y=90)
 
-        # self.button_Finish = Button(self.Frame_Add_St, text="Finish", padx=20, pady=5, state='disabled')
-        # self.button_Finish.place(x=715, y=160)
-
     def Delete(self):
         select=self.frame_Table.selection()[0]
         self.frame_Table.delete(select)
@@ -621,7 +636,7 @@ class InvortoryGUI:
         self.Add_Del.config(state='normal')
         self.button_Add_Em.config(state='normal')
         self.button_Add_Pm.config(state='normal')
-        self.button_Add_prodref.config(state='normal')
+        # self.button_Add_prodref.config(state='normal')
         self.btn_Notification.config(state='disabled')
 
         self.Add_Notify= Toplevel()
@@ -656,7 +671,7 @@ class InvortoryGUI:
         self.Stack_Product_Name_EN.config(width=43)
         self.Stack_Product_Name_EN['values']=([x[n] for x in lst])
 
-        self.button_S=Button(self.Frame_Add_nofi,text="Add",padx=20,pady=5,bg="green",command=self.Noti)
+        self.button_S=Button(self.Frame_Add_nofi,text="Add",padx=20,pady=5,bg="green")
         self.button_S.place(x=400,y=90)
 
         #Table    
@@ -718,7 +733,7 @@ class InvortoryGUI:
         self.Add_Del=Button(self.Frame_Side,text="ADD Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add)
         self.button_Add_Em=Button(self.Frame_Side,text="ADD Employee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Em)
         self.button_Add_Pm=Button(self.Frame_Side,text="ADD Product",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Product)
-        self.button_Add_prodref=Button(self.Frame_Side,text="Reference",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.ProdRef)
+        # self.button_Add_prodref=Button(self.Frame_Side,text="Reference",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.ProdRef)
         self.btn_Notification=Button(self.Frame_Side,text="Notification",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.notify_UI)
 
         self.button_List.place(x=40,y=300)
@@ -729,7 +744,7 @@ class InvortoryGUI:
         self.Add_Del.place(x=40,y=450)
         self.button_Add_Em.place(x=160,y=450)
         self.button_Add_Pm.place(x=40,y=500)
-        self.button_Add_prodref.place(x=160,y=500)
+        # self.button_Add_prodref.place(x=160,y=500)
         self.btn_Notification.place(x=160,y=600)
 
         self.InvorVal.mainloop()
@@ -738,7 +753,7 @@ class InvortoryGUI:
         self.Add_Del.config(state='normal')
         self.button_Add_Em.config(state='normal')
         self.button_Add_Pm.config(state='normal')
-        self.button_Add_prodref.config(state='disabled')
+        # self.button_Add_prodref.config(state='disabled')
         self.btn_Notification.config(state='normal')
 
         self.Add_Stack= Toplevel()
@@ -773,20 +788,10 @@ class InvortoryGUI:
         self.Frma.place(x=20,y=10)
 
         a=Product.product()
-
-        self.chosen_val=tk.StringVar(self.Frame_Add_St)
-        self.chosen_val.set("Select Product")
         
         global lst
         lst = a.returnall()
         n=1
-
-        # self.Stack_Product_Name_LA=Label(self.Frame_Add_St,text="Product Reference Name:")
-        # self.Stack_Product_Name_EN= ttk.Combobox(self.Frame_Add_St,textvariable=self.chosen_val,state='readonly')
-        # self.Stack_Product_Name_LA.pack()
-        # self.Stack_Product_Name_EN.pack()
-        # self.Stack_Product_Name_EN.config(width=20)
-        # self.Stack_Product_Name_EN['values']=([x[n] for x in lst])
 
         self.Old=Label(self.Frame_Add_St,text="Old Product Name", width=20, font=("Arial", 15),anchor=W)
         self.Old.place(x=50,y=70)
@@ -796,8 +801,11 @@ class InvortoryGUI:
         self.Stack_Product_ID_Label=Label(self.Frame_Add_St,text="ID:").place(x=50,y=110)
         self.Stack_Product_ID_EN=Entry(self.Frame_Add_St,width=10, borderwidth=5,textvariable=ref_id_entry,state="disabled").place(x=50,y=130)
 
+        
         self.Stack_Product_Item_Label=Label(self.Frame_Add_St,text="Product Name:",).place(x=130,y=110)
-        self.Stack_Product_Item_ENN=Entry(self.Frame_Add_St,width=70, borderwidth=5,state="disabled").place(x=130,y=130)
+        self.Stack_Product_Item_ENN=Entry(self.Frame_Add_St,width=70, borderwidth=5,state="disabled")
+        self.Stack_Product_Item_ENN.place(x=130,y=130)
+        
 
         # global ref_id_entry
         # ref_id_entry=StringVar()

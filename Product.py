@@ -104,6 +104,21 @@ class product:
         else:
             return result
 
+    def return_one(self,name):
+        dbcursor=self.dbcursor
+        query="SELECT * FROM products_directory WHERE product_name=%s LIMIT 1"
+        value=[name]
+        value=tuple(value)
+        
+        dbcursor.execute(query,value)
+        result = dbcursor.fetchall()
+        dbConnector.db.commit()
+
+        if (dbcursor.rowcount == 0):
+            return "empty"
+        else:
+            return result
+
 
 
     def viewALL(self,val):
