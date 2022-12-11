@@ -78,15 +78,15 @@ class InvortoryGUI:
         self.frame_Table.column("ID",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=400,stretch=NO)
         self.frame_Table.column("Status",anchor=E,width=200,stretch=NO)
-        self.frame_Table.column("Price",anchor=CENTER,width=155,stretch=NO)
+        self.frame_Table.column("Price",anchor=CENTER,width=135,stretch=NO)
         self.frame_Table.column("Quantity",anchor=E,width=200,stretch=NO)
         #Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID",text="ID",anchor=W)
         self.frame_Table.heading("Name",text="Product Name",anchor=W)
-        self.frame_Table.heading("Status",text="Status",anchor=E)
+        self.frame_Table.heading("Status",text="Status",anchor=W)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
-        self.frame_Table.heading("Quantity",text="Quantity",anchor=E)
+        self.frame_Table.heading("Quantity",text="Quantity",anchor=W)
         self.frame_Table.pack()
         m1=Manager.Manager()
         result=m1.inventoryList()
@@ -117,16 +117,16 @@ class InvortoryGUI:
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=400,stretch=NO)
-        self.frame_Table.column("Detail",anchor=E,width=200,stretch=NO)
-        self.frame_Table.column("Price",anchor=CENTER,width=155,stretch=NO)
+        self.frame_Table.column("Detail",anchor=W,width=200,stretch=NO)
+        self.frame_Table.column("Price",anchor=CENTER,width=135,stretch=NO)
         self.frame_Table.column("Stack",anchor=E,width=200,stretch=NO)
         #Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID",text="Stack-ID",anchor=W)
         self.frame_Table.heading("Name",text="Product Name",anchor=W)
-        self.frame_Table.heading("Detail",text="Detail",anchor=E)
+        self.frame_Table.heading("Detail",text="Detail",anchor=W)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
-        self.frame_Table.heading("Stack",text="Stack",anchor=E)
+        self.frame_Table.heading("Stack",text="Stack",anchor=W)
         self.frame_Table.pack(fill='both')
         m1=Manager.Manager()
         result=m1.inventoryList()
@@ -150,20 +150,22 @@ class InvortoryGUI:
         style.theme_use("default")
         style.configure("Treeview")
         self.frame_Table=ttk.Treeview(self.Frame_Del,height=24)
-        self.frame_Table['columns']=("ID","Name","Detail","Price","Quantity")
+        self.frame_Table['columns']=("ID","Name","Detail","Price","Quantity","Arrival")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=400,stretch=NO)
-        self.frame_Table.column("Detail",anchor=E,width=200,stretch=NO)
-        self.frame_Table.column("Price",anchor=CENTER,width=155,stretch=NO)
-        self.frame_Table.column("Quantity",anchor=E,width=200,stretch=NO)
+        self.frame_Table.column("Detail",anchor=W,width=200,stretch=NO)
+        self.frame_Table.column("Price",anchor=CENTER,width=95,stretch=NO)
+        self.frame_Table.column("Quantity",anchor=E,width=100,stretch=OFF)
+        self.frame_Table.column("Arrival",anchor=E,width=140,stretch=OFF)
         #Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID",text="Batch Code",anchor=W)
         self.frame_Table.heading("Name",text="Product Name",anchor=W)
-        self.frame_Table.heading("Detail",text="Detail",anchor=E)
+        self.frame_Table.heading("Detail",text="Detail",anchor=W)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
-        self.frame_Table.heading("Quantity",text="Quantity",anchor=E)
+        self.frame_Table.heading("Quantity",text="Quantity",anchor=W)
+        self.frame_Table.heading("Arrival",text="Arrival Day",anchor=W)
         self.frame_Table.pack()
         m1=Employee.Employee()
         result=m1.viewDeliveryList()
@@ -193,7 +195,7 @@ class InvortoryGUI:
         self.frame_Table.column("ID",anchor=W,width=103,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=420,stretch=NO)
         self.frame_Table.column("Username",anchor=W,width=280,stretch=NO)
-        self.frame_Table.column("Detail",anchor=CENTER,width=250,stretch=NO)
+        self.frame_Table.column("Detail",anchor=CENTER,width=230,stretch=NO)
 
         #Table Head
         self.frame_Table.heading("#0")
@@ -318,7 +320,7 @@ class InvortoryGUI:
 
         self.Add_Delivery= Toplevel()
         self.Add_Delivery.title("Add Products on Delivery")
-        self.Add_Delivery.geometry("800x532")
+        self.Add_Delivery.geometry("800x550")
         self.Add_Delivery.resizable(False,False)
 
         global btn,frame
@@ -383,18 +385,18 @@ class InvortoryGUI:
         self.button_Delete.place(x=700,y=110)
 
 
-        self.Frame_List=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=3)
+        self.Frame_List=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
         self.Frame_List.place(x=0,y=200)
         #Table
         self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
         self.frame_Table['columns']=("ID","Name","Price","Quantity","Order Date","Expiration Date")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=50)
-        self.frame_Table.column("Name",anchor=W,width=244)
+        self.frame_Table.column("Name",anchor=W,width=246)
         self.frame_Table.column("Price",anchor=CENTER,width=100)
-        self.frame_Table.column("Quantity",anchor=E,width=100)
-        self.frame_Table.column("Order Date", anchor=E, width=149)
-        self.frame_Table.column("Expiration Date", anchor=E, width=149)
+        self.frame_Table.column("Quantity",anchor=E,width=80)
+        self.frame_Table.column("Order Date", anchor=E, width=150)
+        self.frame_Table.column("Expiration Date", anchor=E, width=150)
         #Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID",text="ID",anchor=W)
@@ -543,7 +545,7 @@ class InvortoryGUI:
 
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Add Product")
-        self.Add_Stack.geometry("800x530")
+        self.Add_Stack.geometry("800x540")
         self.Add_Stack.resizable(False,False)
 
         global btn,frame
@@ -576,22 +578,22 @@ class InvortoryGUI:
         if lst != 'empty':
             self.Stack_Product_Name_EN['values']=([x[n] for x in lst])
 
-        
 
-        self.Frame_List=Frame(self.Add_Stack,width=800,height=320,highlightbackground="black", highlightthickness=3)
+
+        self.Frame_List=Frame(self.Add_Stack,width=800,height=320,padx=10, pady=10,highlightbackground="black", highlightthickness=1)
         self.Frame_List.place(x=0,y=150)
         #Table
-        self.frame_Table=ttk.Treeview(self.Frame_List,height=18)
+        self.frame_Table=ttk.Treeview(self.Frame_List,height=17)
         self.frame_Table['columns']=("ID","Name","Price")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=90)
-        self.frame_Table.column("Name",anchor=W,width=403)
-        self.frame_Table.column("Price",anchor=CENTER,width=150)
+        self.frame_Table.column("Name",anchor=W,width=555)
+        self.frame_Table.column("Price",anchor=CENTER,width=130)
         #Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID",text="ID",anchor=W)
         self.frame_Table.heading("Name",text="Product Name",anchor=W)
-        self.frame_Table.heading("Price",text="Price",anchor=CENTER)
+        self.frame_Table.heading("Price",text="Price",anchor=W)
         self.frame_Table.pack(fill='both')
         self.frame_Table.grid(row=1,column=0)
 
@@ -608,11 +610,11 @@ class InvortoryGUI:
             #     count = 0
             # else:
             #     count += 1
-            
+
             for i in res:
                 self.frame_Table.insert(parent='', index='end', iid=i[0], text=i,values=i)
-                
-    
+
+
         self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>",AddProduct_ChangeName)
 
         self.button_Find=Button(self.Frame_Add_St,text="Search",padx=20,pady=5,command=search)
@@ -640,14 +642,14 @@ class InvortoryGUI:
         self.btn_Notification.config(state='disabled')
 
         self.Add_Notify= Toplevel()
-        
+
         global btn,frame
         btn=self.btn_Notification
         frame=self.Add_Notify
 
         self.Add_Notify.protocol("WM_DELETE_WINDOW",self.close_window)
         self.Add_Notify.title("Notification")
-        self.Add_Notify.geometry("800x570")
+        self.Add_Notify.geometry("800x583")
         self.Add_Notify.resizable(False,False)
 
         self.Frame_Add_nofi=Frame(self.Add_Notify,width=800,height=200)
@@ -675,12 +677,12 @@ class InvortoryGUI:
         self.button_S.place(x=400,y=90)
 
         #Table    
-        self.Frame_List=Frame(self.Add_Notify,width=800,height=400,highlightbackground="black", highlightthickness=3)
+        self.Frame_List=Frame(self.Add_Notify,width=800,height=400,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
         self.Frame_List.place(x=0,y=140)
         self.frame_Table=ttk.Treeview(self.Frame_List,height=20)
         self.frame_Table['columns']=("ID","Name","Days","Expiration_Date")
         self.frame_Table.column("#0",width=0,stretch=NO)
-        self.frame_Table.column("ID",anchor=W,width=90)
+        self.frame_Table.column("ID",anchor=W,width=73)
         self.frame_Table.column("Name",anchor=W,width=403)
         self.frame_Table.column("Days",anchor=CENTER,width=150)
         self.frame_Table.column("Expiration_Date",anchor=W,width=150)
@@ -706,20 +708,20 @@ class InvortoryGUI:
         self.InvorVal.resizable(False,False)
         
         #For the Page 1 Detail
-        self.Frame_Detail=Frame(self.InvorVal,width=1063,height=200,highlightbackground="black", highlightthickness=3)
+        self.Frame_Detail=Frame(self.InvorVal,width=1063,height=200,highlightbackground="black", highlightthickness=3,padx=10, pady=10)
         self.Frame_Detail.place(x=0,y=0)
         label=Label(self.Frame_Detail,text="IMAGE",width=37,height=10).place(x=0,y=0)
         
         #For the Page LIST
         self.Frame_main=Frame(self.InvorVal,width=1063,height=498,highlightbackground="black", highlightthickness=3)
         self.Frame_main.place(x=0,y=199)
-        self.Frame_List=Frame(self.Frame_main,width=1063,height=498)
-        self.Frame_stack=Frame(self.Frame_main,width=1063,height=498)
-        self.Frame_Empl=Frame(self.Frame_main,width=1063,height=498)
-        self.Frame_Del=Frame(self.Frame_main,width=1063,height=498)
+        self.Frame_List=Frame(self.Frame_main,width=1063,height=498,padx=10, pady=10)
+        self.Frame_stack=Frame(self.Frame_main,width=1063,height=498,padx=10, pady=10)
+        self.Frame_Empl=Frame(self.Frame_main,width=1063,height=498,padx=10, pady=10)
+        self.Frame_Del=Frame(self.Frame_main,width=1063,height=498,padx=10, pady=10)
         
         #For the Side
-        self.Frame_Side=Frame(self.InvorVal,width=300,height=697,highlightbackground="black", highlightthickness=3)
+        self.Frame_Side=Frame(self.InvorVal,width=300,height=697,highlightbackground="black", highlightthickness=3,padx=10, pady=10)
         self.Frame_Side.place(x=1060,y=0)
 
         Detail=Label(self.Frame_Side,text="Detail Button",width=37,anchor=W).place(x=40,y=270)
@@ -745,25 +747,13 @@ class InvortoryGUI:
         self.button_Add_Em.place(x=160,y=450)
         self.button_Add_Pm.place(x=40,y=500)
         # self.button_Add_prodref.place(x=160,y=500)
-        self.btn_Notification.place(x=160,y=600)
+        self.btn_Notification.place(x=160,y=500)
 
         self.InvorVal.mainloop()
 
     def ProdRef(self):
-        self.Add_Del.config(state='normal')
-        self.button_Add_Em.config(state='normal')
-        self.button_Add_Pm.config(state='normal')
-        # self.button_Add_prodref.config(state='disabled')
-        self.btn_Notification.config(state='normal')
-
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Product Reference")
-
-        global btn,frame
-        btn=self.button_Add_prodref
-        frame=self.Add_Stack
-
-        self.Add_Stack.protocol("WM_DELETE_WINDOW",self.close_window)
         
 
         self.Frame_Add_St=Frame(self.Add_Stack)
@@ -801,11 +791,11 @@ class InvortoryGUI:
         self.Stack_Product_ID_Label=Label(self.Frame_Add_St,text="ID:").place(x=50,y=110)
         self.Stack_Product_ID_EN=Entry(self.Frame_Add_St,width=10, borderwidth=5,textvariable=ref_id_entry,state="disabled").place(x=50,y=130)
 
-        
+
         self.Stack_Product_Item_Label=Label(self.Frame_Add_St,text="Product Name:",).place(x=130,y=110)
         self.Stack_Product_Item_ENN=Entry(self.Frame_Add_St,width=70, borderwidth=5,state="disabled")
         self.Stack_Product_Item_ENN.place(x=130,y=130)
-        
+
 
         # global ref_id_entry
         # ref_id_entry=StringVar()
