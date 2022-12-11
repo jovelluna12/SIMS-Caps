@@ -7,8 +7,7 @@ from datetime import date, datetime
 ## pip install pillow
 from PIL import Image, ImageTk
 
-import POS_GUI,InventoryGUI, Manager
-
+import POS_GUI,InventoryGUI
 
 #declare GUI var
 class GUI():
@@ -121,9 +120,11 @@ class GUI():
         self.dashboardGUI.mainloop()
 
     def Notification(self):
-        
         self.NotifGUI=Tk()
         self.NotifGUI.title("Notification")
+        
+
+
 
     def startInventory(self, id):
         INVOR=InventoryGUI.InvortoryGUI()

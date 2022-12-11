@@ -58,6 +58,11 @@ class InvortoryGUI:
 
 #Chick List and stack Start~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def Click_List1(self):
+        self.button_List.config(state="disabled")
+        self.button_Stack.config(state="normal")
+        self.button_Delivery.config(state="normal")
+        self.button_Employee.config(state="normal")
+
         self.Frame_List.pack_forget()
         self.Frame_stack.pack_forget()
         self.Frame_Del.pack_forget()
@@ -93,7 +98,12 @@ class InvortoryGUI:
          
 
     def Click_Stack(self):
-        #Table
+        self.button_List.config(state="normal")
+        self.button_Stack.config(state="disabled")
+        self.button_Delivery.config(state="normal")
+        self.button_Employee.config(state="normal")
+
+
         self.Frame_List.pack_forget()
         self.Frame_stack.pack_forget()
         self.Frame_Del.pack_forget()
@@ -126,7 +136,10 @@ class InvortoryGUI:
             self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x)
         
     def Click_Delivery(self):
-        #Table\
+        self.button_List.config(state="normal")
+        self.button_Stack.config(state="normal")
+        self.button_Delivery.config(state="disabled")
+        self.button_Employee.config(state="normal")
         self.Frame_List.pack_forget()
         self.Frame_stack.pack_forget()
         self.Frame_Del.pack_forget()
@@ -160,6 +173,12 @@ class InvortoryGUI:
             self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x)
             
     def Click_Employee(self):
+
+        self.button_List.config(state="normal")
+        self.button_Stack.config(state="normal")
+        self.button_Delivery.config(state="normal")
+        self.button_Employee.config(state="disabled")
+
         self.Frame_List.pack_forget()
         self.Frame_stack.pack_forget()
         self.Frame_Del.pack_forget()
@@ -291,10 +310,22 @@ class InvortoryGUI:
 
 
     def Click_Add(self):
+        self.Add_Del.config(state='disabled')
+        self.button_Add_Em.config(state='normal')
+        self.button_Add_Pm.config(state='normal')
+        self.button_Add_prodref.config(state='normal')
+        self.btn_Notification.config(state='normal')
+
         self.Add_Delivery= Toplevel()
         self.Add_Delivery.title("Add Products on Delivery")
         self.Add_Delivery.geometry("800x532")
         self.Add_Delivery.resizable(False,False)
+
+        global btn,frame
+        btn=self.Add_Del
+        frame=self.Add_Delivery
+
+        self.Add_Delivery.protocol("WM_DELETE_WINDOW",self.close_window)
 
         global lst
         a=Product.product()
@@ -389,10 +420,22 @@ class InvortoryGUI:
         man.AddEmp(id,Fname,username,password,role)
 
     def Click_Add_Em(self):
+        self.Add_Del.config(state='normal')
+        self.button_Add_Em.config(state='disabled')
+        self.button_Add_Pm.config(state='normal')
+        self.button_Add_prodref.config(state='normal')
+        self.btn_Notification.config(state='normal')
+
         self.Add_Employee= Toplevel()
         self.Add_Employee.title("Employeee!")
         self.Add_Employee.geometry("500x400")
         self.Add_Employee.resizable(False,False)
+
+        global btn,frame
+        btn=self.button_Add_Em
+        frame=self.Add_Employee
+
+        self.Add_Employee.protocol("WM_DELETE_WINDOW",self.close_window)
 
         self.Frame_Add_Em=Frame(self.Add_Employee,width=800,height=500,)
         self.Frame_Add_Em.place(x=0,y=0)
@@ -492,10 +535,22 @@ class InvortoryGUI:
         price_entry.set(price)
 
     def Click_Add_Product(self):
+        self.Add_Del.config(state='normal')
+        self.button_Add_Em.config(state='normal')
+        self.button_Add_Pm.config(state='disabled')
+        self.button_Add_prodref.config(state='normal')
+        self.btn_Notification.config(state='normal')
+
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Add Product")
         self.Add_Stack.geometry("800x530")
         self.Add_Stack.resizable(False,False)
+
+        global btn,frame
+        btn=self.Add_Stack
+        frame=self.Add_Stack
+
+        self.Add_Stack.protocol("WM_DELETE_WINDOW",self.close_window)
 
         self.Frame_Add_St=Frame(self.Add_Stack,width=800,height=505,)
         self.Frame_Add_St.place(x=0,y=0)
@@ -562,11 +617,20 @@ class InvortoryGUI:
         self.frame_Table.delete(select)
 
     # start UI for Notification ---------------
-    def Noti(self):
-        print("Nako")
-
     def notify_UI(self):
+        self.Add_Del.config(state='normal')
+        self.button_Add_Em.config(state='normal')
+        self.button_Add_Pm.config(state='normal')
+        self.button_Add_prodref.config(state='normal')
+        self.btn_Notification.config(state='disabled')
+
         self.Add_Notify= Toplevel()
+        
+        global btn,frame
+        btn=self.btn_Notification
+        frame=self.Add_Notify
+
+        self.Add_Notify.protocol("WM_DELETE_WINDOW",self.close_window)
         self.Add_Notify.title("Notification")
         self.Add_Notify.geometry("800x570")
         self.Add_Notify.resizable(False,False)
@@ -644,24 +708,47 @@ class InvortoryGUI:
         self.Frame_Side.place(x=1060,y=0)
 
         Detail=Label(self.Frame_Side,text="Detail Button",width=37,anchor=W).place(x=40,y=270)
-        self.button_List=Button(self.Frame_Side,text="List",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_List1).place(x=40,y=300)
-        self.button_Stack=Button(self.Frame_Side,text="Stack",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Stack).place(x=160,y=300)
-        self.button_Delivery=Button(self.Frame_Side,text="Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Delivery).place(x=40,y=350)
-        self.button_Employee=Button(self.Frame_Side,text="Employeee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Employee).place(x=160,y=350)
+        self.button_List=Button(self.Frame_Side,text="List",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_List1)
+        self.button_Stack=Button(self.Frame_Side,text="Stack",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Stack)
+        self.button_Delivery=Button(self.Frame_Side,text="Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Delivery)
+        self.button_Employee=Button(self.Frame_Side,text="Employeee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Employee)
 
         label=Label(self.Frame_Side,text="IMAGE").place(x=100,y=10)
         Add=Label(self.Frame_Side,text="ADD Button",width=37,anchor=W).place(x=40,y=420)
-        self.Add_Del=Button(self.Frame_Side,text="ADD Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add).place(x=40,y=450)
-        self.button_Add_Em=Button(self.Frame_Side,text="ADD Employee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Em).place(x=160,y=450)
-        self.button_Add_Pm=Button(self.Frame_Side,text="ADD Product",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Product).place(x=40,y=500)
-        self.button_Add_prodref=Button(self.Frame_Side,text="Reference",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.ProdRef).place(x=160,y=500)
-        self.btn_Notification=Button(self.Frame_Side,text="Notification",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.notify_UI).place(x=160,y=600)
+        self.Add_Del=Button(self.Frame_Side,text="ADD Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add)
+        self.button_Add_Em=Button(self.Frame_Side,text="ADD Employee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Em)
+        self.button_Add_Pm=Button(self.Frame_Side,text="ADD Product",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Product)
+        self.button_Add_prodref=Button(self.Frame_Side,text="Reference",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.ProdRef)
+        self.btn_Notification=Button(self.Frame_Side,text="Notification",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.notify_UI)
+
+        self.button_List.place(x=40,y=300)
+        self.button_Stack.place(x=160,y=300)
+        self.button_Delivery.place(x=40,y=350)
+        self.button_Employee.place(x=160,y=350)
+
+        self.Add_Del.place(x=40,y=450)
+        self.button_Add_Em.place(x=160,y=450)
+        self.button_Add_Pm.place(x=40,y=500)
+        self.button_Add_prodref.place(x=160,y=500)
+        self.btn_Notification.place(x=160,y=600)
 
         self.InvorVal.mainloop()
 
     def ProdRef(self):
+        self.Add_Del.config(state='normal')
+        self.button_Add_Em.config(state='normal')
+        self.button_Add_Pm.config(state='normal')
+        self.button_Add_prodref.config(state='disabled')
+        self.btn_Notification.config(state='normal')
+
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Product Reference")
+
+        global btn,frame
+        btn=self.button_Add_prodref
+        frame=self.Add_Stack
+
+        self.Add_Stack.protocol("WM_DELETE_WINDOW",self.close_window)
         
 
         self.Frame_Add_St=Frame(self.Add_Stack)
@@ -903,13 +990,15 @@ class InvortoryGUI:
             count += 1
             Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
+    def close_window(self):
+        btn.config(state='normal')
+        frame.destroy()
 
+    # def search(self):
+        # search_field = Entry_Search.get()
 
-    def search(self):
-        search_field = Entry_Search.get()
-
-        e=Employee.Employee()
-        e.MarkBatchArrived(search_field)
+        # e=Employee.Employee()
+        # e.MarkBatchArrived(search_field)
 
     def start(self,id):
         self.InvorGUI()
