@@ -853,7 +853,7 @@ class InvortoryGUI:
         
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Add Product Reference")
-        self.Add_Stack.geometry("700x530")
+        self.Add_Stack.geometry("700x543")
 
         self.Frame_Add_St=Frame(self.Add_Stack,width=700,height=350,)
         self.Frame_Add_St.grid(row=0,column=0)
@@ -870,16 +870,15 @@ class InvortoryGUI:
         self.Stack_Product_Price_Label=Label(self.Frame_Add_St,text="Price:").place(x=470,y=90)
         self.Stack_Product_Price_EN=Entry(self.Frame_Add_St,width=15, borderwidth=5,textvariable=price_entry).place(x=470,y=110)
 
-        self.Frame_List=Frame(self.Add_Stack,width=800,height=320,highlightbackground="black", highlightthickness=3)
+        self.Frame_List=Frame(self.Add_Stack,width=800,height=320,highlightbackground="black", highlightthickness=3,padx=5,pady=5)
         self.Frame_List.place(x=0,y=200)
         #Table
         self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
         self.frame_Table['columns']=("ID","Name","Price")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100)
-        self.frame_Table.column("Name",anchor=W,width=492)
+        self.frame_Table.column("Name",anchor=W,width=482)
         self.frame_Table.column("Price",anchor=E,width=100)
-        
         #Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID",text="ID",anchor=W)

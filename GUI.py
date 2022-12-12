@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter import messagebox
 from functools import partial
 from tkinter.ttk import Treeview
@@ -63,7 +64,8 @@ class GUI():
         self.dashboardGUI.title('Cresdel Pharmacy!!')
         #set size
         self.dashboardGUI.geometry("1000x600")
-        self.employeePage = Label(self.dashboardGUI, text=f"Employee Page", font=("Arial", 25)).place(x=10, y=5)
+        self.dashboardGUI.resizable(False,False)
+        self.employeePage = Label(self.dashboardGUI, text=f"Employee Page", font=("Arial", 40)).place(x=230, y=12)
 
         self.tv = Treeview(self.dashboardGUI, height= 20)
         self.tv['columns']=('ID','Name', 'Date', 'Working Time')
@@ -88,15 +90,15 @@ class GUI():
         self.startButton.place(x=850, y=535)  
 
         self.NotifyButton=Button(self.dashboardGUI, text="Notification", width=10, font=("Arial", 15), bg='#54FA9B',command=self.Notification)
-        self.NotifyButton.place(x=50, y=350)
+        self.NotifyButton.place(x=50, y=270)
 
         pos=POS_GUI
         self.POSButton=Button(self.dashboardGUI, text="Point of Sale", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda m="pos": pos.start(m,result['user'][0],result['user'][1],self.inTime))
-        self.POSButton.place(x=50, y=400)
+        self.POSButton.place(x=50, y=320)
 
         if result['user'][4]=="Manager" or result['user'][4]=="Owner":
             self.inventoryButton=Button(self.dashboardGUI, text="Inventory", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda: self.startInventory(result['user'][0]))
-            self.inventoryButton.place(x=50, y=450)
+            self.inventoryButton.place(x=50, y=370)
 
 
         print("userID ",result['user'][0])
@@ -106,10 +108,10 @@ class GUI():
         self.render = ImageTk.PhotoImage(self.load)
         self.img = Label(self.dashboardGUI, image=self.render)
         self.img.image = self.render
-        self.img.place(x=35, y=90)
+        self.img.place(x=35, y=10)
 
         
-        self.employeeName = Label(self.dashboardGUI, text=f"{self.session_user['user']}", font=("Arial", 15)).place(x=50, y=250)
+        self.employeeName = Label(self.dashboardGUI, text=f"{self.session_user['user']}", font=("Arial", 15)).place(x=50, y=170)
 
         for i in attendanceRows:
             
@@ -122,9 +124,44 @@ class GUI():
     def Notification(self):
         self.NotifGUI=Tk()
         self.NotifGUI.title("Notification")
+        self.NotifGUI.geometry("483x520")
+        self.NotifGUI.resizable(False,False)
+
+        self.Noti_Frame=Frame(self.NotifGUI,width=405,height=35)
+        self.Noti_Frame.grid(row=0,column=0)
+
+        self.Noti_Label=Label(self.Noti_Frame,text="Notification",font=("Arial", 20))
+        self.Noti_Label.grid(row=0,column=0)
+
+
+        #BOX
+        self.Noti_BOX=Frame(self.NotifGUI,width=450,height=460,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
+        self.Noti_BOX.place(x=0,y=35)
+
+        self.Noti_canvas=Canvas(self.Noti_BOX,width=450,height=460)
+        self.Noti_canvas.pack(side=LEFT,fill=BOTH,expand=1)
+
+        self.my_scrollbar= ttk.Scrollbar(self.Noti_BOX,orient=VERTICAL,command=self.Noti_canvas.yview)
+        self.my_scrollbar.pack(side=RIGHT,fill=Y)
+
+        self.Noti_canvas.configure(yscrollcommand=self.my_scrollbar.set)
+        self.Noti_canvas.bind('<Configure>',lambda e: self.Noti_canvas.configure(scrollregion= self.Noti_canvas.bbox("all")))
+
+        self.Noti_post=Frame(self.Noti_canvas)
+        self.Noti_canvas.create_window((0,0), window=self.Noti_post,anchor=NW)
+
+        for thing in range (50):
+            self.Noti_NotiBOX=Frame(self.Noti_post,width=400,height=70,padx=5,pady=5)
+            self.Noti_NotiBOX.grid(row=thing,column=0)
+            self.Noti_MessageBOX=Frame(self.Noti_NotiBOX,width=395,height=70,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
+            self.Noti_MessageBOX.grid(row=0,column=0)
+
+            self.Noti_MTitle=Label(self.Noti_MessageBOX,text="Title",font=("Arial", 15),width=34,anchor=W)
+            self.Noti_MTitle.grid(row=0,column=0)
+            self.Noti_MBody=Label(self.Noti_MessageBOX,text="This is the body of the message!!",font=("Arial", 10))
+            self.Noti_MBody.grid(row=1,column=0)
+            self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Chick").grid(row=0,column=1)
         
-
-
 
     def startInventory(self, id):
         INVOR=InventoryGUI.InvortoryGUI()
