@@ -19,42 +19,7 @@ class InvortoryGUI:
            
     def search(self):
         result = self.Entry_Search.get()
-
-        self.window_Frame = Frame(self.window_list, width=400, height=100,highlightbackground="black", highlightthickness=3)
-        self.window_Frame.grid(row=0, column=0)
-
-        Label_Search = Label(self.window_Frame, text="Search:")
-        self.Entry_Search = Entry(self.window_Frame, width=50, borderwidth=3)
-        self.button_Search = Button(self.window_Frame, text="Search", padx=5, pady=0, command=self.search())
-
-        Label_Search.grid(row=0, column=0, sticky=W)
-        self.Entry_Search.grid(row=0, column=1)
-        self.button_Search.grid(row=0, column=3)
-
-        self.window_Frame2 = Frame(self.window_list, width=400, height=250, bg="blue",highlightbackground="black", highlightthickness=3)
-        self.window_Frame2.grid(row=1, column=0)
-
-        self.Search_Table = ttk.Treeview(self.window_Frame2, height=12)
-        self.Search_Table['column'] = ("ID", "Name", "Price", "Stack")
-        self.Search_Table.column("#0", width=0, stretch=NO, anchor=W)
-        self.Search_Table.column("ID", width=50, stretch=NO, anchor=W)
-        self.Search_Table.column("Name", width=148, stretch=NO, anchor=W)
-        self.Search_Table.column("Price", width=100, stretch=NO, anchor=E)
-        self.Search_Table.column("Stack", width=80, stretch=NO, anchor=E)
-
-        self.Search_Table.heading("#0")
-        self.Search_Table.heading("ID", text="ID", anchor=W)
-        self.Search_Table.heading("Name", text="Name", anchor=W)
-        self.Search_Table.heading("Price", text="Price", anchor=W)
-        self.Search_Table.heading("Stack", text="Stack", anchor=W)
-        self.Search_Table.grid(row=0, column=0)
-
-        self.window_Frame3 = Frame(self.window_list, width=400, height=50, bg="blue",highlightbackground="black", highlightthickness=3)
-        self.window_Frame3.grid(row=2, column=0)
-
-        self.button_Close = Button(self.window_Frame3, text="Close", command=self.window_list.destroy)
-        self.button_Close.pack()
-
+        
 
 #Chick List and stack Start~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def Click_List1(self):

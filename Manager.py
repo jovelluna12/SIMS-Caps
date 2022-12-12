@@ -53,8 +53,10 @@ class Manager (Employee.Employee):
         name=[]
         batch=[]
         x=0
+
         notif_list=[]
-        
+        expire_list=[]
+
         for i in result:
             days_left=7
             if result!=None:
@@ -65,9 +67,11 @@ class Manager (Employee.Employee):
                     id.append(result[x][0])
                     name.append(result[x][1])
                     batch.append(result[x][3])
-                    notif_list.append(f"Product {result[x][1]} of Batch {result[x][3]} is about to Expire in {today_left} Days")  
+                    # string=f"Product {result[x][1]} of Batch {result[x][3]} is about to Expire in {today_left} Days"
+                    notif_list.append(result[x][1])  
+                    expire_list.append(today_left)
             x+=1
-        return notif_list
+        return notif_list, batch, expire_list
         # return list(zip(id,name,batch))
 
     def viewSales(self):
