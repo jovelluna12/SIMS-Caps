@@ -597,25 +597,26 @@ class InvortoryGUI:
         self.frame_Table.pack(fill='both')
         self.frame_Table.grid(row=1,column=0)
 
+        a=Product.product()
+        res=a.returnall()
+
+        for i in res:
+            self.frame_Table.insert(parent='', index='end', iid=i[0], text=i, values=i)
+
         def AddProduct_ChangeName(event):
             global val
-            val=self.chosen_val.get()
-            val=(val)
+            val = self.chosen_val.get()
+            val = (val)
 
         def search():
             a=Product.product()
             res=a.return_one(val)
 
-            # if 'count' not in globals():
-            #     count = 0
-            # else:
-            #     count += 1
-
+            self.frame_Table.delete(*self.frame_Table.get_children())
             for i in res:
                 self.frame_Table.insert(parent='', index='end', iid=i[0], text=i,values=i)
 
-
-        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>",AddProduct_ChangeName)
+        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>", AddProduct_ChangeName)
 
         self.button_Find=Button(self.Frame_Add_St,text="Search",padx=20,pady=5,command=search)
         self.button_Find.place(x=350,y=90)
@@ -628,6 +629,8 @@ class InvortoryGUI:
 
         self.button_Delete=Button(self.Frame_Add_St,text="Delete",padx=20,pady=5,command=self.Delete)
         self.button_Delete.place(x=700,y=90)
+
+        self.Add_Stack.update()
 
     def Delete(self):
         select=self.frame_Table.selection()[0]
@@ -751,22 +754,8 @@ class InvortoryGUI:
 
         self.InvorVal.mainloop()
 
-    def ProdRef(self):
-        self.Add_Stack= Toplevel()
-        self.Add_Stack.title("Product Reference")
-        
-
-        self.Frame_Add_St=Frame(self.Add_Stack)
-        self.Frame_Add_St.pack()
-
-        self.Frma=Label(self.Frame_Add_St,text="Product Reference Menu", width=20, font=("Arial", 35),anchor=W)
-        self.Frma.pack()
-
-        self.add=Button(self.Frame_Add_St, text="Add Reference", padx=20, pady=5, command=self.Click_Add_Ref).pack()
-        self.edit=Button(self.Frame_Add_St, text="Edit Reference", padx=20, pady=5, command=self.Click_Edit_Ref).pack()
-
-
     def Click_Edit_Ref(self):
+        print(val)
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Edit Product Reference")
         self.Add_Stack.geometry("700x350")
