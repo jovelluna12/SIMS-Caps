@@ -616,6 +616,12 @@ class InvortoryGUI:
             for i in res:
                 self.frame_Table.insert(parent='', index='end', iid=i[0], text=i,values=i)
 
+        def edit():
+
+            var=self.chosen_val.get()
+            
+            self.Click_Edit_Ref(var)
+
         self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>", AddProduct_ChangeName)
 
         self.button_Find=Button(self.Frame_Add_St,text="Search",padx=20,pady=5,command=search)
@@ -624,7 +630,7 @@ class InvortoryGUI:
         self.button_Add=Button(self.Frame_Add_St,text="Add Product",padx=20,pady=5,command=self.Click_Add_Ref)
         self.button_Add.place(x=500,y=90)
 
-        self.button_Edit = Button(self.Frame_Add_St, text="Edit", padx=20, pady=5,command=self.Click_Edit_Ref)
+        self.button_Edit = Button(self.Frame_Add_St, text="Edit", padx=20, pady=5,command=edit)
         self.button_Edit.place(x=623, y=90)
 
         self.button_Delete=Button(self.Frame_Add_St,text="Delete",padx=20,pady=5,command=self.Delete)
@@ -754,8 +760,7 @@ class InvortoryGUI:
 
         self.InvorVal.mainloop()
 
-    def Click_Edit_Ref(self):
-        print(val)
+    def Click_Edit_Ref(self,var):
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Edit Product Reference")
         self.Add_Stack.geometry("700x350")
@@ -769,27 +774,44 @@ class InvortoryGUI:
         a=Product.product()
         
         global lst
-        lst = a.returnall()
-        n=1
+        lst = a.return_one(var)
+        
+        idd=lst[0][0]
+        namee=lst[0][1]
+        pricee=lst[0][2]
 
         self.Old=Label(self.Frame_Add_St,text="Old Product Name", width=20, font=("Arial", 15),anchor=W)
         self.Old.place(x=50,y=70)
 
-        global ref_id_entry
+        global ref_id_entry,name,price
         ref_id_entry=StringVar()
-        self.Stack_Product_ID_Label=Label(self.Frame_Add_St,text="ID:").place(x=50,y=110)
-        self.Stack_Product_ID_EN=Entry(self.Frame_Add_St,width=10, borderwidth=5,textvariable=ref_id_entry,state="disabled").place(x=50,y=130)
+        name=StringVar()
+        price=StringVar()
 
+
+        self.Stack_Product_ID_Label=Label(self.Frame_Add_St,text="ID:").place(x=50,y=110)
+        self.Stack_Product_ID_EN=Entry(self.Frame_Add_St,width=10, borderwidth=5,textvariable=ref_id_entry,state="disabled")
+        self.Stack_Product_ID_EN.place(x=50,y=130)
 
         self.Stack_Product_Item_Label=Label(self.Frame_Add_St,text="Product Name:",).place(x=130,y=110)
-        self.Stack_Product_Item_ENN=Entry(self.Frame_Add_St,width=70, borderwidth=5,state="disabled")
+        self.Stack_Product_Item_ENN=Entry(self.Frame_Add_St,width=70,textvariable=name, borderwidth=5,state="disabled")
         self.Stack_Product_Item_ENN.place(x=130,y=130)
 
-
-        # global ref_id_entry
-        # ref_id_entry=StringVar()
         self.Stack_Product_ID_Label=Label(self.Frame_Add_St,text="Price:").place(x=570,y=110)
-        self.Stack_Product_ID_EN=Entry(self.Frame_Add_St,width=15, borderwidth=5,state="disabled").place(x=570,y=130)
+        self.Stack_Product_PRICE_EN=Entry(self.Frame_Add_St,textvariable=price,width=15, borderwidth=5,state="disabled")
+        self.Stack_Product_PRICE_EN.place(x=570,y=130)
+
+        self.Stack_Product_ID_EN.config(state='normal')
+        self.Stack_Product_ID_EN.config(state='normal')
+        self.Stack_Product_PRICE_EN.config(state='normal')
+
+        ref_id_entry.set(idd)
+        name.set(namee)
+        price.set(pricee)
+
+        self.Stack_Product_ID_EN.config(state='disabled')
+        self.Stack_Product_ID_EN.config(state='disabled')
+        self.Stack_Product_PRICE_EN.config(state='disabled')
 
         self.New=Label(self.Frame_Add_St,text="New Product Name", width=20, font=("Arial", 15),anchor=W)
         self.New.place(x=50,y=180)
@@ -809,15 +831,13 @@ class InvortoryGUI:
         self.button_Out= Button(self.Frame_Add_St,text="Cancel",padx=9,pady=5,bg="green",command=self.Add_Stack.destroy)
         self.button_Out.place(x=600,y=280)
 
-        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>",self.setRefVals)
-
+        
     def Click_ref_submit(self):
         id=ref_id_entry.get()
         name=ref_name_entry.get()
         price=ref_price_entry.get()
 
         idd=int(id)
-        
         pricee=int(price)
         priceee=float(pricee)
 
@@ -842,7 +862,7 @@ class InvortoryGUI:
         
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Add Product Reference")
-        self.Add_Stack.geometry("700x530")
+        self.Add_Stack.geometry("700x543")
 
         self.Frame_Add_St=Frame(self.Add_Stack,width=700,height=350,)
         self.Frame_Add_St.grid(row=0,column=0)
@@ -859,16 +879,15 @@ class InvortoryGUI:
         self.Stack_Product_Price_Label=Label(self.Frame_Add_St,text="Price:").place(x=470,y=90)
         self.Stack_Product_Price_EN=Entry(self.Frame_Add_St,width=15, borderwidth=5,textvariable=price_entry).place(x=470,y=110)
 
-        self.Frame_List=Frame(self.Add_Stack,width=800,height=320,highlightbackground="black", highlightthickness=3)
+        self.Frame_List=Frame(self.Add_Stack,width=800,height=320,highlightbackground="black", highlightthickness=3,padx=5,pady=5)
         self.Frame_List.place(x=0,y=200)
         #Table
         self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
         self.frame_Table['columns']=("ID","Name","Price")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100)
-        self.frame_Table.column("Name",anchor=W,width=492)
+        self.frame_Table.column("Name",anchor=W,width=482)
         self.frame_Table.column("Price",anchor=E,width=100)
-        
         #Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID",text="ID",anchor=W)

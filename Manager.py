@@ -10,6 +10,7 @@ class Manager (Employee.Employee):
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         return result
+        
     def viewInv(self):
         dbcursor = self.dbcursor
         # query="SELECT ProductID as ProdID,ProductName,price, SUM(quantity) AS quantity FROM products WHERE quantity!=0 GROUP BY ProductName ORDER BY (SELECT order_date from products WHERE ProductID=ProdID ORDER BY order_date DESC)"
@@ -52,20 +53,22 @@ class Manager (Employee.Employee):
         name=[]
         batch=[]
         x=0
+        notif_list=[]
         
         for i in result:
             days_left=7
-            if result[x][2]!=None:
-                
+            if result!=None:
                 diff=result[x][2]-datetime.today().date()
-                
-                if diff.days==days_left:
+                today_left=diff.days
+
+                if today_left<=days_left:
                     id.append(result[x][0])
                     name.append(result[x][1])
                     batch.append(result[x][3])
-                    return f"Product {result[x][1]} is about to Expire in 7 Days"
+                    notif_list.append(f"Product {result[x][1]} of Batch {result[x][3]} is about to Expire in {today_left} Days")  
             x+=1
-        return list(zip(id,name,batch))
+        return notif_list
+        # return list(zip(id,name,batch))
 
     def viewSales(self):
         dbcursor = self.dbcursor
