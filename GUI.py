@@ -154,12 +154,12 @@ class GUI():
         notif,batch,days=a.notify_expiry()
         x=0
 
-        widget=[]
+        widget={}
         for thing in range(len(notif)):
             
             self.Noti_NotiBOX=Frame(self.Noti_post,width=400,height=70,padx=5,pady=5)
             self.Noti_NotiBOX.grid(row=thing,column=0)
-            widget.append(self.Noti_NotiBOX)
+            widget[batch[thing]]=self.Noti_NotiBOX
             self.Noti_MessageBOX=Frame(self.Noti_NotiBOX,width=395,height=70,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
             self.Noti_MessageBOX.grid(row=0,column=0)
 
@@ -169,11 +169,13 @@ class GUI():
             
             self.Noti_MBody.grid(row=1,column=0)
             
-            self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Check", command= lambda: check(widget[thing])).grid(row=0,column=1)
+            self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Check", command= lambda: check())
+            self.Noti_NotiButton.grid(row=0,column=1)
             x+=1
-        
-        def check(val):
-            val.grid_remove()
+
+        def check():
+            print()
+            # val.grid_remove()
 
     def startInventory(self, id):
         INVOR=InventoryGUI.InvortoryGUI()

@@ -99,12 +99,93 @@ class InvortoryGUI:
         for x in result:
             count+=1
             self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x)
+
+    def Click_Delivery_onDouble_Click(self,event):
+        item=self.frame_Table.selection()[0]
+        batch=self.frame_Table.item(item)['values'][0]
+        prod=Product.product()
         
+        batch=(batch,)
+        result=prod.retrieveBatch(batch)
+        
+        self.Add_Delivery= Toplevel()
+        self.Add_Delivery.title("Confirm Delivery")
+        self.Add_Delivery.geometry("800x550")
+        self.Add_Delivery.resizable(False,False)
+
+        self.Frame_Add=Frame(self.Add_Delivery,width=800,height=200)
+        self.Frame_Add.place(x=0,y=0)
+    
+        self.Frame_List=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
+        self.Frame_List.place(x=0,y=200)
+
+        global idd,namee,qty
+        idd=StringVar()
+        namee=StringVar()
+        qty=StringVar()
+
+        self.Product_ID_LA=Label(self.Frame_Add,text="Product ID")
+        self.Product_ID_EN= Entry(self.Frame_Add,width=20,borderwidth=4,state='disabled')
+        self.Product_ID_LA.place(x=200,y=70)
+        self.Product_ID_EN.place(x=200,y=90)
+
+        self.Product_Price_LA=Label(self.Frame_Add,text="Product Name")
+        self.Product_Price_EN= Entry(self.Frame_Add,width=20,borderwidth=4,state='disabled')
+        self.Product_Price_LA.place(x=380,y=70)
+        self.Product_Price_EN.place(x=380,y=90)
+
+        self.Product_Stack_LA=Label(self.Frame_Add,text="Quantity")
+        self.Product_Stack_EN= Entry(self.Frame_Add,width=20,borderwidth=4,state='disabled')
+        self.Product_Stack_LA.place(x=520,y=70)
+        self.Product_Stack_EN.place(x=520,y=90)
+
+        Label(self.Frame_Add,text="Confirming Delivery will Mark it as Received and Sellable").place(x=100,y=130)
+        self.button=Button(self.Frame_Add,text="Confirm Delivery")
+        self.button.place(x=100,y=90)
+    
+        self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
+        self.frame_Table['columns']=("ID","Name","Price","Quantity","Order Date","Expiration Date")
+        self.frame_Table.column("#0",width=0,stretch=NO)
+        self.frame_Table.column("ID",anchor=W,width=50)
+        self.frame_Table.column("Name",anchor=W,width=246)
+        self.frame_Table.column("Price",anchor=CENTER,width=100)
+        self.frame_Table.column("Quantity",anchor=E,width=80)
+        self.frame_Table.column("Order Date", anchor=E, width=150)
+        self.frame_Table.column("Expiration Date", anchor=E, width=150)
+        
+        self.frame_Table.heading("#0")
+        self.frame_Table.heading("ID",text="ID",anchor=W)
+        self.frame_Table.heading("Name",text="Product Name",anchor=W)
+        self.frame_Table.heading("Price",text="Price",anchor=CENTER)
+        self.frame_Table.heading("Quantity",text="Quantity",anchor=W)
+        self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
+        self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
+
+        self.frame_Table.pack(fill='both')
+        self.frame_Table.grid(row=1,column=0)
+
+        def selectItem(event):
+            selected_item=self.frame_Table.selection()[0]
+            id=self.frame_Table.item(selected_item)['values'][0]
+            name=self.frame_Table.item(selected_item)['values'][1]
+            price=self.frame_Table.item(selected_item)['values'][2]
+            quantity=self.frame_Table.item(selected_item)['values'][3]
+
+            
+
+        count=0
+        for i in result:
+            self.frame_Table.insert(parent='',index='end',iid=count,text=i,values=i)
+            count+=1
+        
+        self.frame_Table.bind("<Double-1>",selectItem)
+
     def Click_Delivery(self):
         self.button_List.config(state="normal")
         self.button_Stack.config(state="normal")
         self.button_Delivery.config(state="disabled")
         self.button_Employee.config(state="normal")
+
         self.Frame_List.pack_forget()
         self.Frame_stack.pack_forget()
         self.Frame_Del.pack_forget()
@@ -132,6 +213,8 @@ class InvortoryGUI:
         self.frame_Table.heading("Quantity",text="Quantity",anchor=W)
         self.frame_Table.heading("Arrival",text="Arrival Day",anchor=W)
         self.frame_Table.pack()
+        self.frame_Table.bind("<Double-1>", self.Click_Delivery_onDouble_Click)
+        
         m1=Employee.Employee()
         result=m1.viewDeliveryList()
         count=0
@@ -154,6 +237,7 @@ class InvortoryGUI:
         style=ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
+
         self.frame_Table=ttk.Treeview(self.Frame_Empl,height=24)
         self.frame_Table['columns']=("ID","Name","Username","Detail")
         self.frame_Table.column("#0",width=0,stretch=NO)

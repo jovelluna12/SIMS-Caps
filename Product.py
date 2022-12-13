@@ -11,8 +11,13 @@ class product:
     #     self.status = status
     #     self.Price = Price
         self.dbcursor = dbConnector.db.cursor()
-    def viewAll(self):
-        print("Viewing Product List")
+    def retrieveBatch(self,code):
+        dbcursor = self.dbcursor
+        query = "SELECT ProductID,ProductName,price,quantity,order_date,expiry_date FROM products WHERE batch_code=%s"
+
+        dbcursor.execute(query, code)
+        result=dbcursor.fetchall()
+        return result
 
 
     def add(self,value):
