@@ -32,17 +32,30 @@ class product:
         query = "INSERT INTO products_directory (ref_id,product_name,price) VALUES(%s,%s,%s)"
 
         vals=tuple(list(vals))
-        print(type(vals))
-        print(vals)
-
         dbcursor.executemany(query, vals)
         dbConnector.db.commit()
+
+    def editDelivery(self,id, name, price,qty,expiry_date):
+        dbcursor = self.dbcursor
+        query = "UPDATE products SET ProductName=%s, price=%s, quantity=%s,expiry_date=%s ,status='Sellable' WHERE ProductID=%s"
+
+        vals=(name, price,qty,expiry_date,id)
+
+        dbcursor.execute(query, vals)
+        dbConnector.db.commit()
+
+    def confirm_all(self,val):
+        dbcursor = self.dbcursor
+        query = "UPDATE products SET ProductName=%s, price=%s, quantity=%s,expiry_date=%s ,status='Sellable' WHERE ProductID=%s"
+
+        dbcursor.execute(query, val)
+        dbConnector.db.commit()
+
 
     def editReference(self,id, name, price):
         dbcursor = self.dbcursor
         query = "UPDATE products_directory SET product_name=%s, price=%s WHERE ref_id=%s"
 
-        print (id , name, price)
         vals=(name, price,id)
 
         dbcursor.execute(query, vals)
@@ -124,11 +137,19 @@ class product:
         else:
             return result
 
+    def editStatus(self,stat,id):
+        dbcursor = self.dbcursor
+        query = "UPDATE products SET status=%s WHERE ProductID=%s"
+        val=(stat,id)
+
+        dbcursor.execute(query, val)
+        dbConnector.db.commit()
+
 
 
     def viewALL(self,val):
         dbcursor = self.dbcursor
-        query = "SELECT ProductID,ProductName,price,Quantity FROM products WHERE ProductName LIKE {}".format("\'%"+val+"%\'")
+        query = "SELECT ProductID,ProductName,price,Quantity FROM products WHERE ProductName LIKE {}".format("\'%"+val+"%\' AND status='Sellable'")
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         dbConnector.db.commit()

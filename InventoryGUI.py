@@ -1,4 +1,7 @@
 from logging import root
+import datetime
+from datetime import datetime
+
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -119,29 +122,38 @@ class InvortoryGUI:
         self.Frame_List=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
         self.Frame_List.place(x=0,y=200)
 
-        global idd,namee,qty
+        global idd,namee,qty, price
         idd=StringVar()
         namee=StringVar()
         qty=StringVar()
+        price=StringVar()
 
         self.Product_ID_LA=Label(self.Frame_Add,text="Product ID")
-        self.Product_ID_EN= Entry(self.Frame_Add,width=20,borderwidth=4,state='disabled')
+        self.Product_ID_EN= Entry(self.Frame_Add,width=20,textvariable=idd,borderwidth=4,state='disabled')
         self.Product_ID_LA.place(x=200,y=70)
         self.Product_ID_EN.place(x=200,y=90)
 
         self.Product_Price_LA=Label(self.Frame_Add,text="Product Name")
-        self.Product_Price_EN= Entry(self.Frame_Add,width=20,borderwidth=4,state='disabled')
+        self.Product_Price_EN= Entry(self.Frame_Add,width=20,textvariable=namee,borderwidth=4,state='disabled')
         self.Product_Price_LA.place(x=380,y=70)
         self.Product_Price_EN.place(x=380,y=90)
 
+        self.Product_Stack_LA=Label(self.Frame_Add,text="Price")
+        self.Product_price_EN= Entry(self.Frame_Add,width=20,textvariable=price,borderwidth=4,state='disabled')
+        self.Product_Stack_LA.place(x=650,y=150)
+        self.Product_price_EN.place(x=650,y=170)
+
+        self.Product_date_LA=Label(self.Frame_Add,text="Expiry Date")
+        self.Product_date_EN=DateEntry(self.Frame_Add,selectmode='day',width=20,state='disabled')
+        self.Product_date_LA.place(x=450,y=120)
+        self.Product_date_EN.place(x=450,y=140)
+
         self.Product_Stack_LA=Label(self.Frame_Add,text="Quantity")
-        self.Product_Stack_EN= Entry(self.Frame_Add,width=20,borderwidth=4,state='disabled')
+        self.Product_Stack_EN= Entry(self.Frame_Add,width=20,textvariable=qty,borderwidth=4,state='disabled')
         self.Product_Stack_LA.place(x=520,y=70)
         self.Product_Stack_EN.place(x=520,y=90)
 
         Label(self.Frame_Add,text="Confirming Delivery will Mark it as Received and Sellable").place(x=100,y=130)
-        self.button=Button(self.Frame_Add,text="Confirm Delivery")
-        self.button.place(x=100,y=90)
     
         self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
         self.frame_Table['columns']=("ID","Name","Price","Quantity","Order Date","Expiration Date")
@@ -164,14 +176,49 @@ class InvortoryGUI:
         self.frame_Table.pack(fill='both')
         self.frame_Table.grid(row=1,column=0)
 
+        def confirm_delivery():
+            prod=Product.product()
+            id=idd.get()
+            name=namee.get()
+            qtyy=qty.get()
+            
+            if id=="" and name=="" and qtyy=="":
+                for item in self.frame_Table.get_children():
+                    id=self.frame_Table.item(item)['values'][0]
+                    name=self.frame_Table.item(item)['values'][1]
+                    priceeee=self.frame_Table.item(item)['values'][2]
+                    qtyyy=self.frame_Table.item(item)['values'][3]
+                    datee=self.frame_Table.item(item)['values'][5]
+                    prod.editDelivery(id, name, priceeee,qtyyy,datee)
+            else:
+                date=self.Product_date_EN.get_date()
+                price_product=float(str(price.get()))
+                prod.editDelivery(id, name, price_product,qtyy,date)
+
+        self.button=Button(self.Frame_Add,text="Confirm Delivery",command=confirm_delivery)
+        self.button.place(x=100,y=90)
+
         def selectItem(event):
             selected_item=self.frame_Table.selection()[0]
             id=self.frame_Table.item(selected_item)['values'][0]
             name=self.frame_Table.item(selected_item)['values'][1]
-            price=self.frame_Table.item(selected_item)['values'][2]
+            pricee=self.frame_Table.item(selected_item)['values'][2]
             quantity=self.frame_Table.item(selected_item)['values'][3]
+            expire=self.frame_Table.item(selected_item)['values'][5]
 
-            
+            self.Product_Price_EN.config(state='normal')
+            self.Product_Stack_EN.config(state='normal')
+            self.Product_date_EN.config(state='normal')
+            self.Product_price_EN.config(state='normal')
+
+            date=datetime.strptime(expire, '%Y-%m-%d')
+
+            self.Product_date_EN.set_date(date)      
+            idd.set(id)
+            namee.set(name)
+            qty.set(quantity)
+            price.set(pricee)
+
 
         count=0
         for i in result:

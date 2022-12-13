@@ -1,4 +1,4 @@
-import Employee, dbConnector, ROP
+import Employee, dbConnector, ROP, Product
 from datetime import datetime
 class Manager (Employee.Employee):
     def __init__(self):
@@ -14,7 +14,7 @@ class Manager (Employee.Employee):
     def viewInv(self):
         dbcursor = self.dbcursor
         # query="SELECT ProductID as ProdID,ProductName,price, SUM(quantity) AS quantity FROM products WHERE quantity!=0 GROUP BY ProductName ORDER BY (SELECT order_date from products WHERE ProductID=ProdID ORDER BY order_date DESC)"
-        query="SELECT ProductID as ProdID ,ProductName,price, SUM(quantity) AS quantity FROM products WHERE quantity!=0 AND order_date = (SELECT order_date FROM products WHERE ProductID=ProductID GROUP BY ProductName ORDER BY order_date ASC LIMIT 1) GROUP BY ProductName;"
+        query="SELECT ProductID as ProdID ,ProductName,price, SUM(quantity) AS quantity FROM products WHERE quantity!=0 AND status = 'Sellable' GROUP BY ProductName ORDER BY order_date ASC"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result
@@ -42,11 +42,11 @@ class Manager (Employee.Employee):
                 batch.append(result[x][3])
                 return f"Product {result[x][1]} is Unsellable"
             x+=1
-        return list(zip(id,name,batch))
+        # return list(zip(id,name,batch))
 
     def notify_expiry(self):
         dbcursor=self.dbcursor
-        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired'"
+        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable'"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         id=[]
@@ -63,17 +63,20 @@ class Manager (Employee.Employee):
                 diff=result[x][2]-datetime.today().date()
                 today_left=diff.days
 
-                if today_left<=days_left:
+                if today_left>=0:
+                    man=Product.product()
+                    man.editStatus('Unsellable',result[x][0])
+                else:
                     id.append(result[x][0])
                     name.append(result[x][1])
                     batch.append(result[x][3])
-                    # string=f"Product {result[x][1]} of Batch {result[x][3]} is about to Expire in {today_left} Days"
+                        
                     notif_list.append(result[x][1])  
                     expire_list.append(today_left)
+
             x+=1
         return notif_list, batch, expire_list
-        # return list(zip(id,name,batch))
-
+        
     def viewSales(self):
         dbcursor = self.dbcursor
         query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item, purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.attendedBy,salestransaction.DatePurchased FROM salestransaction,purchasedproducts"
