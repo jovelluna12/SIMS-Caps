@@ -205,7 +205,7 @@ def Click_List():
     global Search_Table
     window_list = Toplevel()
     window_list.title("PRODUCT LISTS!")
-    window_list.geometry("400x320")
+    window_list.geometry("460x320")
 
     window_Frame = Frame(window_list, width=400, height=100)
     window_Frame.grid(row=0, column=0)
@@ -214,16 +214,18 @@ def Click_List():
     window_Frame2.grid(row=1, column=0)
 
     Search_Table = ttk.Treeview(window_Frame2, height=12)
-    Search_Table['column'] = ("ID", "Name", "Price", "Stack")
+    Search_Table['column'] = ("ID", "Name", "Price",'Batch Number',"Stack")
     Search_Table.column("#0", width=0, stretch=NO, anchor=W)
     Search_Table.column("ID", width=50, stretch=NO, anchor=W)
     Search_Table.column("Name", width=148, stretch=NO, anchor=W)
-    Search_Table.column("Price", width=100, stretch=NO, anchor=E)
+    Search_Table.column("Batch Number", width=100, stretch=NO, anchor=W)
+    Search_Table.column("Price", width=80, stretch=NO, anchor=E)
     Search_Table.column("Stack", width=80, stretch=NO, anchor=E)
 
     Search_Table.heading("#0")
     Search_Table.heading("ID", text="ID", anchor=W)
     Search_Table.heading("Name", text="Name", anchor=W)
+    Search_Table.heading("Batch Number", text="Batch No", anchor=W)
     Search_Table.heading("Price", text="Price", anchor=W)
     Search_Table.heading("Stack", text="Stack", anchor=W)
     Search_Table.grid(row=0, column=0)
@@ -378,6 +380,8 @@ def Click_Enter(result):
 
         if call==0:
             if (ProdQTY>RemainingQTY):
+                qty_diff=ProdQTY-RemainingQTY
+                
                 messagebox.showerror("POS Transaction", "Not Enough QTY in Stock")
             else:
                 itemsLIST.append(ProdName)

@@ -83,7 +83,7 @@ class Employee:
 
     def viewDeliveryList(self):
         dbcursor=self.cursor
-        query="SELECT batch_code,ProductName,status,price,quantity FROM products WHERE status!='Added' AND status!='Expired'"
+        query="SELECT deliverylist.BatchCode,ProductName,deliverylist.status,price,quantity FROM deliverylist, products WHERE deliverylist.status!='Added' AND deliverylist.status!='Expired'"
         dbcursor.execute(query)
 
         result=dbcursor.fetchall()
@@ -118,26 +118,3 @@ class Employee:
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result
-
-    def MarkBatchArrived(self,batchcode):
-        dbcursor=self.cursor
-        code=[batchcode]
-        query="UPDATE deliverylist SET status='arrived' WHERE BatchCode=%s"
-        dbcursor.execute(query,(tuple(code)))
-
-        query_product="SELECT ProductCode,Quantity from productsindelivery WHERE BatchCode=%s"
-        dbcursor.execute(query_product,(tuple(code)))
-
-        result=dbcursor.fetchall()
-        x=0
-
-        query_list = "UPDATE products SET quantity=quantity+%s WHERE ProductID=%s"
-
-        for i in range(0,len(result)):
-            id=result[x][0]
-            quantity=result[x][1]
-            x+=1
-            dbcursor.execute(query_list,(quantity,id))
-        dbConnector.db.commit()
-
-

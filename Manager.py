@@ -10,14 +10,31 @@ class Manager (Employee.Employee):
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         return result
+
+    def productSales(self):
+        dbcursor = self.dbcursor
+        query = "SELECT purchasedproducts.PurchaseID,products.ProductName,purchasedproducts.Quantity,products.price, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM purchasedproducts,products,salestransaction WHERE purchasedproducts.InvoiceNumber=salestransaction.InvoiceNumber GROUP BY purchasedproducts.PurchaseID;"
+        dbcursor.execute(query)
+        result = dbcursor.fetchall()
+        return result
         
     def viewInv(self):
         dbcursor = self.dbcursor
-        # query="SELECT ProductID as ProdID,ProductName,price, SUM(quantity) AS quantity FROM products WHERE quantity!=0 GROUP BY ProductName ORDER BY (SELECT order_date from products WHERE ProductID=ProdID ORDER BY order_date DESC)"
-        query="SELECT ProductID as ProdID ,ProductName,price, SUM(quantity) AS quantity FROM products WHERE quantity!=0 AND status = 'Sellable' GROUP BY ProductName ORDER BY order_date ASC"
+        query="SELECT ProductID as ProdID ,ProductName,price,batch_code, quantity FROM products,deliverylist WHERE quantity!=0 AND products.status = 'Sellable' ORDER BY deliverylist.datepurchased ASC"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result
+
+    def get_export_data(self,report,date):
+        dbcursor = self.dbcursor
+        if report=="Sales":
+            query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item,purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.DatePurchased FROM salestransaction, purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND DatePurchased=%s;"
+        if report=="Inventory":
+            query="SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,SUM(products.quantity) FROM products_directory, products, deliverylist WHERE products.ref_id=products_directory.ref_id AND deliverylist.datepurchased=%s AND deliverylist.status='Under Delivery' AND products.status='Under Delivery';"
+        if report=="Delivery":
+            query="SELECT batch_code,ProductName,quantity,price,deliverylist.status FROM products,deliverylist WHERE deliverylist.status='Under Delivery' AND deliverylist.datepurchased=%s AND products.batch_code=deliverylist.BatchCode;"
+        dbcursor.execute(query,(str(date),))
+        return dbcursor.fetchall()
 
     def notify_low_quantity(self):
         ROP=self.ROP.calculate_ROP()
@@ -63,7 +80,7 @@ class Manager (Employee.Employee):
                 diff=result[x][2]-datetime.today().date()
                 today_left=diff.days
 
-                if today_left>=0:
+                if today_left<=0:
                     man=Product.product()
                     man.editStatus('Unsellable',result[x][0])
                 else:
