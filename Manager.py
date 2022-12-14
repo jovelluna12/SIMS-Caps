@@ -20,7 +20,7 @@ class Manager (Employee.Employee):
         
     def viewInv(self):
         dbcursor = self.dbcursor
-        query="SELECT ProductID as ProdID ,ProductName,price,batch_code, quantity FROM products,deliverylist WHERE quantity!=0 AND products.status = 'Sellable' ORDER BY deliverylist.datepurchased ASC"
+        query="SELECT ProductID as ProdID ,ProductName,price,batch_code, quantity FROM products,deliverylist WHERE quantity!=0 AND products.status = 'Sellable' AND products.batch_code=deliverylist.BatchCode ORDER BY deliverylist.datepurchased ASC"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result
@@ -42,23 +42,11 @@ class Manager (Employee.Employee):
         if quantity<=ROP:
             return "Low Product"
 
-    def notify_expired(self):
+    def addNote(self,val):
         dbcursor=self.dbcursor
-        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired'"
-        dbcursor.execute(query)
-        result=dbcursor.fetchall()
-        id=[]
-        name=[]
-        batch=[]
-        x=0
-        
-        for i in result:
-            if result[x][2]==datetime.today().date():
-                id.append(result[x][0])
-                name.append(result[x][1])
-                batch.append(result[x][3])
-                return f"Product {result[x][1]} is Expired and is Marked Unsellable"
-            x+=1
+        query="UPDATE products SET note=%s WHERE ProductID=%s"
+        dbcursor.execute(query,val)
+        dbConnector.db.commit()
 
     def notify_expiry(self):
         dbcursor=self.dbcursor
@@ -68,6 +56,9 @@ class Manager (Employee.Employee):
     
         x=0
         messages=[]
+        id=[]
+        name=[]
+        batch=[]
         for i in result:
             days_left=7
             if result!=None:
@@ -77,15 +68,22 @@ class Manager (Employee.Employee):
                 if today_left<=0:
                     man=Product.product()
                     man.editStatus('Unsellable',result[x][0])
+                    
                     message="Product "+ str(result[x][1])+" of Batch "+str(result[x][3])+" is Expired and Unsellable"
                     messages.append(message)
+                    id.append(result[x][0])
+                    name.append(result[x][1])
+                    batch.append(result[x][3])
 
                 if today_left>=days_left:
                     message="Product "+ str(result[x][1])+" of Batch "+str(result[x][3])+" is about to Expire in "+str(today_left)+" days"
                     messages.append(message)
+                    id.append(result[x][0])
+                    name.append(result[x][1])
+                    batch.append(result[x][3])
             x+=1
-        return messages
-        
+        return messages,name,batch,id
+
     def viewSales(self):
         dbcursor = self.dbcursor
         query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item, purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.attendedBy,salestransaction.DatePurchased FROM salestransaction,purchasedproducts"

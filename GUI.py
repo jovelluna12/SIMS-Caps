@@ -151,7 +151,7 @@ class GUI():
         self.Noti_canvas.create_window((0,0), window=self.Noti_post,anchor=NW)
 
         a=Manager.Manager()
-        message=a.notify_expiry()
+        message,name,batch,id=a.notify_expiry()
 
         widgets=[]
         x=0
@@ -163,19 +163,22 @@ class GUI():
             self.Noti_MessageBOX=Frame(self.Noti_NotiBOX,width=395,height=70,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
             self.Noti_MessageBOX.grid(row=0,column=0)
 
-            self.Noti_MTitle=Label(self.Noti_MessageBOX,text="Title",font=("Arial", 15),width=34,anchor=W)
+            self.Noti_MTitle=Label(self.Noti_MessageBOX,text=name[x]+" of Batch "+str(batch[x])+" with an ID of "+str(id[x]),font=("Arial", 12),width=40,anchor=W)
             self.Noti_MTitle.grid(row=0,column=0)
             self.Noti_MBody=Label(self.Noti_MessageBOX,text=thing,font=("Arial", 10))
             
             self.Noti_MBody.grid(row=1,column=0)
             for widget in widgets:
-                self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Check", command= lambda w=widget: check(w))
-                self.Noti_NotiButton.grid(row=0,column=1)
+                for i in id:
+                    self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Close", command= lambda w=widget: check(w))
+                    self.Noti_NotiButton.grid(row=0,column=1)
 
             x+=1
             
         def check(w):
             w.destroy()
+            # man=Manager.Manager()
+            # man.addNote(("Checked",))
 
     def startInventory(self, id):
         INVOR=InventoryGUI.InvortoryGUI()
