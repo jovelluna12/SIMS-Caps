@@ -151,31 +151,31 @@ class GUI():
         self.Noti_canvas.create_window((0,0), window=self.Noti_post,anchor=NW)
 
         a=Manager.Manager()
-        notif,batch,days=a.notify_expiry()
-        x=0
+        message=a.notify_expiry()
 
-        widget={}
-        for thing in range(len(notif)):
+        widgets=[]
+        x=0
+        for thing in message:
             
             self.Noti_NotiBOX=Frame(self.Noti_post,width=400,height=70,padx=5,pady=5)
-            self.Noti_NotiBOX.grid(row=thing,column=0)
-            widget[batch[thing]]=self.Noti_NotiBOX
+            self.Noti_NotiBOX.grid(row=x,column=0)
+            widgets.append(self.Noti_NotiBOX)
             self.Noti_MessageBOX=Frame(self.Noti_NotiBOX,width=395,height=70,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
             self.Noti_MessageBOX.grid(row=0,column=0)
 
             self.Noti_MTitle=Label(self.Noti_MessageBOX,text="Title",font=("Arial", 15),width=34,anchor=W)
             self.Noti_MTitle.grid(row=0,column=0)
-            self.Noti_MBody=Label(self.Noti_MessageBOX,text=f"Product {notif[thing]} of Batch {batch[thing]} is about to expire in {days[thing]} days",font=("Arial", 10))
+            self.Noti_MBody=Label(self.Noti_MessageBOX,text=thing,font=("Arial", 10))
             
             self.Noti_MBody.grid(row=1,column=0)
-            
-            self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Check", command= lambda: check())
-            self.Noti_NotiButton.grid(row=0,column=1)
-            x+=1
+            for widget in widgets:
+                self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Check", command= lambda w=widget: check(w))
+                self.Noti_NotiButton.grid(row=0,column=1)
 
-        def check():
-            print()
-            # val.grid_remove()
+            x+=1
+            
+        def check(w):
+            w.destroy()
 
     def startInventory(self, id):
         INVOR=InventoryGUI.InvortoryGUI()

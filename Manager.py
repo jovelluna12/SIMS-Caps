@@ -57,23 +57,17 @@ class Manager (Employee.Employee):
                 id.append(result[x][0])
                 name.append(result[x][1])
                 batch.append(result[x][3])
-                return f"Product {result[x][1]} is Unsellable"
+                return f"Product {result[x][1]} is Expired and is Marked Unsellable"
             x+=1
-        # return list(zip(id,name,batch))
 
     def notify_expiry(self):
         dbcursor=self.dbcursor
         query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable'"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
-        id=[]
-        name=[]
-        batch=[]
+    
         x=0
-
-        notif_list=[]
-        expire_list=[]
-
+        messages=[]
         for i in result:
             days_left=7
             if result!=None:
@@ -83,16 +77,14 @@ class Manager (Employee.Employee):
                 if today_left<=0:
                     man=Product.product()
                     man.editStatus('Unsellable',result[x][0])
-                else:
-                    id.append(result[x][0])
-                    name.append(result[x][1])
-                    batch.append(result[x][3])
-                        
-                    notif_list.append(result[x][1])  
-                    expire_list.append(today_left)
+                    message="Product "+ str(result[x][1])+" of Batch "+str(result[x][3])+" is Expired and Unsellable"
+                    messages.append(message)
 
+                if today_left>=days_left:
+                    message="Product "+ str(result[x][1])+" of Batch "+str(result[x][3])+" is about to Expire in "+str(today_left)+" days"
+                    messages.append(message)
             x+=1
-        return notif_list, batch, expire_list
+        return messages
         
     def viewSales(self):
         dbcursor = self.dbcursor
