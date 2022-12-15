@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from functools import partial
 from tkinter.ttk import Treeview
-import Employee
+import Employee, Manager
 from datetime import date, datetime
 ## pip install pillow
 from PIL import Image, ImageTk
@@ -150,18 +150,42 @@ class GUI():
         self.Noti_post=Frame(self.Noti_canvas)
         self.Noti_canvas.create_window((0,0), window=self.Noti_post,anchor=NW)
 
-        for thing in range (50):
+        a=Manager.Manager()
+        message,name,batch,id=a.notify_expiry()
+
+        widgets=[]
+        ids=[]
+        x=0
+        
+        for thing in message:
+            
             self.Noti_NotiBOX=Frame(self.Noti_post,width=400,height=70,padx=5,pady=5)
-            self.Noti_NotiBOX.grid(row=thing,column=0)
+            self.Noti_NotiBOX.grid(row=x,column=0)
+            widgets.append(self.Noti_NotiBOX)
             self.Noti_MessageBOX=Frame(self.Noti_NotiBOX,width=395,height=70,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
             self.Noti_MessageBOX.grid(row=0,column=0)
 
-            self.Noti_MTitle=Label(self.Noti_MessageBOX,text="Title",font=("Arial", 15),width=34,anchor=W)
+            self.Noti_MTitle=Label(self.Noti_MessageBOX,text=name[x]+" of Batch "+str(batch[x])+" with an ID of "+str(id[x]),font=("Arial", 12),width=40,anchor=W)
+            ids.append(id[x])
             self.Noti_MTitle.grid(row=0,column=0)
-            self.Noti_MBody=Label(self.Noti_MessageBOX,text="This is the body of the message!!",font=("Arial", 10))
+            self.Noti_MBody=Label(self.Noti_MessageBOX,text=thing,font=("Arial", 10))
+            
             self.Noti_MBody.grid(row=1,column=0)
-            self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Chick").grid(row=0,column=1)
+            for widget in widgets:
+                for i in ids:
+                    # wid=lambda w=widget: check(w)
+                    # noted=lambda id=i: noteChecked(id)
+                    
+                    self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Close",command=lambda w=widget, id=i: (check(w), noteChecked(id)))
+                    self.Noti_NotiButton.grid(row=0,column=1)
+
+            x+=1
+        def check(w):
+            w.destroy()
         
+        def noteChecked(i):
+            man=Manager.Manager()
+            man.addNote(("Checked",i))
 
     def startInventory(self, id):
         INVOR=InventoryGUI.InvortoryGUI()

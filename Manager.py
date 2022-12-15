@@ -1,4 +1,4 @@
-import Employee, dbConnector, ROP
+import Employee, dbConnector, ROP, Product
 from datetime import datetime
 class Manager (Employee.Employee):
     def __init__(self):
@@ -10,13 +10,31 @@ class Manager (Employee.Employee):
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         return result
+
+    def productSales(self):
+        dbcursor = self.dbcursor
+        query = "SELECT purchasedproducts.PurchaseID,products.ProductName,purchasedproducts.Quantity,products.price, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM purchasedproducts,products,salestransaction WHERE purchasedproducts.InvoiceNumber=salestransaction.InvoiceNumber GROUP BY purchasedproducts.PurchaseID;"
+        dbcursor.execute(query)
+        result = dbcursor.fetchall()
+        return result
+        
     def viewInv(self):
         dbcursor = self.dbcursor
-        # query="SELECT ProductID as ProdID,ProductName,price, SUM(quantity) AS quantity FROM products WHERE quantity!=0 GROUP BY ProductName ORDER BY (SELECT order_date from products WHERE ProductID=ProdID ORDER BY order_date DESC)"
-        query="SELECT ProductID as ProdID ,ProductName,price, SUM(quantity) AS quantity FROM products WHERE quantity!=0 AND order_date = (SELECT order_date FROM products WHERE ProductID=ProductID GROUP BY ProductName ORDER BY order_date ASC LIMIT 1) GROUP BY ProductName;"
+        query="SELECT ProductID as ProdID ,ProductName,price,batch_code, quantity FROM products,deliverylist WHERE quantity!=0 AND products.status = 'Sellable' AND products.batch_code=deliverylist.BatchCode ORDER BY deliverylist.datepurchased ASC"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result
+
+    def get_export_data(self,report,date):
+        dbcursor = self.dbcursor
+        if report=="Sales":
+            query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item,purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.DatePurchased FROM salestransaction, purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND DatePurchased=%s;"
+        if report=="Inventory":
+            query="SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,SUM(products.quantity) FROM products_directory, products, deliverylist WHERE products.ref_id=products_directory.ref_id AND deliverylist.datepurchased=%s AND deliverylist.status='Under Delivery' AND products.status='Under Delivery';"
+        if report=="Delivery":
+            query="SELECT batch_code,ProductName,quantity,price,deliverylist.status FROM products,deliverylist WHERE deliverylist.status='Under Delivery' AND deliverylist.datepurchased=%s AND products.batch_code=deliverylist.BatchCode;"
+        dbcursor.execute(query,(str(date),))
+        return dbcursor.fetchall()
 
     def notify_low_quantity(self):
         ROP=self.ROP.calculate_ROP()
@@ -24,48 +42,47 @@ class Manager (Employee.Employee):
         if quantity<=ROP:
             return "Low Product"
 
-    def notify_expired(self):
+    def addNote(self,val):
         dbcursor=self.dbcursor
-        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired'"
-        dbcursor.execute(query)
-        result=dbcursor.fetchall()
-        id=[]
-        name=[]
-        batch=[]
-        x=0
-        
-        for i in result:
-            if result[x][2]==datetime.today().date():
-                id.append(result[x][0])
-                name.append(result[x][1])
-                batch.append(result[x][3])
-                return f"Product {result[x][1]} is Unsellable"
-            x+=1
-        return list(zip(id,name,batch))
+        query="UPDATE products SET note=%s WHERE ProductID=%s"
+        dbcursor.execute(query,val)
+        dbConnector.db.commit()
 
     def notify_expiry(self):
         dbcursor=self.dbcursor
-        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired'"
+        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable' AND note!='Checked'"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
+    
+        x=0
+        messages=[]
         id=[]
         name=[]
         batch=[]
-        x=0
-        
         for i in result:
             days_left=7
-            if result[x][2]!=None:
-                
+            if result!=None:
                 diff=result[x][2]-datetime.today().date()
-                
-                if diff.days==days_left:
+                today_left=diff.days
+
+                if today_left<=0:
+                    man=Product.product()
+                    man.editStatus('Unsellable',result[x][0])
+                    
+                    message="Product "+ str(result[x][1])+" of Batch "+str(result[x][3])+" is Expired and Unsellable"
+                    messages.append(message)
                     id.append(result[x][0])
                     name.append(result[x][1])
                     batch.append(result[x][3])
-                    return f"Product {result[x][1]} is about to Expire in 7 Days"
+
+                if today_left<=days_left:
+                    message="Product "+ str(result[x][1])+" of Batch "+str(result[x][3])+" is about to Expire in "+str(today_left)+" days"
+                    messages.append(message)
+                    id.append(result[x][0])
+                    name.append(result[x][1])
+                    batch.append(result[x][3])
             x+=1
-        return list(zip(id,name,batch))
+        return messages,name,batch,id
 
     def viewSales(self):
         dbcursor = self.dbcursor

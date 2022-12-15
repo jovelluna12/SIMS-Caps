@@ -1,4 +1,7 @@
 from logging import root
+import datetime
+from datetime import datetime
+
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -12,13 +15,18 @@ from PIL import Image, ImageTk
 import Product
 import randomNumGen
 
-
-opened = False
+import pandas as pd
+from openpyxl.workbook import Workbook
+import os
 
 class InvortoryGUI:
 
     def __init__(self):
         self.InvorVal = None
+           
+    def search(self):
+        result = self.Entry_Search.get()
+        
 
 #Chick List and stack Start~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def Click_List1(self):
@@ -78,33 +86,165 @@ class InvortoryGUI:
         style.theme_use("default")
         style.configure("Treeview")
         self.frame_Table=ttk.Treeview(self.Frame_stack,height=21)
-        self.frame_Table['columns']=("ID","Name","Detail","Price","Stack")
+        self.frame_Table['columns']=("ID","Name","Items Sold","Price","Sales","Date Purchased")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=400,stretch=NO)
-        self.frame_Table.column("Detail",anchor=W,width=200,stretch=NO)
+        self.frame_Table.column("Items Sold",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Price",anchor=CENTER,width=131,stretch=NO)
-        self.frame_Table.column("Stack",anchor=E,width=200,stretch=NO)
+        self.frame_Table.column("Sales",anchor=E,width=100,stretch=NO)
+        self.frame_Table.column("Date Purchased",anchor=E,width=200,stretch=NO)
         #Table Head
         self.frame_Table.heading("#0")
-        self.frame_Table.heading("ID",text="Stack-ID",anchor=W)
+        self.frame_Table.heading("ID",text="Purchase ID",anchor=W)
         self.frame_Table.heading("Name",text="Product Name",anchor=W)
-        self.frame_Table.heading("Detail",text="Detail",anchor=W)
+        self.frame_Table.heading("Items Sold",text="Items Sold",anchor=W)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
-        self.frame_Table.heading("Stack",text="Stack",anchor=W)
+        self.frame_Table.heading("Sales",text="Sales",anchor=W)
+        self.frame_Table.heading("Date Purchased",text="Date Purchased",anchor=W)
         self.frame_Table.place(x=0,y=30)
         m1=Manager.Manager()
-        result=m1.inventoryList()
+        result=m1.productSales()
         count=0
         for x in result:
             count+=1
             self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x)
+
+    def Click_Delivery_onDouble_Click(self,event):
+        item=self.frame_Table.selection()[0]
+        batch=self.frame_Table.item(item)['values'][0]
+        prod=Product.product()
         
+        batch=(batch,)
+        result=prod.retrieveBatch(batch)
+        
+        self.Add_Delivery= Toplevel()
+        self.Add_Delivery.title("Confirm Delivery")
+        self.Add_Delivery.geometry("800x550")
+        self.Add_Delivery.resizable(False,False)
+
+        self.Frame_Add=Frame(self.Add_Delivery,width=800,height=200)
+        self.Frame_Add.place(x=0,y=0)
+    
+        self.Frame_List=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
+        self.Frame_List.place(x=0,y=200)
+
+        global idd,namee,qty, price
+        idd=StringVar()
+        namee=StringVar()
+        qty=StringVar()
+        price=StringVar()
+
+        self.Product_ID_LA=Label(self.Frame_Add,text="Product ID")
+        self.Product_ID_EN= Entry(self.Frame_Add,width=20,textvariable=idd,borderwidth=4,state='disabled')
+        self.Product_ID_LA.place(x=200,y=70)
+        self.Product_ID_EN.place(x=200,y=90)
+
+        self.Product_Price_LA=Label(self.Frame_Add,text="Product Name")
+        self.Product_Price_EN= Entry(self.Frame_Add,width=20,textvariable=namee,borderwidth=4,state='disabled')
+        self.Product_Price_LA.place(x=380,y=70)
+        self.Product_Price_EN.place(x=380,y=90)
+
+        self.Product_Stack_LA=Label(self.Frame_Add,text="Price")
+        self.Product_price_EN= Entry(self.Frame_Add,width=20,textvariable=price,borderwidth=4,state='disabled')
+        self.Product_Stack_LA.place(x=650,y=150)
+        self.Product_price_EN.place(x=650,y=170)
+
+        self.Product_date_LA=Label(self.Frame_Add,text="Expiry Date")
+        self.Product_date_EN=DateEntry(self.Frame_Add,selectmode='day',width=20,state='disabled')
+        self.Product_date_LA.place(x=450,y=120)
+        self.Product_date_EN.place(x=450,y=140)
+
+        self.Product_Stack_LA=Label(self.Frame_Add,text="Quantity")
+        self.Product_Stack_EN= Entry(self.Frame_Add,width=20,textvariable=qty,borderwidth=4,state='disabled')
+        self.Product_Stack_LA.place(x=520,y=70)
+        self.Product_Stack_EN.place(x=520,y=90)
+
+        Label(self.Frame_Add,text="Confirming Delivery will Mark it as Received and Sellable").place(x=100,y=130)
+    
+        self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
+        self.frame_Table['columns']=("ID","Name","Price","Quantity","Order Date","Expiration Date")
+        self.frame_Table.column("#0",width=0,stretch=NO)
+        self.frame_Table.column("ID",anchor=W,width=50)
+        self.frame_Table.column("Name",anchor=W,width=246)
+        self.frame_Table.column("Price",anchor=CENTER,width=100)
+        self.frame_Table.column("Quantity",anchor=E,width=80)
+        self.frame_Table.column("Order Date", anchor=E, width=150)
+        self.frame_Table.column("Expiration Date", anchor=E, width=150)
+        
+        self.frame_Table.heading("#0")
+        self.frame_Table.heading("ID",text="ID",anchor=W)
+        self.frame_Table.heading("Name",text="Product Name",anchor=W)
+        self.frame_Table.heading("Price",text="Price",anchor=CENTER)
+        self.frame_Table.heading("Quantity",text="Quantity",anchor=W)
+        self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
+        self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
+
+        self.frame_Table.pack(fill='both')
+        self.frame_Table.grid(row=1,column=0)
+
+        def confirm_delivery():
+            prod=Product.product()
+            id=idd.get()
+            name=namee.get()
+            qtyy=qty.get()
+            
+            for item in self.frame_Table.get_children():
+                id=self.frame_Table.item(item)['values'][0]
+                name=self.frame_Table.item(item)['values'][1]
+                priceeee=self.frame_Table.item(item)['values'][2]
+                qtyyy=self.frame_Table.item(item)['values'][3]
+                datee=self.frame_Table.item(item)['values'][5]
+                prod.editDelivery(id, name, priceeee,qtyyy,datee)
+            
+            self.frame_Table.delete(*self.frame_Table.get_children())
+
+        self.button=Button(self.Frame_Add,text="Confirm Delivery",command=confirm_delivery)
+        self.button.place(x=100,y=90)
+
+        def saveChanges():
+            selectedItem=self.frame_Table.selection()[0]
+            x=self.frame_Table.item(item)['values'][4]
+            self.frame_Table.item(selectedItem, values=(idd.get(),namee.get(),price.get(),qty.get(),x,self.frame_Table.item(item)['values'][5]))
+
+        self.button=Button(self.Frame_Add,text="Save",command=saveChanges)
+        self.button.place(x=700,y=90)
+
+        def selectItem(event):
+            selected_item=self.frame_Table.selection()[0]
+            id=self.frame_Table.item(selected_item)['values'][0]
+            name=self.frame_Table.item(selected_item)['values'][1]
+            pricee=self.frame_Table.item(selected_item)['values'][2]
+            quantity=self.frame_Table.item(selected_item)['values'][3]
+            expire=self.frame_Table.item(selected_item)['values'][5]
+
+            self.Product_Price_EN.config(state='normal')
+            self.Product_Stack_EN.config(state='normal')
+            self.Product_date_EN.config(state='normal')
+            self.Product_price_EN.config(state='normal')
+
+            date=datetime.strptime(expire, '%Y-%m-%d')
+
+            self.Product_date_EN.set_date(date)      
+            idd.set(id)
+            namee.set(name)
+            qty.set(quantity)
+            price.set(pricee)
+
+
+        count=0
+        for i in result:
+            self.frame_Table.insert(parent='',index='end',iid=count,text=i,values=i)
+            count+=1
+        
+        self.frame_Table.bind("<Double-1>",selectItem)
+
     def Click_Delivery(self):
         self.button_List.config(state="normal")
         self.button_Stack.config(state="normal")
         self.button_Delivery.config(state="disabled")
         self.button_Employee.config(state="normal")
+
         self.Frame_List.pack_forget()
         self.Frame_stack.pack_forget()
         self.Frame_Empl.pack_forget()
@@ -132,6 +272,8 @@ class InvortoryGUI:
         self.frame_Table.heading("Quantity",text="Quantity",anchor=W)
         self.frame_Table.heading("Arrival",text="Arrival Day",anchor=W)
         self.frame_Table.place(x=0,y=30)
+        self.frame_Table.bind("<Double-1>", self.Click_Delivery_onDouble_Click)
+        
         m1=Employee.Employee()
         result=m1.viewDeliveryList()
         count=0
@@ -154,6 +296,7 @@ class InvortoryGUI:
         style=ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
+
         self.frame_Table=ttk.Treeview(self.Frame_Empl,height=21)
         self.frame_Table['columns']=("ID","Name","Username","Detail")
         self.frame_Table.column("#0",width=0,stretch=NO)
@@ -184,6 +327,7 @@ class InvortoryGUI:
         self.add_to_products
 
     def add_to_products(self):
+        global order_date,arrival_date
         ProdName = self.Product_CODE_EN.get()
         date = self.Product_date_EN.get_date()
         expiry_date = self.Product_EXdate_EN.get_date()
@@ -199,10 +343,10 @@ class InvortoryGUI:
         var4 = "price_list"
         var5 = "date_list"
         var6 = "expiry_date_list"
-        
+        var7="ref_id_list"
 
-        if var1 not in globals() and var2 not in globals() and var3 not in globals() and var4 not in globals() and var5 not in globals() and var6 not in globals() :
-            global ProductID_list, ProdName_list, quantity_list, price_list, date_list, expiry_date_list,status_list ,arrival_date_list, order_date_list
+        if var1 not in globals() and var2 not in globals() and var3 not in globals() and var4 not in globals() and var5 not in globals() and var6 not in globals() and var7 not in globals():
+            global ProductID_list, ProdName_list, ref_id_list,quantity_list, price_list, date_list, expiry_date_list,status_list ,arrival_date_list, order_date_list
 
             ProductID_list = []
             ProdName_list = []
@@ -213,6 +357,10 @@ class InvortoryGUI:
             arrival_date_list=[]
             order_date_list=[]
             status_list=[]
+            ref_id_list=[]
+
+        prod=Product.product()
+        ref_id=prod.get_ref_id(ProdName)
 
         ProductID_list.append(int(ProductIDD))
         ProdName_list.append(ProdName)
@@ -220,10 +368,10 @@ class InvortoryGUI:
         price_list.append(price)
         date_list.append(date)
         expiry_date_list.append(expiry_date)
-        
         order_date_list.append(order_date)
         arrival_date_list.append(arrival_date)
         status_list.append("Under Delivery")
+        ref_id_list.append(ref_id[0][0])
 
         self.frame_Table.insert(parent='', index='end', iid=ProductIDD, text=(ProductIDD,ProdName,price,quantity,date,expiry_date), values=(ProductIDD,ProdName,price,quantity,date,expiry_date))
 
@@ -245,11 +393,13 @@ class InvortoryGUI:
         for i in ProductID_list:
             batch_code_list.append(batch_code)
 
-        item_tuple = list(zip(ProductID_list,ProdName_list,quantity_list,price_list,batch_code_list, status_list,expiry_date_list,arrival_date_list,order_date_list))
+        item_tuple = list(zip(ProductID_list,ref_id_list,ProdName_list,quantity_list,price_list, status_list,batch_code_list,expiry_date_list))
 
-        print(item_tuple)
+        values=(batch_code,order_date,arrival_date,'Under Delivery')
 
         b=Product.product()
+        b.add_deliveryBatch(values)
+
         b.addMany_Del(item_tuple)
 
         self.frame_Table.delete(*self.frame_Table.get_children())
@@ -564,25 +714,32 @@ class InvortoryGUI:
         self.frame_Table.pack(fill='both')
         self.frame_Table.grid(row=1,column=0)
 
+        a=Product.product()
+        res=a.returnall()
+
+        for i in res:
+            self.frame_Table.insert(parent='', index='end', iid=i[0], text=i, values=i)
+
         def AddProduct_ChangeName(event):
             global val
-            val=self.chosen_val.get()
-            val=(val)
+            val = self.chosen_val.get()
+            val = (val)
 
         def search():
             a=Product.product()
             res=a.return_one(val)
 
-            # if 'count' not in globals():
-            #     count = 0
-            # else:
-            #     count += 1
-
+            self.frame_Table.delete(*self.frame_Table.get_children())
             for i in res:
                 self.frame_Table.insert(parent='', index='end', iid=i[0], text=i,values=i)
 
+        def edit():
 
-        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>",AddProduct_ChangeName)
+            var=self.chosen_val.get()
+            
+            self.Click_Edit_Ref(var)
+
+        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>", AddProduct_ChangeName)
 
         self.button_Find=Button(self.Frame_Add_St,text="Search",padx=20,pady=5,command=search)
         self.button_Find.place(x=350,y=90)
@@ -590,11 +747,13 @@ class InvortoryGUI:
         self.button_Add=Button(self.Frame_Add_St,text="Add Product",padx=20,pady=5,command=self.Click_Add_Ref)
         self.button_Add.place(x=500,y=90)
 
-        self.button_Edit = Button(self.Frame_Add_St, text="Edit", padx=20, pady=5,command=self.Click_Edit_Ref)
+        self.button_Edit = Button(self.Frame_Add_St, text="Edit", padx=20, pady=5,command=edit)
         self.button_Edit.place(x=623, y=90)
 
         self.button_Delete=Button(self.Frame_Add_St,text="Delete",padx=20,pady=5,command=self.Delete)
         self.button_Delete.place(x=700,y=90)
+
+        self.Add_Stack.update()
 
         self.Add_Stack.mainloop()
 
@@ -617,33 +776,78 @@ class InvortoryGUI:
         frame=self.Add_Notify
 
         self.Add_Notify.protocol("WM_DELETE_WINDOW",self.close_window)
-        self.Add_Notify.title("Notification")
+        self.Add_Notify.title("Export to Spreadsheet")
         self.Add_Notify.geometry("800x583")
         self.Add_Notify.resizable(False,False)
 
         self.Frame_Add_nofi=Frame(self.Add_Notify,width=800,height=200)
         self.Frame_Add_nofi.place(x=0,y=0)
 
-        self.Frma=Label(self.Frame_Add_nofi,text="Notification", width=20, font=("Arial", 35),anchor=W)
+        self.Frma=Label(self.Frame_Add_nofi,text="Export to Spreadsheet", width=20, font=("Arial", 35),anchor=W)
         self.Frma.place(x=10,y=10)
 
-        a=Product.product()
-        self.chosen_val=tk.StringVar(self.Frame_Add_nofi)
-        self.chosen_val.set("Select Product")
-        
-        global lst
-        lst = a.returnall()
-        n=1
+        Label(self.Add_Notify,text="Select What to Export").place(x=20, y=70)
+        reports=ttk.Combobox(self.Add_Notify,width=20)
+        reports.place(x=20,y=90)
+        reports['values']=("Sales", "Inventory" , "Delivery")
 
-        self.Stack_Product_Name_LA=Label(self.Frame_Add_nofi,text="Product Name:")
-        self.Stack_Product_Name_EN= ttk.Combobox(self.Frame_Add_nofi,textvariable=self.chosen_val)
-        self.Stack_Product_Name_LA.place(x=40,y=80)
-        self.Stack_Product_Name_EN.place(x=40,y=100)
-        self.Stack_Product_Name_EN.config(width=43)
-        self.Stack_Product_Name_EN['values']=([x[n] for x in lst])
+        Label(self.Add_Notify,text="Select Date Scope").place(x=250, y=70)
+        scope=DateEntry(self.Add_Notify,selectmode='day',width=20)
+        scope.place(x=250, y=90)
 
-        self.button_S=Button(self.Frame_Add_nofi,text="Add",padx=20,pady=5,bg="green")
-        self.button_S.place(x=400,y=90)
+        Label(self.Add_Notify,text="Click this Button to Start Exporting").place(x=450, y=70)
+        export=Button(self.Add_Notify,text="Export", state='disabled')
+        export.place(x=500, y=90)
+
+        self.export_Table=ttk.Treeview(self.Add_Notify,height=15)
+        self.export_Table['columns']=("Invoice Number","Item","Quantity","Total Price","Discount","Date Purchased")
+        self.export_Table.column("#0",width=0,stretch=NO)
+        self.export_Table.column("Invoice Number",anchor=W,width=100)
+        self.export_Table.column("Item",anchor=W,width=250)
+        self.export_Table.column("Quantity",anchor=E,width=100)
+        self.export_Table.column("Total Price",anchor=E,width=100)
+        self.export_Table.column("Discount",anchor=E,width=100)
+        self.export_Table.column("Date Purchased",anchor=E,width=100)
+        #Table Head
+        self.export_Table.heading("#0")
+        self.export_Table.heading("Invoice Number",text="Invoice Number",anchor=W)
+        self.export_Table.heading("Item",text="Item",anchor=W)
+        self.export_Table.heading("Quantity",text="Quantity",anchor=W)
+        self.export_Table.heading("Total Price",text="Total Price",anchor=W)
+        self.export_Table.heading("Discount",text="Discount",anchor=W)
+        self.export_Table.heading("Date Purchased",text="Date Purchased",anchor=W)
+       
+        self.export_Table.place(x=0,y=250)
+       
+        def export_report():
+            report_type=reports.get()
+            date=scope.get_date()
+            man=Manager.Manager()
+            result=man.get_export_data(report_type,date)
+            if report_type=='Sales':
+                df=pd.DataFrame(result,columns=['Invoice Number','Purchase ID','Item','Quantity','Total Price','Discount','Date Purchased'])
+            if report_type=='Inventory':
+                df=pd.DataFrame(result,columns=['Reference ID',"Item","Price","Remaining Quantity"])
+            if report_type=="Delivery":
+                df=pd.DataFrame(result,columns=['Batch Code','Item','Quantity','Price','Status'])
+            title=str.lower(report_type)+str(date)+'.xlsx'
+            df.to_excel(title,"Sales")
+            message="Saved to ",title
+            messagebox.showinfo("Exported Successfully","Saved to "+title)
+
+        def reports_callback(event):    
+            export.config(state='normal',command=export_report)
+            
+            self.export_Table.delete(*self.export_Table.get_children())
+            report_type=reports.get()
+            date=scope.get_date()
+            man=Manager.Manager()
+            result=man.get_export_data(report_type,date)
+
+            count=0
+            for item in result:
+                self.export_Table.insert('',index='end', iid=count, text=item,values=(item))
+                count+=1
 
         #Table    
         self.Frame_ListN=Frame(self.Add_Notify,width=800,height=400,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
@@ -706,7 +910,7 @@ class InvortoryGUI:
         self.Add_Del=Button(self.Frame_Side,text="ADD Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add)
         self.button_Add_Em=Button(self.Frame_Side,text="ADD Employee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Em)
         self.button_Add_Pm=Button(self.Frame_Side,text="ADD Product",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Product)
-        self.btn_Notification=Button(self.Frame_Side,text="Notification",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.notify_UI)
+        self.btn_Notification=Button(self.Frame_Side,text="Export",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.notify_UI)
 
         self.button_List.place(x=40,y=300)
         self.button_Stack.place(x=160,y=300)
@@ -721,22 +925,7 @@ class InvortoryGUI:
 
         self.InvorVal.mainloop()
 
-    def ProdRef(self):
-        self.Add_Stack= Toplevel()
-        self.Add_Stack.title("Product Reference")
-        
-
-        self.Frame_Add_St=Frame(self.Add_Stack)
-        self.Frame_Add_St.pack()
-
-        self.Frma=Label(self.Frame_Add_St,text="Product Reference Menu", width=20, font=("Arial", 35),anchor=W)
-        self.Frma.pack()
-
-        self.add=Button(self.Frame_Add_St, text="Add Reference", padx=20, pady=5, command=self.Click_Add_Ref).pack()
-        self.edit=Button(self.Frame_Add_St, text="Edit Reference", padx=20, pady=5, command=self.Click_Edit_Ref).pack()
-
-
-    def Click_Edit_Ref(self):
+    def Click_Edit_Ref(self,var):
         self.Add_Stack= Toplevel()
         self.Add_Stack.title("Edit Product Reference")
         self.Add_Stack.geometry("700x350")
@@ -750,27 +939,44 @@ class InvortoryGUI:
         a=Product.product()
         
         global lst
-        lst = a.returnall()
-        n=1
+        lst = a.return_one(var)
+        
+        idd=lst[0][0]
+        namee=lst[0][1]
+        pricee=lst[0][2]
 
         self.Old=Label(self.Frame_Add_St,text="Old Product Name", width=20, font=("Arial", 15),anchor=W)
         self.Old.place(x=50,y=70)
 
-        global ref_id_entry
+        global ref_id_entry,name,price
         ref_id_entry=StringVar()
-        self.Stack_Product_ID_Label=Label(self.Frame_Add_St,text="ID:").place(x=50,y=110)
-        self.Stack_Product_ID_EN=Entry(self.Frame_Add_St,width=10, borderwidth=5,textvariable=ref_id_entry,state="disabled").place(x=50,y=130)
+        name=StringVar()
+        price=StringVar()
 
+
+        self.Stack_Product_ID_Label=Label(self.Frame_Add_St,text="ID:").place(x=50,y=110)
+        self.Stack_Product_ID_EN=Entry(self.Frame_Add_St,width=10, borderwidth=5,textvariable=ref_id_entry,state="disabled")
+        self.Stack_Product_ID_EN.place(x=50,y=130)
 
         self.Stack_Product_Item_Label=Label(self.Frame_Add_St,text="Product Name:",).place(x=130,y=110)
-        self.Stack_Product_Item_ENN=Entry(self.Frame_Add_St,width=70, borderwidth=5,state="disabled")
+        self.Stack_Product_Item_ENN=Entry(self.Frame_Add_St,width=70,textvariable=name, borderwidth=5,state="disabled")
         self.Stack_Product_Item_ENN.place(x=130,y=130)
 
-
-        # global ref_id_entry
-        # ref_id_entry=StringVar()
         self.Stack_Product_ID_Label=Label(self.Frame_Add_St,text="Price:").place(x=570,y=110)
-        self.Stack_Product_ID_EN=Entry(self.Frame_Add_St,width=15, borderwidth=5,state="disabled").place(x=570,y=130)
+        self.Stack_Product_PRICE_EN=Entry(self.Frame_Add_St,textvariable=price,width=15, borderwidth=5,state="disabled")
+        self.Stack_Product_PRICE_EN.place(x=570,y=130)
+
+        self.Stack_Product_ID_EN.config(state='normal')
+        self.Stack_Product_ID_EN.config(state='normal')
+        self.Stack_Product_PRICE_EN.config(state='normal')
+
+        ref_id_entry.set(idd)
+        name.set(namee)
+        price.set(pricee)
+
+        self.Stack_Product_ID_EN.config(state='disabled')
+        self.Stack_Product_ID_EN.config(state='disabled')
+        self.Stack_Product_PRICE_EN.config(state='disabled')
 
         self.New=Label(self.Frame_Add_St,text="New Product Name", width=20, font=("Arial", 15),anchor=W)
         self.New.place(x=50,y=180)
@@ -790,15 +996,13 @@ class InvortoryGUI:
         self.button_Out= Button(self.Frame_Add_St,text="Cancel",padx=9,pady=5,bg="green",command=self.Add_Stack.destroy)
         self.button_Out.place(x=600,y=280)
 
-        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>",self.setRefVals)
-
+        
     def Click_ref_submit(self):
         id=ref_id_entry.get()
         name=ref_name_entry.get()
         price=ref_price_entry.get()
 
         idd=int(id)
-        
         pricee=int(price)
         priceee=float(pricee)
 
@@ -960,12 +1164,6 @@ class InvortoryGUI:
     def close_window(self):
         btn.config(state='normal')
         frame.destroy()
-
-    # def search(self):
-        # search_field = Entry_Search.get()
-
-        # e=Employee.Employee()
-        # e.MarkBatchArrived(search_field)
 
     def start(self,id):
         self.InvorGUI()
