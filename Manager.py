@@ -50,7 +50,7 @@ class Manager (Employee.Employee):
 
     def notify_expiry(self):
         dbcursor=self.dbcursor
-        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable'"
+        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable' AND note!='Checked'"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
     
@@ -75,7 +75,7 @@ class Manager (Employee.Employee):
                     name.append(result[x][1])
                     batch.append(result[x][3])
 
-                if today_left>=days_left:
+                if today_left<=days_left:
                     message="Product "+ str(result[x][1])+" of Batch "+str(result[x][3])+" is about to Expire in "+str(today_left)+" days"
                     messages.append(message)
                     id.append(result[x][0])
