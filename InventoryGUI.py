@@ -126,8 +126,8 @@ class InvortoryGUI:
         self.Frame_Add=Frame(self.Add_Delivery,width=800,height=200)
         self.Frame_Add.place(x=0,y=0)
     
-        self.Frame_List=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
-        self.Frame_List.place(x=0,y=200)
+        self.Frame_ListD=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
+        self.Frame_ListD.place(x=0,y=200)
 
         global idd,namee,qty, price
         idd=StringVar()
@@ -162,7 +162,7 @@ class InvortoryGUI:
 
         Label(self.Frame_Add,text="Confirming Delivery will Mark it as Received and Sellable").place(x=100,y=130)
     
-        self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
+        self.frame_Table=ttk.Treeview(self.Frame_ListD,height=15)
         self.frame_Table['columns']=("ID","Name","Price","Quantity","Order Date","Expiration Date")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=50)
