@@ -7,54 +7,18 @@ from tracemalloc import start
 import Employee
 import Manager
 from tkcalendar import DateEntry
+from PIL import Image, ImageTk
 
 import Product
 import randomNumGen
 
 
+opened = False
+
 class InvortoryGUI:
 
     def __init__(self):
         self.InvorVal = None
-           
-    def search(self):
-        result = self.Entry_Search.get()
-
-        self.window_Frame = Frame(self.window_list, width=400, height=100,highlightbackground="black", highlightthickness=3)
-        self.window_Frame.grid(row=0, column=0)
-
-        Label_Search = Label(self.window_Frame, text="Search:")
-        self.Entry_Search = Entry(self.window_Frame, width=50, borderwidth=3)
-        self.button_Search = Button(self.window_Frame, text="Search", padx=5, pady=0, command=self.search())
-
-        Label_Search.grid(row=0, column=0, sticky=W)
-        self.Entry_Search.grid(row=0, column=1)
-        self.button_Search.grid(row=0, column=3)
-
-        self.window_Frame2 = Frame(self.window_list, width=400, height=250, bg="blue",highlightbackground="black", highlightthickness=3)
-        self.window_Frame2.grid(row=1, column=0)
-
-        self.Search_Table = ttk.Treeview(self.window_Frame2, height=12)
-        self.Search_Table['column'] = ("ID", "Name", "Price", "Stack")
-        self.Search_Table.column("#0", width=0, stretch=NO, anchor=W)
-        self.Search_Table.column("ID", width=50, stretch=NO, anchor=W)
-        self.Search_Table.column("Name", width=148, stretch=NO, anchor=W)
-        self.Search_Table.column("Price", width=100, stretch=NO, anchor=E)
-        self.Search_Table.column("Stack", width=80, stretch=NO, anchor=E)
-
-        self.Search_Table.heading("#0")
-        self.Search_Table.heading("ID", text="ID", anchor=W)
-        self.Search_Table.heading("Name", text="Name", anchor=W)
-        self.Search_Table.heading("Price", text="Price", anchor=W)
-        self.Search_Table.heading("Stack", text="Stack", anchor=W)
-        self.Search_Table.grid(row=0, column=0)
-
-        self.window_Frame3 = Frame(self.window_list, width=400, height=50, bg="blue",highlightbackground="black", highlightthickness=3)
-        self.window_Frame3.grid(row=2, column=0)
-
-        self.button_Close = Button(self.window_Frame3, text="Close", command=self.window_list.destroy)
-        self.button_Close.pack()
-
 
 #Chick List and stack Start~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def Click_List1(self):
@@ -63,22 +27,22 @@ class InvortoryGUI:
         self.button_Delivery.config(state="normal")
         self.button_Employee.config(state="normal")
 
-        self.Frame_List.pack_forget()
         self.Frame_stack.pack_forget()
         self.Frame_Del.pack_forget()
         self.Frame_Empl.pack_forget()
         
         self.Frame_List.pack()
+        self.Label_title=Label(self.Frame_List,text="List Page",font=("Arial", 15)).place(x=0,y=0)
         style=ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
-        self.frame_Table=ttk.Treeview(self.Frame_List,height=24)
+        self.frame_Table=ttk.Treeview(self.Frame_List,height=21)
         self.frame_Table['columns']=("ID","Name","Status","Price","Quantity")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=400,stretch=NO)
         self.frame_Table.column("Status",anchor=E,width=200,stretch=NO)
-        self.frame_Table.column("Price",anchor=CENTER,width=135,stretch=NO)
+        self.frame_Table.column("Price",anchor=CENTER,width=131,stretch=NO)
         self.frame_Table.column("Quantity",anchor=E,width=200,stretch=NO)
         #Table Head
         self.frame_Table.heading("#0")
@@ -87,7 +51,7 @@ class InvortoryGUI:
         self.frame_Table.heading("Status",text="Status",anchor=W)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
         self.frame_Table.heading("Quantity",text="Quantity",anchor=W)
-        self.frame_Table.pack()
+        self.frame_Table.place(x=0,y=30)
         m1=Manager.Manager()
         result=m1.inventoryList()
         count=0
@@ -105,20 +69,21 @@ class InvortoryGUI:
 
 
         self.Frame_List.pack_forget()
-        self.Frame_stack.pack_forget()
         self.Frame_Del.pack_forget()
         self.Frame_Empl.pack_forget()
+
         self.Frame_stack.pack(fill='both')
+        self.Label_title=Label(self.Frame_stack,text="Stack Page",font=("Arial", 15)).place(x=0,y=0)
         style=ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
-        self.frame_Table=ttk.Treeview(self.Frame_stack,height=24)
+        self.frame_Table=ttk.Treeview(self.Frame_stack,height=21)
         self.frame_Table['columns']=("ID","Name","Detail","Price","Stack")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=400,stretch=NO)
         self.frame_Table.column("Detail",anchor=W,width=200,stretch=NO)
-        self.frame_Table.column("Price",anchor=CENTER,width=135,stretch=NO)
+        self.frame_Table.column("Price",anchor=CENTER,width=131,stretch=NO)
         self.frame_Table.column("Stack",anchor=E,width=200,stretch=NO)
         #Table Head
         self.frame_Table.heading("#0")
@@ -127,7 +92,7 @@ class InvortoryGUI:
         self.frame_Table.heading("Detail",text="Detail",anchor=W)
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
         self.frame_Table.heading("Stack",text="Stack",anchor=W)
-        self.frame_Table.pack(fill='both')
+        self.frame_Table.place(x=0,y=30)
         m1=Manager.Manager()
         result=m1.inventoryList()
         count=0
@@ -142,20 +107,20 @@ class InvortoryGUI:
         self.button_Employee.config(state="normal")
         self.Frame_List.pack_forget()
         self.Frame_stack.pack_forget()
-        self.Frame_Del.pack_forget()
         self.Frame_Empl.pack_forget()
         
         self.Frame_Del.pack()
+        self.Label_title=Label(self.Frame_Del,text="Delivery Page",font=("Arial", 15)).place(x=0,y=0)
         style=ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
-        self.frame_Table=ttk.Treeview(self.Frame_Del,height=24)
+        self.frame_Table=ttk.Treeview(self.Frame_Del,height=21)
         self.frame_Table['columns']=("ID","Name","Detail","Price","Quantity","Arrival")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=400,stretch=NO)
         self.frame_Table.column("Detail",anchor=W,width=200,stretch=NO)
-        self.frame_Table.column("Price",anchor=CENTER,width=95,stretch=NO)
+        self.frame_Table.column("Price",anchor=CENTER,width=91,stretch=NO)
         self.frame_Table.column("Quantity",anchor=E,width=100,stretch=OFF)
         self.frame_Table.column("Arrival",anchor=E,width=140,stretch=OFF)
         #Table Head
@@ -166,7 +131,7 @@ class InvortoryGUI:
         self.frame_Table.heading("Price",text="Price",anchor=CENTER)
         self.frame_Table.heading("Quantity",text="Quantity",anchor=W)
         self.frame_Table.heading("Arrival",text="Arrival Day",anchor=W)
-        self.frame_Table.pack()
+        self.frame_Table.place(x=0,y=30)
         m1=Employee.Employee()
         result=m1.viewDeliveryList()
         count=0
@@ -175,7 +140,6 @@ class InvortoryGUI:
             self.frame_Table.insert(parent='',index='end',iid=count,text=x,values=x)
             
     def Click_Employee(self):
-
         self.button_List.config(state="normal")
         self.button_Stack.config(state="normal")
         self.button_Delivery.config(state="normal")
@@ -184,15 +148,16 @@ class InvortoryGUI:
         self.Frame_List.pack_forget()
         self.Frame_stack.pack_forget()
         self.Frame_Del.pack_forget()
-        self.Frame_Empl.pack_forget()
+        
         self.Frame_Empl.pack()
+        self.Label_title=Label(self.Frame_Empl,text="Employee Page",font=("Arial", 15)).place(x=0,y=0)
         style=ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
-        self.frame_Table=ttk.Treeview(self.Frame_Empl,height=24)
+        self.frame_Table=ttk.Treeview(self.Frame_Empl,height=21)
         self.frame_Table['columns']=("ID","Name","Username","Detail")
         self.frame_Table.column("#0",width=0,stretch=NO)
-        self.frame_Table.column("ID",anchor=W,width=103,stretch=NO)
+        self.frame_Table.column("ID",anchor=W,width=98,stretch=NO)
         self.frame_Table.column("Name",anchor=W,width=420,stretch=NO)
         self.frame_Table.column("Username",anchor=W,width=280,stretch=NO)
         self.frame_Table.column("Detail",anchor=CENTER,width=230,stretch=NO)
@@ -203,9 +168,9 @@ class InvortoryGUI:
         self.frame_Table.heading("Name",text="Name",anchor=W)
         self.frame_Table.heading("Username",text="Username",anchor=W)
         self.frame_Table.heading("Detail",text="Role",anchor=CENTER)
-        
+        self.frame_Table.place(x=0,y=30)
 
-        self.frame_Table.pack()
+
         m1=Manager.Manager()
         result=m1.viewEMPList()
         count=0
@@ -342,7 +307,7 @@ class InvortoryGUI:
         global price_entry
         price_entry=tk.StringVar()
 
-        APD=Label(self.Frame_Add,text="Add Products on Delivery",font=("Arial", 40)).place(x=10,y=5)
+        self.APD=Label(self.Frame_Add,text="Add Products on Delivery",font=("Arial", 40)).place(x=10,y=5)
         self.Product_CODE_LA=Label(self.Frame_Add,text="Select Product Name")
         self.Product_CODE_EN= ttk.Combobox(self.Frame_Add,textvariable=self.chosen_val,state='readonly',width=50)
         self.Product_CODE_LA.place(x=20,y=70)
@@ -385,10 +350,10 @@ class InvortoryGUI:
         self.button_Delete.place(x=700,y=110)
 
 
-        self.Frame_List=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
-        self.Frame_List.place(x=0,y=200)
+        self.Frame_List1=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
+        self.Frame_List1.place(x=0,y=200)
         #Table
-        self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
+        self.frame_Table=ttk.Treeview(self.Frame_List1,height=15)
         self.frame_Table['columns']=("ID","Name","Price","Quantity","Order Date","Expiration Date")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=50)
@@ -408,6 +373,7 @@ class InvortoryGUI:
 
         self.frame_Table.pack(fill='both')
         self.frame_Table.grid(row=1,column=0)
+        self.Add_Delivery.mainloop()
 
     #employee
     def Click_AddS_Em(self):
@@ -425,7 +391,7 @@ class InvortoryGUI:
         self.Add_Del.config(state='normal')
         self.button_Add_Em.config(state='disabled')
         self.button_Add_Pm.config(state='normal')
-        # self.button_Add_prodref.config(state='normal')
+        #self.button_Add_prodref.config(state='normal')
         self.btn_Notification.config(state='normal')
 
         self.Add_Employee= Toplevel()
@@ -473,6 +439,7 @@ class InvortoryGUI:
         
         self.button_Add=Button(self.Frame_Add_Em,text="Add",padx=20,pady=5,command=self.Click_AddS_Em)
         self.button_Add.place(x=360,y=330)
+        self.Add_Employee.mainloop()
 
     def AddProduct(self):
         self.frame_Table.delete(*self.frame_Table.get_children())
@@ -580,10 +547,10 @@ class InvortoryGUI:
 
 
 
-        self.Frame_List=Frame(self.Add_Stack,width=800,height=320,padx=10, pady=10,highlightbackground="black", highlightthickness=1)
-        self.Frame_List.place(x=0,y=150)
+        self.Frame_ListAP=Frame(self.Add_Stack,width=800,height=320,padx=10, pady=10,highlightbackground="black", highlightthickness=1)
+        self.Frame_ListAP.place(x=0,y=150)
         #Table
-        self.frame_Table=ttk.Treeview(self.Frame_List,height=17)
+        self.frame_Table=ttk.Treeview(self.Frame_ListAP,height=17)
         self.frame_Table['columns']=("ID","Name","Price")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=90)
@@ -628,6 +595,8 @@ class InvortoryGUI:
 
         self.button_Delete=Button(self.Frame_Add_St,text="Delete",padx=20,pady=5,command=self.Delete)
         self.button_Delete.place(x=700,y=90)
+
+        self.Add_Stack.mainloop()
 
     def Delete(self):
         select=self.frame_Table.selection()[0]
@@ -677,9 +646,9 @@ class InvortoryGUI:
         self.button_S.place(x=400,y=90)
 
         #Table    
-        self.Frame_List=Frame(self.Add_Notify,width=800,height=400,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
-        self.Frame_List.place(x=0,y=140)
-        self.frame_Table=ttk.Treeview(self.Frame_List,height=20)
+        self.Frame_ListN=Frame(self.Add_Notify,width=800,height=400,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
+        self.Frame_ListN.place(x=0,y=140)
+        self.frame_Table=ttk.Treeview(self.Frame_ListN,height=20)
         self.frame_Table['columns']=("ID","Name","Days","Expiration_Date")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=73)
@@ -694,8 +663,7 @@ class InvortoryGUI:
         self.frame_Table.heading("Expiration_Date",text="Expiration Date",anchor=W)
         self.frame_Table.pack(fill='both')
         self.frame_Table.grid(row=1,column=0)
-
-
+        self.Add_Notify.mainloop()
         # END
 
 #Chick ADD END!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -710,15 +678,18 @@ class InvortoryGUI:
         #For the Page 1 Detail
         self.Frame_Detail=Frame(self.InvorVal,width=1063,height=200,highlightbackground="black", highlightthickness=3,padx=10, pady=10)
         self.Frame_Detail.place(x=0,y=0)
-        label=Label(self.Frame_Detail,text="IMAGE",width=37,height=10).place(x=0,y=0)
+        # self.img = PhotoImage(Image.open(r"C:\Users\Administrator\Documents\GitHub\Logo\123.jpg"))
+        # self.label=Label(self.Frame_Detail,image=self.img,width=37,height=10)
+        # self.label.place(x=0,y=0)
         
+
         #For the Page LIST
         self.Frame_main=Frame(self.InvorVal,width=1063,height=498,highlightbackground="black", highlightthickness=3)
         self.Frame_main.place(x=0,y=199)
-        self.Frame_List=Frame(self.Frame_main,width=1063,height=498,padx=10, pady=10)
-        self.Frame_stack=Frame(self.Frame_main,width=1063,height=498,padx=10, pady=10)
-        self.Frame_Empl=Frame(self.Frame_main,width=1063,height=498,padx=10, pady=10)
-        self.Frame_Del=Frame(self.Frame_main,width=1063,height=498,padx=10, pady=10)
+        self.Frame_List=Frame(self.Frame_main,width=1058,height=498,padx=10, pady=10)
+        self.Frame_stack=Frame(self.Frame_main,width=1058,height=498,padx=10, pady=10)
+        self.Frame_Empl=Frame(self.Frame_main,width=1058,height=498,padx=10, pady=10)
+        self.Frame_Del=Frame(self.Frame_main,width=1058,height=498,padx=10, pady=10)
         
         #For the Side
         self.Frame_Side=Frame(self.InvorVal,width=300,height=697,highlightbackground="black", highlightthickness=3,padx=10, pady=10)
@@ -735,7 +706,6 @@ class InvortoryGUI:
         self.Add_Del=Button(self.Frame_Side,text="ADD Delivery",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add)
         self.button_Add_Em=Button(self.Frame_Side,text="ADD Employee",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Em)
         self.button_Add_Pm=Button(self.Frame_Side,text="ADD Product",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Click_Add_Product)
-        # self.button_Add_prodref=Button(self.Frame_Side,text="Reference",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.ProdRef)
         self.btn_Notification=Button(self.Frame_Side,text="Notification",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.notify_UI)
 
         self.button_List.place(x=40,y=300)
@@ -870,10 +840,10 @@ class InvortoryGUI:
         self.Stack_Product_Price_Label=Label(self.Frame_Add_St,text="Price:").place(x=470,y=90)
         self.Stack_Product_Price_EN=Entry(self.Frame_Add_St,width=15, borderwidth=5,textvariable=price_entry).place(x=470,y=110)
 
-        self.Frame_List=Frame(self.Add_Stack,width=800,height=320,highlightbackground="black", highlightthickness=3,padx=5,pady=5)
-        self.Frame_List.place(x=0,y=200)
+        self.Frame_ListS=Frame(self.Add_Stack,width=800,height=320,highlightbackground="black", highlightthickness=3,padx=5,pady=5)
+        self.Frame_ListS.place(x=0,y=200)
         #Table
-        self.frame_Table=ttk.Treeview(self.Frame_List,height=15)
+        self.frame_Table=ttk.Treeview(self.Frame_ListS,height=15)
         self.frame_Table['columns']=("ID","Name","Price")
         self.frame_Table.column("#0",width=0,stretch=NO)
         self.frame_Table.column("ID",anchor=W,width=100)
