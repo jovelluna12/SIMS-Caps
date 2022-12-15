@@ -126,8 +126,8 @@ class InvortoryGUI:
         self.Frame_Add=Frame(self.Add_Delivery,width=800,height=200)
         self.Frame_Add.place(x=0,y=0)
     
-        self.Frame_List=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
-        self.Frame_List.place(x=0,y=200)
+        self.Frame_ListD=Frame(self.Add_Delivery,width=800,height=320,highlightbackground="black", highlightthickness=1,padx=10, pady=10)
+        self.Frame_ListD.place(x=0,y=200)
 
         global idd,namee,qty, price
         idd=StringVar()
