@@ -167,7 +167,7 @@ def start(m,id,user,time):
         button_confirm = Button(frame_Detail, text="QTY", padx=3, pady=12, state="disabled")
         button_final_payment = Button(frame_Detail, text="Finish", padx=9, pady=12, command=payment, state="disabled")
 
-        ButtonClear=Button(frame_Detail, text="Clear",padx=25, pady=12, bg="green",command=Click_Remove)
+        ButtonClear=Button(frame_Detail, text="Clear",padx=20, pady=12, bg="green",command=Click_Remove)
         
         # Button Grid frame_CAL
         button_Enter.place(x=230,y=600)
