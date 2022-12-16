@@ -352,7 +352,6 @@ class InvortoryGUI:
             price_list = []
             date_list = []
             expiry_date_list = []
-            arrival_date_list = []
             order_date_list = []
             status_list = []
             ref_id_list = []
@@ -367,7 +366,6 @@ class InvortoryGUI:
         date_list.append(date)
         expiry_date_list.append(expiry_date)
         order_date_list.append(order_date)
-        arrival_date_list.append(arrival_date)
         status_list.append("Under Delivery")
         ref_id_list.append(ref_id[0][0])
 
@@ -418,15 +416,6 @@ class InvortoryGUI:
         order_date_list.clear()
         status_list.clear()
 
-        # ProductID_list = []
-        #     ProdName_list = []
-        #     quantity_list = []
-        #     price_list = []
-        #     date_list = []
-        #     expiry_date_list = []
-        #     arrival_date_list=[]
-        #     order_date_list=[]
-        #     status_list=[]
 
     def Click_Add(self):
         self.Add_Del.config(state='disabled')
