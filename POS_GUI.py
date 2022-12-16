@@ -230,6 +230,12 @@ def Click_List():
     Search_Table.heading("Stack", text="Stack", anchor=W)
     Search_Table.grid(row=0, column=0)
 
+    def selectItem(a):
+        curItem = Search_Table.selection()[0]
+        print(Search_Table.item(curItem)['values'])
+
+    Search_Table.bind('<Double-1>', selectItem)
+
     Label_Search = Label(window_Frame, text="Search:")
     Entry_Search = Entry(window_Frame, width=50, borderwidth=3)
     button_Search = Button(window_Frame, text="Search", padx=5, pady=0, command=search)
