@@ -419,10 +419,9 @@ class InvortoryGUI:
 
     def Click_Add(self):
         self.Add_Del.config(state='disabled')
-        self.button_Add_Em.config(state='normal')
-        self.button_Add_Pm.config(state='normal')
-        # self.button_Add_prodref.config(state='normal')
-        self.btn_Notification.config(state='normal')
+        self.button_Add_Em.config(state='disabled')
+        self.button_Add_Pm.config(state='disabled')
+        self.btn_Notification.config(state='disabled')
 
         self.Add_Delivery = Toplevel()
         self.Add_Delivery.title("Add Products on Delivery")
@@ -530,11 +529,10 @@ class InvortoryGUI:
         man.AddEmp(id, Fname, username, password, role)
 
     def Click_Add_Em(self):
-        self.Add_Del.config(state='normal')
+        self.Add_Del.config(state='disabled')
         self.button_Add_Em.config(state='disabled')
-        self.button_Add_Pm.config(state='normal')
-        # self.button_Add_prodref.config(state='normal')
-        self.btn_Notification.config(state='normal')
+        self.button_Add_Pm.config(state='disabled')
+        self.btn_Notification.config(state='disabled')
 
         self.Add_Employee = Toplevel()
         self.Add_Employee.title("Employeee!")
@@ -647,11 +645,10 @@ class InvortoryGUI:
         price_entry.set(price)
 
     def Click_Add_Product(self):
-        self.Add_Del.config(state='normal')
-        self.button_Add_Em.config(state='normal')
+        self.Add_Del.config(state='disabled')
+        self.button_Add_Em.config(state='disabled')
         self.button_Add_Pm.config(state='disabled')
-        # self.button_Add_prodref.config(state='normal')
-        self.btn_Notification.config(state='normal')
+        self.btn_Notification.config(state='disabled')
 
         self.Add_Stack = Toplevel()
         self.Add_Stack.title("Add Product")
@@ -755,10 +752,9 @@ class InvortoryGUI:
 
     # start UI for Notification ---------------
     def notify_UI(self):
-        self.Add_Del.config(state='normal')
-        self.button_Add_Em.config(state='normal')
-        self.button_Add_Pm.config(state='normal')
-        # self.button_Add_prodref.config(state='normal')
+        self.Add_Del.config(state='disabled')
+        self.button_Add_Em.config(state='disabled')
+        self.button_Add_Pm.config(state='disabled')
         self.btn_Notification.config(state='disabled')
 
         self.Add_Notify = Toplevel()
@@ -791,6 +787,8 @@ class InvortoryGUI:
         export = Button(self.Add_Notify, text="Export", state='disabled')
         export.place(x=500, y=90)
 
+        # Table for Exports ; this dont filter out with the data to be exported =========================
+
         self.export_Table = ttk.Treeview(self.Add_Notify, height=15)
         self.export_Table['columns'] = (
         "Invoice Number", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
@@ -801,7 +799,7 @@ class InvortoryGUI:
         self.export_Table.column("Total Price", anchor=E, width=100)
         self.export_Table.column("Discount", anchor=E, width=100)
         self.export_Table.column("Date Purchased", anchor=E, width=100)
-        # Table Head
+
         self.export_Table.heading("#0")
         self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
         self.export_Table.heading("Item", text="Item", anchor=W)
@@ -811,6 +809,8 @@ class InvortoryGUI:
         self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
 
         self.export_Table.place(x=0, y=250)
+
+        # ==========================================================================================
 
         def export_report():
             report_type = reports.get()
@@ -829,6 +829,7 @@ class InvortoryGUI:
             message = "Saved to ", title
             messagebox.showinfo("Exported Successfully", "Saved to " + title)
 
+        
         def reports_callback(event):
             export.config(state='normal', command=export_report)
 
@@ -843,25 +844,32 @@ class InvortoryGUI:
                 self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
                 count += 1
 
-        # Table
-        self.Frame_ListN = Frame(self.Add_Notify, width=800, height=400, highlightbackground="black",
-                                 highlightthickness=1, padx=10, pady=10)
-        self.Frame_ListN.place(x=0, y=140)
-        self.frame_Table = ttk.Treeview(self.Frame_ListN, height=20)
-        self.frame_Table['columns'] = ("ID", "Name", "Days", "Expiration_Date")
-        self.frame_Table.column("#0", width=0, stretch=NO)
-        self.frame_Table.column("ID", anchor=W, width=73)
-        self.frame_Table.column("Name", anchor=W, width=403)
-        self.frame_Table.column("Days", anchor=CENTER, width=150)
-        self.frame_Table.column("Expiration_Date", anchor=W, width=150)
-        # Table Head
-        self.frame_Table.heading("#0")
-        self.frame_Table.heading("ID", text="ID", anchor=W)
-        self.frame_Table.heading("Name", text="Product Name", anchor=W)
-        self.frame_Table.heading("Days", text="Day", anchor=CENTER)
-        self.frame_Table.heading("Expiration_Date", text="Expiration Date", anchor=W)
-        self.frame_Table.pack(fill='both')
-        self.frame_Table.grid(row=1, column=0)
+        reports.bind('<<ComboboxSelected>>',reports_callback)
+        scope.bind('<<DateEntrySelected>>',reports_callback)
+
+        # Accidentally Replaced lines 843 and 844, which is essential ===========
+
+        # self.Frame_ListN = Frame(self.Add_Notify, width=800, height=400, highlightbackground="black",
+        #                          highlightthickness=1, padx=10, pady=10)
+        # self.Frame_ListN.place(x=0, y=140)
+        # self.frame_Table = ttk.Treeview(self.Frame_ListN, height=20)
+        # self.frame_Table['columns'] = ("ID", "Name", "Days", "Expiration_Date")
+        # self.frame_Table.column("#0", width=0, stretch=NO)
+        # self.frame_Table.column("ID", anchor=W, width=73)
+        # self.frame_Table.column("Name", anchor=W, width=403)
+        # self.frame_Table.column("Days", anchor=CENTER, width=150)
+        # self.frame_Table.column("Expiration_Date", anchor=W, width=150)
+        # # Table Head
+        # self.frame_Table.heading("#0")
+        # self.frame_Table.heading("ID", text="ID", anchor=W)
+        # self.frame_Table.heading("Name", text="Product Name", anchor=W)
+        # self.frame_Table.heading("Days", text="Day", anchor=CENTER)
+        # self.frame_Table.heading("Expiration_Date", text="Expiration Date", anchor=W)
+        # self.frame_Table.pack(fill='both')
+        # self.frame_Table.grid(row=1, column=0)
+
+        # ====================================================
+        
         self.Add_Notify.mainloop()
         # END
 
@@ -1171,7 +1179,10 @@ class InvortoryGUI:
             Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
     def close_window(self):
-        btn.config(state='normal')
+        self.Add_Del.config(state='normal')
+        self.button_Add_Em.config(state='normal')
+        self.button_Add_Pm.config(state='normal')
+        self.btn_Notification.config(state='normal')
         frame.destroy()
 
     def start(self, id):
