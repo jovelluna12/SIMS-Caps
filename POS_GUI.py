@@ -232,6 +232,12 @@ def Click_List():
 
     Label_ListT = Label(window_FrameL, text="Product List",font=("Arial", 25, "bold"))
     Label_ListT.place(x=5,y=10)
+    def selectItem(a):
+        curItem = Search_Table.selection()[0]
+        print(Search_Table.item(curItem)['values'])
+
+    Search_Table.bind('<Double-1>', selectItem)
+
     Label_Search = Label(window_FrameL, text="Search:")
     Entry_Search = Entry(window_FrameL, width=50, borderwidth=3)
     button_Search = Button(window_FrameL, text="Search", padx=5, pady=0, command=search)
@@ -448,18 +454,18 @@ def payment():
         Labell = Label(windowPay, text="Total Price",font=("Arial", 25))
         Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
         global button_Quantity
-        button_Quantity = Button(windowPay, text="Compute Discount", padx=5, pady=5, command=discount)
+        button_Quantity = Button(windowPay, text="Enter", padx=5, pady=5, command=discount)
 
         Discount_LBL=Label(windowPay, text="Enter Discount, Leave Blank if None")
         Discount_Entry=Entry(windowPay, width=30, borderwidth=3)
         
-        Labell.place(x=5,y=5)
-        totalpricelabel.place(x=85,y=50)
+        Labell.place(x=20,y=5)
+        totalpricelabel.place(x=90,y=50)
         Entry_Amount.place(x=25,y=90)
 
         Discount_LBL.place(x=25,y=120)
         Discount_Entry.place(x=25,y=140)
-        button_Quantity.place(x=53,y=172)
+        button_Quantity.place(x=88,y=172)
 
 def discount():
     if not Discount_Entry.get():

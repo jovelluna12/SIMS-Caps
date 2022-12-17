@@ -83,7 +83,7 @@ class Employee:
 
     def viewDeliveryList(self):
         dbcursor=self.cursor
-        query="SELECT deliverylist.BatchCode,ProductName,deliverylist.status,price,quantity FROM deliverylist, products WHERE deliverylist.status!='Arrived' AND products.status='Under Delivery' AND deliverylist.status!='Expired'"
+        query="SELECT deliverylist.BatchCode,products.ProductName,deliverylist.status,price,quantity,deliverylist.expectedarrivaldate FROM deliverylist, products WHERE deliverylist.status!='Arrived' AND products.status='Under Delivery' AND deliverylist.status!='Expired'"
         dbcursor.execute(query)
 
         result=dbcursor.fetchall()
