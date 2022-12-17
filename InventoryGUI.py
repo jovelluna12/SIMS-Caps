@@ -134,31 +134,31 @@ class InvortoryGUI:
         price = StringVar()
 
         self.Product_ID_LA = Label(self.Frame_Add, text="Product ID")
-        self.Product_ID_EN = Entry(self.Frame_Add, width=20, textvariable=idd, borderwidth=4, state='disabled')
-        self.Product_ID_LA.place(x=200, y=70)
-        self.Product_ID_EN.place(x=200, y=90)
+        self.Product_ID_EN = Entry(self.Frame_Add, width=10, textvariable=idd, borderwidth=4, state='disabled')
+        self.Product_ID_LA.place(x=40, y=70)
+        self.Product_ID_EN.place(x=40, y=90)
 
         self.Product_Price_LA = Label(self.Frame_Add, text="Product Name")
-        self.Product_Price_EN = Entry(self.Frame_Add, width=20, textvariable=namee, borderwidth=4, state='disabled')
-        self.Product_Price_LA.place(x=380, y=70)
-        self.Product_Price_EN.place(x=380, y=90)
+        self.Product_Price_EN = Entry(self.Frame_Add, width=45, textvariable=namee, borderwidth=4, state='disabled')
+        self.Product_Price_LA.place(x=115, y=70)
+        self.Product_Price_EN.place(x=115, y=90)
 
-        self.Product_Stack_LA = Label(self.Frame_Add, text="Price")
-        self.Product_price_EN = Entry(self.Frame_Add, width=20, textvariable=price, borderwidth=4, state='disabled')
-        self.Product_Stack_LA.place(x=650, y=150)
-        self.Product_price_EN.place(x=650, y=170)
+        self.Product_Stack_LA=Label(self.Frame_Add,text="Price")
+        self.Product_price_EN= Entry(self.Frame_Add,width=10,textvariable=price,borderwidth=4,state='disabled')
+        self.Product_Stack_LA.place(x=400,y=70)
+        self.Product_price_EN.place(x=400,y=90)
+
+        self.Product_Stack_LA=Label(self.Frame_Add,text="Quantity")
+        self.Product_Stack_EN= Entry(self.Frame_Add,width=10,textvariable=qty,borderwidth=4,state='disabled')
+        self.Product_Stack_LA.place(x=475,y=70)
+        self.Product_Stack_EN.place(x=475,y=90)
 
         self.Product_date_LA = Label(self.Frame_Add, text="Expiry Date")
         self.Product_date_EN = DateEntry(self.Frame_Add, selectmode='day', width=20, state='disabled')
-        self.Product_date_LA.place(x=450, y=120)
-        self.Product_date_EN.place(x=450, y=140)
+        self.Product_date_LA.place(x=550, y=70)
+        self.Product_date_EN.place(x=550, y=90)
 
-        self.Product_Stack_LA = Label(self.Frame_Add, text="Quantity")
-        self.Product_Stack_EN = Entry(self.Frame_Add, width=20, textvariable=qty, borderwidth=4, state='disabled')
-        self.Product_Stack_LA.place(x=520, y=70)
-        self.Product_Stack_EN.place(x=520, y=90)
-
-        Label(self.Frame_Add, text="Confirming Delivery will Mark it as Received and Sellable").place(x=100, y=130)
+        Label(self.Frame_Add, text="Confirming Delivery Received Product",font=("Arial", 30)).place(x=10, y=10)
 
         self.frame_Table = ttk.Treeview(self.Frame_ListD, height=15)
         self.frame_Table['columns'] = ("ID", "Name", "Price", "Quantity", "Order Date", "Expiration Date")
@@ -198,7 +198,7 @@ class InvortoryGUI:
             self.frame_Table.delete(*self.frame_Table.get_children())
 
         self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
-        self.button.place(x=100, y=90)
+        self.button.place(x=600, y=150)
 
         def saveChanges():
             selectedItem = self.frame_Table.selection()[0]
@@ -207,7 +207,7 @@ class InvortoryGUI:
             idd.get(), namee.get(), price.get(), qty.get(), x, self.frame_Table.item(item)['values'][5]))
 
         self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
-        self.button.place(x=700, y=90)
+        self.button.place(x=710, y=150)
 
         def selectItem(event):
             selected_item = self.frame_Table.selection()[0]
@@ -249,6 +249,8 @@ class InvortoryGUI:
 
         self.Frame_Del.pack()
         self.Label_title = Label(self.Frame_Del, text="Delivery Page", font=("Arial", 15)).place(x=0, y=0)
+        self.Button_Receive=Button(self.Frame_Del,text="Receive",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.Click_Delivery_onDouble_Click)
+        self.Button_Receive.place(x=945,y=0)
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
@@ -766,7 +768,7 @@ class InvortoryGUI:
         self.Add_Notify.protocol("WM_DELETE_WINDOW", self.close_window)
         self.Add_Notify.title("Export to Spreadsheet")
         self.Add_Notify.geometry("800x583")
-        self.Add_Notify.resizable(False, False)
+        self.Add_Notify.resizable(False,False)
 
         self.Frame_Add_nofi = Frame(self.Add_Notify, width=800, height=200)
         self.Frame_Add_nofi.place(x=0, y=0)
@@ -774,18 +776,18 @@ class InvortoryGUI:
         self.Frma = Label(self.Frame_Add_nofi, text="Export to Spreadsheet", width=20, font=("Arial", 35), anchor=W)
         self.Frma.place(x=10, y=10)
 
-        Label(self.Add_Notify, text="Select What to Export").place(x=20, y=70)
+        Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
         reports = ttk.Combobox(self.Add_Notify, width=20)
-        reports.place(x=20, y=90)
+        reports.place(x=20, y=100)
         reports['values'] = ("Sales", "Inventory", "Delivery")
 
-        Label(self.Add_Notify, text="Select Date Scope").place(x=250, y=70)
+        Label(self.Add_Notify, text="Select Date Scope").place(x=170, y=80)
         scope = DateEntry(self.Add_Notify, selectmode='day', width=20)
-        scope.place(x=250, y=90)
+        scope.place(x=170, y=100)
 
-        Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=450, y=70)
+        Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=350, y=100)
         export = Button(self.Add_Notify, text="Export", state='disabled')
-        export.place(x=500, y=90)
+        export.place(x=540, y=97)
 
         # Table for Exports ; this dont filter out with the data to be exported =========================
 
@@ -924,6 +926,8 @@ class InvortoryGUI:
                                     bg='#54FA9B', command=self.Click_Add_Product)
         self.btn_Notification = Button(self.Frame_Side, text="Export", padx=10, pady=10, width=10, height=1,
                                        bg='#54FA9B', command=self.notify_UI)
+        button_Out= Button(self.Frame_Side,text="Back Home",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.InvorVal.destroy)
+        button_Out.place(x=160,y=600)
 
         self.button_List.place(x=40, y=300)
         self.button_Stack.place(x=160, y=300)
