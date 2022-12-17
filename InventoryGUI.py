@@ -935,6 +935,8 @@ class InvortoryGUI:
         self.button_Add_Pm.place(x=40, y=500)
         # self.button_Add_prodref.place(x=160,y=500)
         self.btn_Notification.place(x=160, y=500)
+    
+        self.Click_List1()
 
         self.InvorVal.mainloop()
 

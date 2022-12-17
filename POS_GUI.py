@@ -113,7 +113,6 @@ def start(m,id,user,time):
         Product_CODE_EN = Entry(frame_Detail, width=50, borderwidth=5)
 
 
-
         # Frame Detail & Button of ProductList grid
         #Disabled entry
         Product_PIMG.place(x=150,y=40)
@@ -231,8 +230,23 @@ def Click_List():
     Search_Table.grid(row=0, column=0)
 
     def selectItem(a):
+        global code,product,price,qty
         curItem = Search_Table.selection()[0]
-        print(Search_Table.item(curItem)['values'])
+        code=Search_Table.item(curItem)['values'][0]
+        product=Search_Table.item(curItem)['values'][1]
+        price=Search_Table.item(curItem)['values'][2]
+        qty=Search_Table.item(curItem)['values'][3]
+        ProductCODE.config(state='normal')
+        Product_Name_EN.config(state='normal')
+        Product_Prices_EN.config(state='normal')
+
+        ProductCODE.insert(0,code)
+        Product_Name_EN.insert(0,product)
+        Product_Prices_EN.insert(0,price)
+
+        ProductCODE.config(state='disabled')
+        Product_Name_EN.config(state='disabled')
+        Product_Prices_EN.config(state='disabled')
 
     Search_Table.bind('<Double-1>', selectItem)
 
@@ -296,23 +310,24 @@ def search():
 
 def SearchItem(buttonpress):
     ProdCode = Product_CODE_EN
+
+    var="itemsLIST"
+    var2="quantityLIST"
+    var3="ProdCodee"
+    if var not in globals():
+        if var2 not in globals():
+            if var3 not in globals():
+                global ProdCodee
+                global itemsLIST
+                global quantityLIST
+
+                ProdCodee=[]
+                itemsLIST=[]
+                quantityLIST=[]
+
     if ProdCode.index("end")!=0:
         ProdCode=Product_CODE_EN.get()
         prod = Product.product()
-
-        
-        var="itemsLIST"
-        var2="quantityLIST"
-        var3="ProdCodee"
-        if var not in globals():
-            if var2 not in globals():
-                if var3 not in globals():
-                    global ProdCodee
-                    ProdCodee=[]
-                    global itemsLIST
-                    global quantityLIST
-                    itemsLIST=[]
-                    quantityLIST=[]
 
         ProdCodee.append(ProdCode)
         result = prod.viewCode(ProdCode)
@@ -327,29 +342,33 @@ def SearchItem(buttonpress):
                 Product_CODE_EN.delete(0, END)
 
                 name = StringVar()
-                price = StringVar()
+                pricee = StringVar()
                 name.set(result[1])
-                price.set(result[2])
+                pricee.set(result[2])
 
-                code=StringVar()
-                code.set(ProdCode)
+                codee=StringVar()
+                codee.set(ProdCode)
 
                 ProductCODE.config(state='normal')
                 Product_Name_EN.config(state='normal')
                 Product_Prices_EN.config(state='normal')
 
-                ProductCODE.insert(0,code.get())
+                ProductCODE.insert(0,codee.get())
                 Product_Name_EN.insert(0,name.get())
-                Product_Prices_EN.insert(0,price.get())
+                Product_Prices_EN.insert(0,pricee.get())
 
                 ProductCODE.config(state='disabled')
                 Product_Name_EN.config(state='disabled')
                 Product_Prices_EN.config(state='disabled')
 
-                quantity = 1
-                result1=(result[0],result[1],result[2],quantity,result[3])
+                result1=(result[0],result[1],result[2],result[3])
 
                 button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(result1))
+    elif ProdCode.index("end")==0 and ProductCODE.index('end')!=0 and Product_Name_EN.index('end')!=0 and Product_Prices_EN.index('end')!=0:
+        ProdCodee.append(code)
+        prod=Product.product()
+
+        button_confirm.config(state="active",command=lambda m="confirm":Click_Enter((code,product,price,qty)))
 
     else: messagebox.showerror("Product Search", "Product Code Empty")
 
@@ -371,8 +390,8 @@ def Click_Enter(result):
     ProdID=result[0]
     ProdName=result[1]
     ProdPrice=result[2]
-    ProdQTY=result[3]
-    RemainingQTY=result[4]
+    # ProdQTY=result[3]
+    RemainingQTY=result[3]
     def setQTY(val):
         call=0
         global ProdQTY
@@ -386,8 +405,6 @@ def Click_Enter(result):
 
         if call==0:
             if (ProdQTY>RemainingQTY):
-                qty_diff=ProdQTY-RemainingQTY
-                
                 messagebox.showerror("POS Transaction", "Not Enough QTY in Stock")
             else:
                 itemsLIST.append(ProdName)
@@ -496,7 +513,6 @@ def calculatechange(discount):
 def record(discount):
 
     totalamounttendered = Entry_Amount.get()
-    # try:
     total = int(float(totalamounttendered.strip()))
     change = total - finalprice
     
@@ -513,7 +529,6 @@ def record(discount):
         
         e = Employee.Employee()
         e.addNewTransaction(finalprice, discount, attendedBy, item_tuple)
-
         # close this window here
         Entry_Amount.config(state="disabled")
         Discount_Entry.config(state="disabled")
@@ -521,7 +536,7 @@ def record(discount):
         windowASK.destroy()
         Button(frame_Total,text="Next Transaction", command=newTransact).place(x=550,y=80)
         # button_Quantity.config(text="Done", command=windowASK.destroy)
-
+    
         for x in frame_Table.get_children():
             frame_Table.delete(x)
 

@@ -203,7 +203,7 @@ class GUI():
         self.stopButton.place(x=850, y=535)  
         pos=POS_GUI
         m="pos"
-        pos.start(m,result['user'][1],self.inTime)
+        pos.start(m, result['user'][0],result['user'][1],self.inTime)
 
     def timeOut(self,idx,binst):
         today = date.today()

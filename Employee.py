@@ -55,6 +55,7 @@ class Employee:
 
 
     def addNewTransaction(self,TotalPrice,Discount,attendedBy,items):
+        print("addnew transaction")
         PurchaseID, InvoiceNumber = randomNumGen.generateNum()
 
         dbcursor=self.cursor
@@ -87,7 +88,6 @@ class Employee:
         dbcursor.execute(query)
 
         result=dbcursor.fetchall()
-        print(result)
         return result
 
     def addProducttoDeliveryList(self,productName,itemCode,Quantity,status,Price,ExpiryDate):
