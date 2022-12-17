@@ -164,7 +164,7 @@ def start(m,id,user,time):
                               command=lambda m="enter": SearchItem(m))
         button_DEL = Button(frame_Detail, text="DELETE", padx=14, pady=12, bg="green", command=Click_Delete)
         button_List = Button(frame_Detail, text="List", padx=25, pady=12, bg="green", command=Click_List)
-        button_confirm = Button(frame_Detail, text="QTY", padx=3, pady=12, state="disabled")
+        button_confirm = Button(frame_Detail, text="QTY", padx=12, pady=12, state="disabled")
         button_final_payment = Button(frame_Detail, text="Finish", padx=9, pady=12, command=payment, state="disabled")
 
         ButtonClear=Button(frame_Detail, text="Clear",padx=20, pady=12, bg="green",command=Click_Remove)
@@ -205,22 +205,22 @@ def Click_List():
     global Search_Table
     window_list = Toplevel()
     window_list.title("PRODUCT LISTS!")
-    window_list.geometry("460x320")
+    window_list.geometry("600x370")
 
-    window_Frame = Frame(window_list, width=400, height=100)
-    window_Frame.grid(row=0, column=0)
+    window_FrameL = Frame(window_list, width=600, height=100)
+    window_FrameL.grid(row=0, column=0)
 
-    window_Frame2 = Frame(window_list, width=400, height=250, bg="blue")
-    window_Frame2.grid(row=1, column=0)
+    window_Frame2 = Frame(window_list, width=600, height=270,highlightbackground="black", highlightthickness=1, padx=5, pady=5)
+    window_Frame2.place(x=0,y=100)
 
     Search_Table = ttk.Treeview(window_Frame2, height=12)
     Search_Table['column'] = ("ID", "Name", "Price",'Batch Number',"Stack")
     Search_Table.column("#0", width=0, stretch=NO, anchor=W)
     Search_Table.column("ID", width=50, stretch=NO, anchor=W)
-    Search_Table.column("Name", width=148, stretch=NO, anchor=W)
+    Search_Table.column("Name", width=290, stretch=NO, anchor=W)
     Search_Table.column("Batch Number", width=100, stretch=NO, anchor=W)
-    Search_Table.column("Price", width=80, stretch=NO, anchor=E)
-    Search_Table.column("Stack", width=80, stretch=NO, anchor=E)
+    Search_Table.column("Price", width=70, stretch=NO, anchor=E)
+    Search_Table.column("Stack", width=70, stretch=NO, anchor=E)
 
     Search_Table.heading("#0")
     Search_Table.heading("ID", text="ID", anchor=W)
@@ -228,18 +228,17 @@ def Click_List():
     Search_Table.heading("Batch Number", text="Batch No", anchor=W)
     Search_Table.heading("Price", text="Price", anchor=W)
     Search_Table.heading("Stack", text="Stack", anchor=W)
-    Search_Table.grid(row=0, column=0)
+    Search_Table.place(x=0,y=0)
 
-    Label_Search = Label(window_Frame, text="Search:")
-    Entry_Search = Entry(window_Frame, width=50, borderwidth=3)
-    button_Search = Button(window_Frame, text="Search", padx=5, pady=0, command=search)
+    Label_ListT = Label(window_FrameL, text="Product List",font=("Arial", 25, "bold"))
+    Label_ListT.place(x=5,y=10)
+    Label_Search = Label(window_FrameL, text="Search:")
+    Entry_Search = Entry(window_FrameL, width=50, borderwidth=3)
+    button_Search = Button(window_FrameL, text="Search", padx=5, pady=0, command=search)
 
-    Label_Search.grid(row=0, column=0, sticky=W)
-    Entry_Search.grid(row=0, column=1)
-    button_Search.grid(row=0, column=3)
-
-    window_Frame3 = Frame(window_list, width=400, height=50, bg="blue")
-    window_Frame3.grid(row=2, column=0)
+    Label_Search.place(x=50,y=70)
+    Entry_Search.place(x=100,y=70)
+    button_Search.place(x=410,y=68)
 
     m = Manager.Manager()
     m1 = m.viewInv()
@@ -252,8 +251,8 @@ def Click_List():
             count += 1
             Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
-    button_Close = Button(window_Frame3, text="Close", command=window_list.destroy)
-    button_Close.pack()
+    button_Close = Button(window_FrameL, text="Close", command=window_list.destroy)
+    button_Close.place(x=500,y=68)
 
 def search():
     search_field = Entry_Search.get()
@@ -352,15 +351,21 @@ def Click_Enter(result):
 
     window_Qty = Toplevel()
     window_Qty.title("Quantity!")
-    window_Qty.geometry("300x120")
+    window_Qty.geometry("330x150")
+    window_Qty.resizable(False, False)
 
-    window_Frame = Frame(window_Qty, width=400, height=100)
+    window_Frame = Frame(window_Qty, width=340, height=150)
     window_Frame.pack()
 
-    Label_Quantity = Label(window_Frame, text="Enter the Quantity of the Products!")
+    Label_Quantity = Label(window_Frame, text="Enter Quantity Products!",font=("Arial", 20))
 
-    Entry_Quantity = Entry(window_Frame, width=30, borderwidth=3)
+    Entry_Quantity = Entry(window_Frame, width=35, borderwidth=3,font=("Arial", 10))
     button_Quantity = Button(window_Frame, text="ENTER", padx=5, pady=5, command=lambda m=Entry_Quantity.get():setQTY(Entry_Quantity.get()))
+
+    
+    Label_Quantity.place(x=10,y=20)
+    Entry_Quantity.place(x=30,y=70)
+    button_Quantity.place(x=120,y=100)
 
     ProdID=result[0]
     ProdName=result[1]
@@ -425,9 +430,6 @@ def Click_Enter(result):
 
                     window_Qty.destroy()
 
-    Label_Quantity.pack()
-    Entry_Quantity.pack()
-    button_Quantity.pack()
 
 def payment():
         global Entry_Amount
@@ -437,27 +439,27 @@ def payment():
 
         windowASK=Toplevel()
         windowASK.title("Payment")
-        windowASK.geometry("200x180")
-        window = Frame(windowASK)
-        window.pack()
+        windowASK.geometry("230x220")
+        windowPay = Frame(windowASK,width=230,height=220)
+        windowPay.pack()
 
         global totalpricelabel
-        totalpricelabel=Label(windowASK,text=totalprice)
-        Labell = Label(windowASK, text="Total Price")
-        Entry_Amount = Entry(windowASK, width=30, borderwidth=3,state="disabled")
+        totalpricelabel=Label(windowPay,font=("Arial", 20),text=totalprice)
+        Labell = Label(windowPay, text="Total Price",font=("Arial", 25))
+        Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
         global button_Quantity
-        button_Quantity = Button(windowASK, text="Compute Discount", padx=5, pady=5, command=discount)
+        button_Quantity = Button(windowPay, text="Compute Discount", padx=5, pady=5, command=discount)
 
-        Discount_LBL=Label(windowASK, text="Enter Discount, Leave Blank if None")
-        Discount_Entry=Entry(windowASK, width=30, borderwidth=3)
+        Discount_LBL=Label(windowPay, text="Enter Discount, Leave Blank if None")
+        Discount_Entry=Entry(windowPay, width=30, borderwidth=3)
         
-        Labell.pack()
-        totalpricelabel.pack()
-        Entry_Amount.pack()
+        Labell.place(x=5,y=5)
+        totalpricelabel.place(x=85,y=50)
+        Entry_Amount.place(x=25,y=90)
 
-        Discount_LBL.pack()
-        Discount_Entry.pack()
-        button_Quantity.pack()
+        Discount_LBL.place(x=25,y=120)
+        Discount_Entry.place(x=25,y=140)
+        button_Quantity.place(x=53,y=172)
 
 def discount():
     if not Discount_Entry.get():
@@ -481,10 +483,10 @@ def calculatechange(discount):
     fprice = StringVar()
     finalprice=totalprice-discount
 
-    finalpricee = "Final Price: " + str(finalprice)
+    #  finalpricee = "Final Price: " + str(finalprice)
 
-    fprice.set(str(finalprice))
-    Labell.config(text=finalpricee)
+    # fprice.set(str(finalprice))
+    # Labell.config(text=finalpricee)
 
 
 def record(discount):
@@ -496,7 +498,8 @@ def record(discount):
     
 
     if (total < finalprice):
-        totalpricelabel.config(text="Entered Amount Not Enough!")
+        # totalpricelabel.config(text="Entered Amount Not Enough!")
+        messagebox.showerror("Amount Not Enough!", "Please Enter the Right Amount")
     else:
         Labell.config(text="Change: " + "{:.2f}".format(change))
         Totalchange_Entry.config(text=change)

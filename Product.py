@@ -98,7 +98,7 @@ class product:
         return result
     def addMany_Del(self,vals):
         dbcursor = self.dbcursor
-        query = "INSERT INTO products VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
+        query = "INSERT INTO products (ProductID,ref_id,ProductName,quantity,price,status,batch_code,expiry_date) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
 
         dbcursor.executemany(query, vals)
         dbConnector.db.commit()
