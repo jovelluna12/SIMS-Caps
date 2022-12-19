@@ -434,8 +434,8 @@ def Click_Enter(result):
                         Product_Name_EN.config(state='disabled')
                         Product_Prices_EN.config(state='disabled')
 
-                        frame_Table.insert(parent='', index='end', iid=ProdID, text=(ProdID, ProdName, ProdPrice, ProdQTY),
-                                           values=(ProdID, ProdName, ProdPrice, ProdQTY))
+                        frame_Table.insert(parent='', index='end', iid=ProdID, text=(ProdID, ProdName, ProdPrice, ProdQTY,float(ProdPrice*ProdQTY)),
+                                           values=(ProdID, ProdName, ProdPrice, ProdQTY,float(ProdPrice*ProdQTY)))
                         button_confirm.config(state="disabled")
 
                     except:

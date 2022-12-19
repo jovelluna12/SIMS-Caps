@@ -5,5 +5,5 @@ def forecast(x,y):
 
     reg.fit(x.values,y.values)
     ans=reg.predict([[200,10]])
-    print(int(ans))
-    print(reg.coef_)
+    
+    return int(ans)

@@ -1,5 +1,6 @@
-import Employee, dbConnector, ROP, Product
+import Employee, dbConnector, ROP, Product, forecast
 from datetime import datetime
+import pandas as pd
 class Manager (Employee.Employee):
     def __init__(self):
         self.dbcursor = dbConnector.dbcursor
@@ -28,13 +29,34 @@ class Manager (Employee.Employee):
     def get_export_data(self,report,date):
         dbcursor = self.dbcursor
         if report=="Sales":
-            query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item,purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.DatePurchased FROM salestransaction, purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND DatePurchased=%s;"
+            query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item,purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.DatePurchased FROM salestransaction, purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND DATE(salestransaction.DatePurchased) >= (DATE(NOW()) - INTERVAL 30 DAY);"
+            dbcursor.execute(query)
+            return dbcursor.fetchall()
+
         if report=="Inventory":
-            query="SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,SUM(products.quantity) FROM products_directory, products, deliverylist WHERE products.ref_id=products_directory.ref_id AND deliverylist.datepurchased=%s AND deliverylist.status='Under Delivery' AND products.status='Under Delivery';"
+            query="SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,SUM(products.quantity) AS QUANTITY FROM products_directory, products WHERE products.ref_id=products_directory.ref_id GROUP BY products.ref_id;;"
+            dbcursor.execute(query)
+
+            return dbcursor.fetchall()
         if report=="Delivery":
-            query="SELECT batch_code,ProductName,quantity,price,deliverylist.status FROM products,deliverylist WHERE deliverylist.status='Under Delivery' AND deliverylist.datepurchased=%s AND products.batch_code=deliverylist.BatchCode;"
-        dbcursor.execute(query,(str(date),))
-        return dbcursor.fetchall()
+            query="SELECT batch_code,ProductName,quantity,price,deliverylist.status FROM products,deliverylist WHERE deliverylist.status='Under Delivery' AND products.batch_code=deliverylist.BatchCode;"
+            dbcursor.execute(query)
+
+            return dbcursor.fetchall()
+
+        if report=="Forecast":
+            query="SELECT products.ProductID,products.ProductName,products.Quantity+SUM(purchasedproducts.Quantity ) as Quantity,products.price,SUM(purchasedproducts.Quantity ) AS NumberOfItemsSold FROM products, purchasedproducts,salestransaction WHERE STRCMP(purchasedproducts.Item , products.ProductName)=0 AND DATE(salestransaction.DatePurchased) >= (DATE(NOW()) - INTERVAL 30 DAY) GROUP BY purchasedproducts.Item;"
+            dbcursor.execute(query)
+
+            result=dbcursor.fetchall()
+            df=pd.DataFrame(result,columns=["ProductID","item","Quantity","Price","NumberOfItemsSold"])
+
+            X=df[["Quantity","Price"]]
+            y=df["NumberOfItemsSold"]
+            value=forecast.forecast(X,y)
+            
+            return result,value
+
 
     def notify_low_quantity(self):
         ROP=self.ROP.calculate_ROP()

@@ -8,32 +8,13 @@ class Owner(Employee.Employee):
     def __init__(self):
         self.dbcursor = dbConnector.dbcursor
 
-    def generateSalesReport(self):
-        print("Now Viewing Latest Sales Report")
-
-    def forecastSales(self):
-        query="SELECT products.ProductID,products.Quantity+SUM(purchasedproducts.Quantity ) as Quantity,products.price,SUM(purchasedproducts.Quantity ) AS NumberOfItemsSold FROM products, purchasedproducts WHERE STRCMP(purchasedproducts.Item , products.ProductName)=0 GROUP BY purchasedproducts.Item;"
-        cursor=self.dbcursor
-        cursor.execute(query)
-
-        result=cursor.fetchall()
-        dbConnector.db.commit()
-        dbConnector.db.close()
-
-        df=pd.DataFrame(result,columns=["ProductID","Quantity","Price","NumberOfItemsSold"])
-
-        X=df[["Quantity","Price"]]
-        y=df["NumberOfItemsSold"]
-        forecast.forecast(X,y)
-
-
     def selectEmp(self,id):
         query = "SELECT * FROM employees where EmpID=%s"
         cursor = self.dbcursor
         cursor.execute(query, id)
         result = cursor.fetchall()
         dbConnector.db.commit()
-        dbConnector.db.close()
+
         return result
 
     def AddEmp(self,EmpID,name, username, password, role):
