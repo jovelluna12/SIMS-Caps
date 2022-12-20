@@ -26,10 +26,10 @@ class Manager (Employee.Employee):
         result=dbcursor.fetchall()
         return result
 
-    def get_export_data(self,report,date):
+    def get_export_data(self,report):
         dbcursor = self.dbcursor
         if report=="Sales":
-            query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item,purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.DatePurchased FROM salestransaction, purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND DATE(salestransaction.DatePurchased) >= (DATE(NOW()) - INTERVAL 30 DAY);"
+            query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item,purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.DatePurchased FROM salestransaction, purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND DATE(salestransaction.DatePurchased) >= (DATE(NOW()) - INTERVAL 30 DAY) ORDER BY DatePurchased;"
             dbcursor.execute(query)
             return dbcursor.fetchall()
 
@@ -53,16 +53,9 @@ class Manager (Employee.Employee):
 
             X=df[["Quantity","Price"]]
             y=df["NumberOfItemsSold"]
-            value=forecast.forecast(X,y)
             
-            return result,value
-
-
-    def notify_low_quantity(self):
-        ROP=self.ROP.calculate_ROP()
-        quantity=0
-        if quantity<=ROP:
-            return "Low Product"
+            res,value=forecast.forecast(X,y)
+            return res,value
 
     def addNote(self,val):
         dbcursor=self.dbcursor

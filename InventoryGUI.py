@@ -1,6 +1,7 @@
 from logging import root
 import datetime
 from datetime import datetime
+from datetime import date
 
 import tkinter as tk
 from tkinter import *
@@ -780,9 +781,11 @@ class InvortoryGUI:
         reports.place(x=20, y=100)
         reports['values'] = ("Sales", "Inventory", "Delivery","Forecast")
 
-        Label(self.Add_Notify, text="Select Date Scope").place(x=170, y=80)
-        scope = DateEntry(self.Add_Notify, selectmode='day', width=20)
+        Label(self.Add_Notify, text="Select Scope").place(x=170, y=80)
+        scope = ttk.Combobox(self.Add_Notify, width=20)
+        scope['values']=("Monthly", "Yearly","Daily")
         scope.place(x=170, y=100)
+
 
         Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=350, y=100)
         export = Button(self.Add_Notify, text="Export", state='disabled')
@@ -790,29 +793,33 @@ class InvortoryGUI:
 
         self.export_Table = ttk.Treeview(self.Add_Notify, height=15)
 
+        def set_scope(event):
+            print("here")
+
+        scope.bind('<<ComboboxSelected>>',set_scope)
+
         def export_report():
             report_type = reports.get()
-            date = scope.get_date()
             man = Manager.Manager()
 
             if report_type == 'Sales':
-                result = man.get_export_data(report_type, date)
-                df = pd.DataFrame(result, columns=['Invoice Number', 'Purchase ID', 'Item', 'Quantity', 'Total Price',
+                result = man.get_export_data(report_type)
+                df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
                                                    'Discount', 'Date Purchased'])
             if report_type == 'Inventory':
-                result = man.get_export_data(report_type, date)
+                result = man.get_export_data(report_type)
                 df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
 
             if report_type == "Delivery":
-                result = man.get_export_data(report_type, date)
+                result = man.get_export_data(report_type)
                 df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
 
             if report_type == 'Forecast':
-                result, value = man.get_export_data(report_type, date)
+                result, value = man.get_export_data(report_type)
                 df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price','Items Sold'])
                 df.insert(5,"30 Day Forecast",value)
 
-            title = str.lower(report_type) + str(date) + '.xlsx'
+            title = str.lower(report_type) + str(date.today()) + '.xlsx'
             df.to_excel(title, str(report_type))
             message = "Saved to ", title
             messagebox.showinfo("Exported Successfully", "Saved to " + title)
@@ -822,15 +829,16 @@ class InvortoryGUI:
 
             self.export_Table.delete(*self.export_Table.get_children())
             report_type = reports.get()
-            date = scope.get_date()
+            # date = scope.get_date()
             man = Manager.Manager()
-            result = man.get_export_data(report_type, date)
+            result = man.get_export_data(report_type)
 
             if report_type == 'Sales':
                 self.export_Table['columns'] = (
-                "Invoice Number", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
+                "Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
                 self.export_Table.column("#0", width=0, stretch=NO)
                 self.export_Table.column("Invoice Number", anchor=W, width=100)
+                self.export_Table.column("Purchase ID", anchor=W, width=100)
                 self.export_Table.column("Item", anchor=W, width=250)
                 self.export_Table.column("Quantity", anchor=E, width=100)
                 self.export_Table.column("Total Price", anchor=E, width=100)
@@ -839,6 +847,7 @@ class InvortoryGUI:
 
                 self.export_Table.heading("#0")
                 self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
+                self.export_Table.heading("Purchase ID", text="Purchase ID", anchor=W)
                 self.export_Table.heading("Item", text="Item", anchor=W)
                 self.export_Table.heading("Quantity", text="Quantity", anchor=W)
                 self.export_Table.heading("Total Price", text="Total Price", anchor=W)
@@ -884,9 +893,11 @@ class InvortoryGUI:
                 self.export_Table.place(x=0, y=250)
 
             if report_type == 'Forecast':
-                result,values = man.get_export_data(report_type, date)
+                # Label(self.Add_Notify,text="NOTE: Forecast will not be Accurate during the First Time Use, when Data is Limited.").place(x=0, y=150)
+                
+                result,values = man.get_export_data(report_type)
                 self.export_Table['columns'] = (
-                'Id','Item','Quantity','Price','Items Sold','30 Day Forecast')
+                'Id','Item','Quantity','Price','30 Day Forecast')
                 self.export_Table.column("#0", width=0, stretch=NO)
                 self.export_Table.column("Id", anchor=W, width=100)
                 self.export_Table.column("Item", anchor=W, width=250)
@@ -899,7 +910,6 @@ class InvortoryGUI:
                 self.export_Table.heading("Item", text="Item", anchor=W)
                 self.export_Table.heading("Quantity", text="Quantity", anchor=W)
                 self.export_Table.heading("Price", text="Price", anchor=W)
-                self.export_Table.heading("Items Sold", text="Items Sold", anchor=W)
                 self.export_Table.heading("30 Day Forecast", text="30 Day Forecast", anchor=W)
 
                 self.export_Table.place(x=0, y=250)
@@ -908,7 +918,7 @@ class InvortoryGUI:
           
             if report_type == 'Forecast':
                 for item in range(len(result)):
-                    self.export_Table.insert('', index='end', iid=count, text=(item,values), values=(result[item][0],result[item][1],result[item][2],result[item][3],result[item][4],values))
+                    self.export_Table.insert('', index='end', iid=count, text=(item,values), values=(result[item][0],result[item][1],result[item][2],result[item][3],values))
                     count += 1
             else:
                 for item in result:
@@ -916,7 +926,6 @@ class InvortoryGUI:
                     count += 1
 
         reports.bind('<<ComboboxSelected>>',reports_callback)
-        scope.bind('<<DateEntrySelected>>',reports_callback)
 
         self.Add_Notify.mainloop()
 

@@ -1,9 +1,27 @@
 from sklearn import linear_model
+import pandas as pd
+import numpy as np
+import dbConnector
+
+global model
 
 def forecast(x,y):
+    dbcursor = dbConnector.dbcursor
     reg=linear_model.LinearRegression()
-
     reg.fit(x.values,y.values)
-    ans=reg.predict([[200,10]])
+
+    query="SELECT products.ProductID,products.ProductName,products.quantity,products.price FROM products WHERE status='Sellable';"
+    dbcursor.execute(query)
+    result=dbcursor.fetchall()
     
-    return int(ans)
+    x1=[]
+    x2=[]
+    for i in range(len(result)):
+        x1.append(result[i][2])
+        x2.append(result[i][3])
+
+    
+    X = np.column_stack((x1, x2))
+    ans=round(reg.predict(X)[0])
+
+    return result,ans
