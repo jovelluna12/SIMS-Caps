@@ -198,81 +198,95 @@ def Button_LOGIC(Number):
     Product_CODE_EN.delete(0, END)
     Product_CODE_EN.insert(0, str(current) + str(Number))
 
+global PageOpen
+PageOpen = 1
 # Button List
 def Click_List():
-    global Entry_Search
-    global Search_Table
-    window_list = Toplevel()
-    window_list.title("PRODUCT LISTS!")
-    window_list.geometry("600x370")
+    global PageOpen
+    def on_close():
+        global PageOpen
+        if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
+            PageOpen=1
+            window_list.destroy()
+    if PageOpen<2:
+        global Entry_Search
+        global Search_Table
+        window_list = Toplevel()
+        window_list.title("PRODUCT LISTS!")
+        window_list.geometry("600x370")
+        window_list.protocol("WM_DELETE_WINDOW",on_close)
 
-    window_FrameL = Frame(window_list, width=600, height=100)
-    window_FrameL.grid(row=0, column=0)
+        window_FrameL = Frame(window_list, width=600, height=100)
+        window_FrameL.grid(row=0, column=0)
 
-    window_Frame2 = Frame(window_list, width=600, height=270,highlightbackground="black", highlightthickness=1, padx=5, pady=5)
-    window_Frame2.place(x=0,y=100)
+        window_Frame2 = Frame(window_list, width=600, height=270,highlightbackground="black", highlightthickness=1, padx=5, pady=5)
+        window_Frame2.place(x=0,y=100)
 
-    Search_Table = ttk.Treeview(window_Frame2, height=12)
-    Search_Table['column'] = ("ID", "Name", "Price",'Batch Number',"Stack")
-    Search_Table.column("#0", width=0, stretch=NO, anchor=W)
-    Search_Table.column("ID", width=50, stretch=NO, anchor=W)
-    Search_Table.column("Name", width=290, stretch=NO, anchor=W)
-    Search_Table.column("Batch Number", width=100, stretch=NO, anchor=W)
-    Search_Table.column("Price", width=70, stretch=NO, anchor=E)
-    Search_Table.column("Stack", width=70, stretch=NO, anchor=E)
+        Search_Table = ttk.Treeview(window_Frame2, height=12)
+        Search_Table['column'] = ("ID", "Name", "Price",'Batch Number',"Stack")
+        Search_Table.column("#0", width=0, stretch=NO, anchor=W)
+        Search_Table.column("ID", width=50, stretch=NO, anchor=W)
+        Search_Table.column("Name", width=290, stretch=NO, anchor=W)
+        Search_Table.column("Batch Number", width=100, stretch=NO, anchor=W)
+        Search_Table.column("Price", width=70, stretch=NO, anchor=E)
+        Search_Table.column("Stack", width=70, stretch=NO, anchor=E)
 
-    Search_Table.heading("#0")
-    Search_Table.heading("ID", text="ID", anchor=W)
-    Search_Table.heading("Name", text="Name", anchor=W)
-    Search_Table.heading("Batch Number", text="Batch No", anchor=W)
-    Search_Table.heading("Price", text="Price", anchor=W)
-    Search_Table.heading("Stack", text="Stack", anchor=W)
-    Search_Table.place(x=0,y=0)
+        Search_Table.heading("#0")
+        Search_Table.heading("ID", text="ID", anchor=W)
+        Search_Table.heading("Name", text="Name", anchor=W)
+        Search_Table.heading("Batch Number", text="Batch No", anchor=W)
+        Search_Table.heading("Price", text="Price", anchor=W)
+        Search_Table.heading("Stack", text="Stack", anchor=W)
+        Search_Table.place(x=0,y=0)
 
-    Label_ListT = Label(window_FrameL, text="Product List",font=("Arial", 25, "bold"))
-    Label_ListT.place(x=5,y=10)
-    def selectItem(a):
-        global code,product,price,qty
-        curItem = Search_Table.selection()[0]
-        code=Search_Table.item(curItem)['values'][0]
-        product=Search_Table.item(curItem)['values'][1]
-        price=Search_Table.item(curItem)['values'][2]
-        qty=Search_Table.item(curItem)['values'][3]
-        ProductCODE.config(state='normal')
-        Product_Name_EN.config(state='normal')
-        Product_Prices_EN.config(state='normal')
+        Label_ListT = Label(window_FrameL, text="Product List",font=("Arial", 25, "bold"))
+        Label_ListT.place(x=5,y=10)
+        def selectItem(a):
+            global code,product,price,qty
+            curItem = Search_Table.selection()[0]
+            code=Search_Table.item(curItem)['values'][0]
+            product=Search_Table.item(curItem)['values'][1]
+            price=Search_Table.item(curItem)['values'][2]
+            qty=Search_Table.item(curItem)['values'][3]
+            ProductCODE.config(state='normal')
+            Product_Name_EN.config(state='normal')
+            Product_Prices_EN.config(state='normal')
 
-        ProductCODE.insert(0,code)
-        Product_Name_EN.insert(0,product)
-        Product_Prices_EN.insert(0,price)
+            ProductCODE.insert(0,code)
+            Product_Name_EN.insert(0,product)
+            Product_Prices_EN.insert(0,price)
 
-        ProductCODE.config(state='disabled')
-        Product_Name_EN.config(state='disabled')
-        Product_Prices_EN.config(state='disabled')
+            ProductCODE.config(state='disabled')
+            Product_Name_EN.config(state='disabled')
+            Product_Prices_EN.config(state='disabled')
 
-    Search_Table.bind('<Double-1>', selectItem)
+        Search_Table.bind('<Double-1>', selectItem)
 
-    Label_Search = Label(window_FrameL, text="Search:")
-    Entry_Search = Entry(window_FrameL, width=50, borderwidth=3)
-    button_Search = Button(window_FrameL, text="Search", padx=5, pady=0, command=search)
+        Label_Search = Label(window_FrameL, text="Search:")
+        Entry_Search = Entry(window_FrameL, width=50, borderwidth=3)
+        button_Search = Button(window_FrameL, text="Search", padx=5, pady=0, command=search)
 
-    Label_Search.place(x=50,y=70)
-    Entry_Search.place(x=100,y=70)
-    button_Search.place(x=410,y=68)
+        Label_Search.place(x=50,y=70)
+        Entry_Search.place(x=100,y=70)
+        button_Search.place(x=410,y=68)
 
-    m = Manager.Manager()
-    m1 = m.viewInv()
-    count = 0
-    if len(m1) == 0:
-        for item in Search_Table.get_children():
-            Search_Table.delete(item)
+        m = Manager.Manager()
+        m1 = m.viewInv()
+        count = 0
+        if len(m1) == 0:
+            for item in Search_Table.get_children():
+                Search_Table.delete(item)
+        else:
+            for x in m1:
+                count += 1
+                Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+        button_Close = Button(window_FrameL, text="Close", command=on_close)
+        button_Close.place(x=500,y=68)
+    
+        PageOpen+=1
     else:
-        for x in m1:
-            count += 1
-            Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-
-    button_Close = Button(window_FrameL, text="Close", command=window_list.destroy)
-    button_Close.place(x=500,y=68)
+        messagebox.showinfo("Error","The Window already Open!")
 
 def search():
     search_field = Entry_Search.get()

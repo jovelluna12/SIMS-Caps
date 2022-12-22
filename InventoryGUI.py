@@ -12,10 +12,8 @@ import Employee
 import Manager
 from tkcalendar import DateEntry
 from PIL import Image, ImageTk
-
 import Product
 import randomNumGen
-
 import pandas as pd
 from openpyxl.workbook import Workbook
 import os
@@ -25,6 +23,10 @@ class InvortoryGUI:
 
     def __init__(self):
         self.InvorVal = None
+        global PageOpen
+        PageOpen = 1
+        global PageOpen_Sub
+        PageOpen_Sub=1
 
     def search(self):
         result = self.Entry_Search.get()
@@ -108,135 +110,153 @@ class InvortoryGUI:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
+
+    def Add_Delivery1_close(self):
+            global PageOpen
+            if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
+                PageOpen=1
+                self.Add_Delivery1.destroy()
+
     def ClickDelivery_onClick(self):
-        item = self.frame_Table.selection()[0]
-        batch = self.frame_Table.item(item)['values'][0]
-        prod = Product.product()
+        global PageOpen
+        if PageOpen < 2:
+            if self.frame_Table != 0:
+                messagebox.showinfo("Error","Sorry their no Item to Receive!")
+            else:
+                item = self.frame_Table.selection()[0]
+                batch = self.frame_Table.item(item)['values'][0]
+                prod = Product.product()
 
-        batch = (batch,)
-        result = prod.retrieveBatch(batch)
+                batch = (batch,)
+                result = prod.retrieveBatch(batch)
 
-        self.Add_Delivery = Toplevel()
-        self.Add_Delivery.title("Confirm Delivery")
-        self.Add_Delivery.geometry("800x550")
-        self.Add_Delivery.resizable(False, False)
+                self.Add_Delivery1= Toplevel()
+                self.Add_Delivery1.title("Confirm Delivery")
+                self.Add_Delivery1.geometry("800x550")
+                self.Add_Delivery1.resizable(False, False)
+                self.Add_Delivery1.protocol("WM_DELETE_WINDOW",self.Add_Delivery1_close)
 
-        self.Frame_Add = Frame(self.Add_Delivery, width=800, height=200)
-        self.Frame_Add.place(x=0, y=0)
+                self.Frame_Add = Frame(self.Add_Delivery1, width=800, height=200)
+                self.Frame_Add.place(x=0, y=0)
 
-        self.Frame_ListD = Frame(self.Add_Delivery, width=800, height=320, highlightbackground="black",
-                                 highlightthickness=1, padx=10, pady=10)
-        self.Frame_ListD.place(x=0, y=200)
+                self.Frame_ListD = Frame(self.Add_Delivery1, width=800, height=320, highlightbackground="black",
+                                        highlightthickness=1, padx=10, pady=10)
+                self.Frame_ListD.place(x=0, y=200)
 
-        global idd, namee, qty, price
-        idd = StringVar()
-        namee = StringVar()
-        qty = StringVar()
-        price = StringVar()
+                global idd, namee, qty, price
+                idd = StringVar()
+                namee = StringVar()
+                qty = StringVar()
+                price = StringVar()
 
-        self.Product_ID_LA = Label(self.Frame_Add, text="Product ID")
-        self.Product_ID_EN = Entry(self.Frame_Add, width=10, textvariable=idd, borderwidth=4, state='disabled')
-        self.Product_ID_LA.place(x=40, y=70)
-        self.Product_ID_EN.place(x=40, y=90)
+                self.Product_ID_LA = Label(self.Frame_Add, text="Product ID")
+                self.Product_ID_EN = Entry(self.Frame_Add, width=10, textvariable=idd, borderwidth=4, state='disabled')
+                self.Product_ID_LA.place(x=40, y=70)
+                self.Product_ID_EN.place(x=40, y=90)
 
-        self.Product_Price_LA = Label(self.Frame_Add, text="Product Name")
-        self.Product_Price_EN = Entry(self.Frame_Add, width=45, textvariable=namee, borderwidth=4, state='disabled')
-        self.Product_Price_LA.place(x=115, y=70)
-        self.Product_Price_EN.place(x=115, y=90)
+                self.Product_Price_LA = Label(self.Frame_Add, text="Product Name")
+                self.Product_Price_EN = Entry(self.Frame_Add, width=45, textvariable=namee, borderwidth=4, state='disabled')
+                self.Product_Price_LA.place(x=115, y=70)
+                self.Product_Price_EN.place(x=115, y=90)
 
-        self.Product_Stack_LA=Label(self.Frame_Add,text="Price")
-        self.Product_price_EN= Entry(self.Frame_Add,width=10,textvariable=price,borderwidth=4,state='disabled')
-        self.Product_Stack_LA.place(x=400,y=70)
-        self.Product_price_EN.place(x=400,y=90)
+                self.Product_Stack_LA=Label(self.Frame_Add,text="Price")
+                self.Product_price_EN= Entry(self.Frame_Add,width=10,textvariable=price,borderwidth=4,state='disabled')
+                self.Product_Stack_LA.place(x=400,y=70)
+                self.Product_price_EN.place(x=400,y=90)
 
-        self.Product_Stack_LA=Label(self.Frame_Add,text="Quantity")
-        self.Product_Stack_EN= Entry(self.Frame_Add,width=10,textvariable=qty,borderwidth=4,state='disabled')
-        self.Product_Stack_LA.place(x=475,y=70)
-        self.Product_Stack_EN.place(x=475,y=90)
+                self.Product_Stack_LA=Label(self.Frame_Add,text="Quantity")
+                self.Product_Stack_EN= Entry(self.Frame_Add,width=10,textvariable=qty,borderwidth=4,state='disabled')
+                self.Product_Stack_LA.place(x=475,y=70)
+                self.Product_Stack_EN.place(x=475,y=90)
 
-        self.Product_date_LA = Label(self.Frame_Add, text="Expiry Date")
-        self.Product_date_EN = DateEntry(self.Frame_Add, selectmode='day', width=20, state='disabled')
-        self.Product_date_LA.place(x=550, y=70)
-        self.Product_date_EN.place(x=550, y=90)
+                self.Product_date_LA = Label(self.Frame_Add, text="Expiry Date")
+                self.Product_date_EN = DateEntry(self.Frame_Add, selectmode='day', width=20, state='disabled')
+                self.Product_date_LA.place(x=550, y=70)
+                self.Product_date_EN.place(x=550, y=90)
 
-        Label(self.Frame_Add, text="Confirming Delivery Received Product",font=("Arial", 30)).place(x=10, y=10)
+                Label(self.Frame_Add, text="Confirming Delivery Received Product",font=("Arial", 30)).place(x=10, y=10)
 
-        self.frame_Table = ttk.Treeview(self.Frame_ListD, height=15)
-        self.frame_Table['columns'] = ("ID", "Name", "Price", "Quantity", "Order Date", "Expiration Date")
-        self.frame_Table.column("#0", width=0, stretch=NO)
-        self.frame_Table.column("ID", anchor=W, width=50)
-        self.frame_Table.column("Name", anchor=W, width=246)
-        self.frame_Table.column("Price", anchor=CENTER, width=100)
-        self.frame_Table.column("Quantity", anchor=E, width=80)
-        self.frame_Table.column("Order Date", anchor=E, width=150)
-        self.frame_Table.column("Expiration Date", anchor=E, width=150)
+                self.frame_Table = ttk.Treeview(self.Frame_ListD, height=15)
+                self.frame_Table['columns'] = ("ID", "Name", "Price", "Quantity", "Order Date", "Expiration Date")
+                self.frame_Table.column("#0", width=0, stretch=NO)
+                self.frame_Table.column("ID", anchor=W, width=50)
+                self.frame_Table.column("Name", anchor=W, width=246)
+                self.frame_Table.column("Price", anchor=CENTER, width=100)
+                self.frame_Table.column("Quantity", anchor=E, width=80)
+                self.frame_Table.column("Order Date", anchor=E, width=150)
+                self.frame_Table.column("Expiration Date", anchor=E, width=150)
 
-        self.frame_Table.heading("#0")
-        self.frame_Table.heading("ID", text="ID", anchor=W)
-        self.frame_Table.heading("Name", text="Product Name", anchor=W)
-        self.frame_Table.heading("Price", text="Price", anchor=CENTER)
-        self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
-        self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
-        self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
+                self.frame_Table.heading("#0")
+                self.frame_Table.heading("ID", text="ID", anchor=W)
+                self.frame_Table.heading("Name", text="Product Name", anchor=W)
+                self.frame_Table.heading("Price", text="Price", anchor=CENTER)
+                self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
+                self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
+                self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
 
-        self.frame_Table.pack(fill='both')
-        self.frame_Table.grid(row=1, column=0)
+                self.frame_Table.pack(fill='both')
+                self.frame_Table.grid(row=1, column=0)
 
-        def confirm_delivery():
-            prod = Product.product()
-            id = idd.get()
-            name = namee.get()
-            qtyy = qty.get()
 
-            for item in self.frame_Table.get_children():
-                id = self.frame_Table.item(item)['values'][0]
-                name = self.frame_Table.item(item)['values'][1]
-                priceeee = self.frame_Table.item(item)['values'][2]
-                qtyyy = self.frame_Table.item(item)['values'][3]
-                datee = self.frame_Table.item(item)['values'][5]
-                prod.editDelivery(id, name, priceeee, qtyyy, datee)
+                def confirm_delivery():
+                    prod = Product.product()
+                    id = idd.get()
+                    name = namee.get()
+                    qtyy = qty.get()
 
-            self.frame_Table.delete(*self.frame_Table.get_children())
-        
-        self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
-        self.button.place(x=600, y=150)
+                    for item in self.frame_Table.get_children():
+                        id = self.frame_Table.item(item)['values'][0]
+                        name = self.frame_Table.item(item)['values'][1]
+                        priceeee = self.frame_Table.item(item)['values'][2]
+                        qtyyy = self.frame_Table.item(item)['values'][3]
+                        datee = self.frame_Table.item(item)['values'][5]
+                        prod.editDelivery(id, name, priceeee, qtyyy, datee)
 
-        def saveChanges():
-            selectedItem = self.frame_Table.selection()[0]
-            x = self.frame_Table.item(item)['values'][4]
-            self.frame_Table.item(selectedItem, values=(
-            idd.get(), namee.get(), price.get(), qty.get(), x, self.frame_Table.item(item)['values'][5]))
+                    self.frame_Table.delete(*self.frame_Table.get_children())
+                
+                self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
+                self.button.place(x=600, y=150)
 
-        self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
-        self.button.place(x=710, y=150)
+                def saveChanges():
+                    selectedItem = self.frame_Table.selection()[0]
+                    x = self.frame_Table.item(item)['values'][4]
+                    self.frame_Table.item(selectedItem, values=(
+                    idd.get(), namee.get(), price.get(), qty.get(), x, self.frame_Table.item(item)['values'][5]))
 
-        def selectItem(event):
-            selected_item = self.frame_Table.selection()[0]
-            id = self.frame_Table.item(selected_item)['values'][0]
-            name = self.frame_Table.item(selected_item)['values'][1]
-            pricee = self.frame_Table.item(selected_item)['values'][2]
-            quantity = self.frame_Table.item(selected_item)['values'][3]
-            expire = self.frame_Table.item(selected_item)['values'][5]
+                self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
+                self.button.place(x=710, y=150)
+                
 
-            self.Product_Price_EN.config(state='normal')
-            self.Product_Stack_EN.config(state='normal')
-            self.Product_date_EN.config(state='normal')
-            self.Product_price_EN.config(state='normal')
+                def selectItem(event):
+                    selected_item = self.frame_Table.selection()[0]
+                    id = self.frame_Table.item(selected_item)['values'][0]
+                    name = self.frame_Table.item(selected_item)['values'][1]
+                    pricee = self.frame_Table.item(selected_item)['values'][2]
+                    quantity = self.frame_Table.item(selected_item)['values'][3]
+                    expire = self.frame_Table.item(selected_item)['values'][5]
 
-            date = datetime.strptime(expire, '%Y-%m-%d')
+                    self.Product_Price_EN.config(state='normal')
+                    self.Product_Stack_EN.config(state='normal')
+                    self.Product_date_EN.config(state='normal')
+                    self.Product_price_EN.config(state='normal')
 
-            self.Product_date_EN.set_date(date)
-            idd.set(id)
-            namee.set(name)
-            qty.set(quantity)
-            price.set(pricee)
+                    date = datetime.strptime(expire, '%Y-%m-%d')
 
-        count = 0
-        for i in result:
-            self.frame_Table.insert(parent='', index='end', iid=count, text=i, values=i)
-            count += 1
+                    self.Product_date_EN.set_date(date)
+                    idd.set(id)
+                    namee.set(name)
+                    qty.set(quantity)
+                    price.set(pricee)
 
-        self.frame_Table.bind("<Double-1>", selectItem)
+                count = 0
+                for i in result:
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=i, values=i)
+                    count += 1
+
+                self.frame_Table.bind("<Double-1>", selectItem)
+                PageOpen += 1
+        else:
+            messagebox.showinfo("Error","The Window is already Open!")
 
     def Click_Delivery(self):
         self.button_List.config(state="normal")
@@ -323,8 +343,6 @@ class InvortoryGUI:
     # Chick List and stack END~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # Chick ADD START!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def Click_AddP(self):
-        self.add_to_products
 
     def add_to_products(self):
         global order_date, arrival_date
@@ -419,104 +437,120 @@ class InvortoryGUI:
         status_list.clear()
 
 
-    def Click_Add(self):
-        self.Add_Del.config(state='disabled')
-        self.button_Add_Em.config(state='disabled')
-        self.button_Add_Pm.config(state='disabled')
-        self.btn_Notification.config(state='disabled')
+  
+    def Add_on_close(self):
+            global PageOpen
+            if messagebox.askokcancel('Close', 'Are you sure you want to close Window?'):
+                self.Add_Del['bg']='#54FA9B'
+                PageOpen=1
+                self.Add_Delivery.destroy()
 
-        self.Add_Delivery = Toplevel()
-        self.Add_Delivery.title("Add Products on Delivery")
-        self.Add_Delivery.geometry("800x550")
-        self.Add_Delivery.resizable(False, False)
+    def Click_Add_Delivery(self):
+        global PageOpen
+        if PageOpen < 2:
+            self.Add_Del['bg']='gray'
 
-        global btn, frame
-        btn = self.Add_Del
-        frame = self.Add_Delivery
+            self.Add_Delivery = Toplevel()
+            self.Add_Delivery.title("Add Products on Delivery")
+            self.Add_Delivery.geometry("800x550")
+            self.Add_Delivery.resizable(False, False)
 
-        self.Add_Delivery.protocol("WM_DELETE_WINDOW", self.close_window)
 
-        global lst
-        a = Product.product()
-        lst = a.returnall()
-        n = 1
+            global btn, frame
+            btn = self.Add_Del
+            frame = self.Add_Delivery
+            self.Add_Delivery.protocol("WM_DELETE_WINDOW", self.Add_on_close)
 
-        self.Frame_Add = Frame(self.Add_Delivery, width=800, height=200)
-        self.Frame_Add.place(x=0, y=0)
+            global lst
+            a = Product.product()
+            lst = a.returnall()
+            n = 1
 
-        self.chosen_val = tk.StringVar(self.Frame_Add)
-        self.chosen_val.set("Select Product")
-        global price_entry
-        price_entry = tk.StringVar()
+            self.Frame_Add = Frame(self.Add_Delivery, width=800, height=200)
+            self.Frame_Add.place(x=0, y=0)
 
-        self.APD = Label(self.Frame_Add, text="Add Products on Delivery", font=("Arial", 40)).place(x=10, y=5)
-        self.Product_CODE_LA = Label(self.Frame_Add, text="Select Product Name")
-        self.Product_CODE_EN = ttk.Combobox(self.Frame_Add, textvariable=self.chosen_val, state='readonly', width=50)
-        self.Product_CODE_LA.place(x=20, y=70)
-        self.Product_CODE_EN.place(x=20, y=90)
+            self.chosen_val = tk.StringVar(self.Frame_Add)
+            self.chosen_val.set("Select Product")
+            global price_entry
+            price_entry = tk.StringVar()
 
-        if lst != "empty":
-            self.Product_CODE_EN['values'] = ([x[n] for x in lst])
+            self.APD = Label(self.Frame_Add, text="Add Products on Delivery", font=("Arial", 40)).place(x=10, y=5)
+            self.Product_CODE_LA = Label(self.Frame_Add, text="Select Product Name")
+            self.Product_CODE_EN = ttk.Combobox(self.Frame_Add, textvariable=self.chosen_val, state='readonly', width=50)
+            self.Product_CODE_LA.place(x=20, y=70)
+            self.Product_CODE_EN.place(x=20, y=90)
 
-        self.Product_CODE_EN.bind("<<ComboboxSelected>>", self.setPrice)
+            if lst != "empty":
+                self.Product_CODE_EN['values'] = ([x[n] for x in lst])
 
-        self.Product_date_LA = Label(self.Frame_Add, text="Date")
-        self.Product_date_EN = DateEntry(self.Frame_Add, selectmode='day', width=20)
-        self.Product_date_LA.place(x=20, y=120)
-        self.Product_date_EN.place(x=20, y=140)
+            self.Product_CODE_EN.bind("<<ComboboxSelected>>", self.setPrice)
 
-        self.Product_Exdate_LA = Label(self.Frame_Add, text="Expiration Date")
-        self.Product_EXdate_EN = DateEntry(self.Frame_Add, selectmode='day', width=20)
-        self.Product_Exdate_LA.place(x=200, y=120)
-        self.Product_EXdate_EN.place(x=200, y=140)
+            self.Product_date_LA = Label(self.Frame_Add, text="Date")
+            self.Product_date_EN = DateEntry(self.Frame_Add, selectmode='day', width=20)
+            self.Product_date_LA.place(x=20, y=120)
+            self.Product_date_EN.place(x=20, y=140)
 
-        self.Product_Arrive_LA = Label(self.Frame_Add, text="Arrival Date")
-        self.Product_Arrive_EN = DateEntry(self.Frame_Add, selectmode='day', width=20)
-        self.Product_Arrive_LA.place(x=380, y=120)
-        self.Product_Arrive_EN.place(x=380, y=140)
+            self.Product_Exdate_LA = Label(self.Frame_Add, text="Expiration Date")
+            self.Product_EXdate_EN = DateEntry(self.Frame_Add, selectmode='day', width=20)
+            self.Product_Exdate_LA.place(x=200, y=120)
+            self.Product_EXdate_EN.place(x=200, y=140)
 
-        self.Product_Price_LA = Label(self.Frame_Add, text="Price")
-        self.Product_Price_EN = Entry(self.Frame_Add, width=20, borderwidth=4, textvariable=price_entry,
-                                      state='disabled')
-        self.Product_Price_LA.place(x=380, y=70)
-        self.Product_Price_EN.place(x=380, y=90)
+            self.Product_Arrive_LA = Label(self.Frame_Add, text="Arrival Date")
+            self.Product_Arrive_EN = DateEntry(self.Frame_Add, selectmode='day', width=20)
+            self.Product_Arrive_LA.place(x=380, y=120)
+            self.Product_Arrive_EN.place(x=380, y=140)
 
-        self.Product_Stack_LA = Label(self.Frame_Add, text="Quantity")
-        self.Product_Stack_EN = Entry(self.Frame_Add, width=20, borderwidth=4)
-        self.Product_Stack_LA.place(x=520, y=70)
-        self.Product_Stack_EN.place(x=520, y=90)
+            self.Product_Price_LA = Label(self.Frame_Add, text="Price")
+            self.Product_Price_EN = Entry(self.Frame_Add, width=20, borderwidth=4, textvariable=price_entry,
+                                        state='disabled')
+            self.Product_Price_LA.place(x=380, y=70)
+            self.Product_Price_EN.place(x=380, y=90)
 
-        self.button_Add = Button(self.Frame_Add, text="Add", padx=20, pady=5, command=self.add_to_products)
-        self.button_Add.place(x=700, y=150)
+            self.Product_Stack_LA = Label(self.Frame_Add, text="Quantity")
+            self.Product_Stack_EN = Entry(self.Frame_Add, width=20, borderwidth=4)
+            self.Product_Stack_LA.place(x=520, y=70)
+            self.Product_Stack_EN.place(x=520, y=90)
 
-        self.button_Delete = Button(self.Frame_Add, text="Delete", padx=20, pady=5, command=self.Delete)
-        self.button_Delete.place(x=700, y=110)
+            self.button_Add = Button(self.Frame_Add, text="Add", padx=20, pady=5, command=self.add_to_products)
+            self.button_Add.place(x=700, y=150)
 
-        self.Frame_List1 = Frame(self.Add_Delivery, width=800, height=320, highlightbackground="black",
-                                 highlightthickness=1, padx=10, pady=10)
-        self.Frame_List1.place(x=0, y=200)
-        # Table
-        self.frame_Table = ttk.Treeview(self.Frame_List1, height=15)
-        self.frame_Table['columns'] = ("ID", "Name", "Price", "Quantity", "Order Date", "Expiration Date")
-        self.frame_Table.column("#0", width=0, stretch=NO)
-        self.frame_Table.column("ID", anchor=W, width=50)
-        self.frame_Table.column("Name", anchor=W, width=246)
-        self.frame_Table.column("Price", anchor=CENTER, width=100)
-        self.frame_Table.column("Quantity", anchor=E, width=80)
-        self.frame_Table.column("Order Date", anchor=E, width=150)
-        self.frame_Table.column("Expiration Date", anchor=E, width=150)
-        # Table Head
-        self.frame_Table.heading("#0")
-        self.frame_Table.heading("ID", text="ID", anchor=W)
-        self.frame_Table.heading("Name", text="Product Name", anchor=W)
-        self.frame_Table.heading("Price", text="Price", anchor=CENTER)
-        self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
-        self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
-        self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
+            self.button_Delete = Button(self.Frame_Add, text="Delete", padx=20, pady=5, command=self.Delete)
+            self.button_Delete.place(x=700, y=110)
 
-        self.frame_Table.pack(fill='both')
-        self.frame_Table.grid(row=1, column=0)
-        self.Add_Delivery.mainloop()
+            self.Frame_List1 = Frame(self.Add_Delivery, width=800, height=320, highlightbackground="black",
+                                    highlightthickness=1, padx=10, pady=10)
+            self.Frame_List1.place(x=0, y=200)
+            # Table
+            self.frame_Table = ttk.Treeview(self.Frame_List1, height=15)
+            self.frame_Table['columns'] = ("ID", "Name", "Price", "Quantity", "Order Date", "Expiration Date")
+            self.frame_Table.column("#0", width=0, stretch=NO)
+            self.frame_Table.column("ID", anchor=W, width=50)
+            self.frame_Table.column("Name", anchor=W, width=246)
+            self.frame_Table.column("Price", anchor=CENTER, width=100)
+            self.frame_Table.column("Quantity", anchor=E, width=80)
+            self.frame_Table.column("Order Date", anchor=E, width=150)
+            self.frame_Table.column("Expiration Date", anchor=E, width=150)
+            # Table Head
+            self.frame_Table.heading("#0")
+            self.frame_Table.heading("ID", text="ID", anchor=W)
+            self.frame_Table.heading("Name", text="Product Name", anchor=W)
+            self.frame_Table.heading("Price", text="Price", anchor=CENTER)
+            self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
+            self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
+            self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
+
+            self.frame_Table.pack(fill='both')
+            self.frame_Table.grid(row=1, column=0)
+            PageOpen += 1
+            self.Add_Delivery.mainloop()
+        else:
+            messagebox.showinfo("Error","The Window already Open!")
+    
+    def Employee_on_close(self):
+        global PageOpen
+        if messagebox.askokcancel('Close', 'Are you sure you want to close Window?'):
+            PageOpen=2
+            self.Add_Employee.destroy()
 
     # employee
     def Click_AddS_Em(self):
@@ -529,60 +563,70 @@ class InvortoryGUI:
         man = Manager.Manager()
         id = randomNumGen.generateEmpID()
         man.AddEmp(id, Fname, username, password, role)
+    
+    def Employee_on_close(self):
+            global PageOpen
+            if messagebox.askokcancel('Close', 'Are you sure you want to close Window?'):
+                self.button_Add_Em['bg']='#54FA9B'
+                PageOpen=1
+                self.Add_Employee.destroy()
+
 
     def Click_Add_Em(self):
-        self.Add_Del.config(state='disabled')
-        self.button_Add_Em.config(state='disabled')
-        self.button_Add_Pm.config(state='disabled')
-        self.btn_Notification.config(state='disabled')
+        global PageOpen
+        if PageOpen<2:
+            self.button_Add_Em['bg']='gray'
+            self.Add_Employee = Toplevel()
+            self.Add_Employee.title("Employeee!")
+            self.Add_Employee.geometry("500x400")
+            self.Add_Employee.resizable(False, False)
 
-        self.Add_Employee = Toplevel()
-        self.Add_Employee.title("Employeee!")
-        self.Add_Employee.geometry("500x400")
-        self.Add_Employee.resizable(False, False)
+            global btn, frame
+            btn = self.button_Add_Em
+            frame = self.Add_Employee
 
-        global btn, frame
-        btn = self.button_Add_Em
-        frame = self.Add_Employee
+            self.Add_Employee.protocol("WM_DELETE_WINDOW", self.Employee_on_close)
 
-        self.Add_Employee.protocol("WM_DELETE_WINDOW", self.close_window)
+            self.Frame_Add_Em = Frame(self.Add_Employee, width=800, height=500, )
+            self.Frame_Add_Em.place(x=0, y=0)
 
-        self.Frame_Add_Em = Frame(self.Add_Employee, width=800, height=500, )
-        self.Frame_Add_Em.place(x=0, y=0)
+            Frma = Label(self.Frame_Add_Em, text="Add Employee", width=20, font=("Arial", 35), anchor=W)
+            Frma.place(x=20, y=20)
 
-        Frma = Label(self.Frame_Add_Em, text="Add Employee", width=20, font=("Arial", 35), anchor=W)
-        Frma.place(x=20, y=20)
+            self.Fname = StringVar()
+            self.Employee_Lname_LA = Label(self.Frame_Add_Em, text="Full Name:")
+            self.Employee_Lname_EN = Entry(self.Frame_Add_Em, width=60, borderwidth=4, textvariable=self.Fname)
+            self.Employee_Lname_LA.place(x=60, y=110)
+            self.Employee_Lname_EN.place(x=60, y=130)
 
-        self.Fname = StringVar()
-        self.Employee_Lname_LA = Label(self.Frame_Add_Em, text="Full Name:")
-        self.Employee_Lname_EN = Entry(self.Frame_Add_Em, width=60, borderwidth=4, textvariable=self.Fname)
-        self.Employee_Lname_LA.place(x=60, y=110)
-        self.Employee_Lname_EN.place(x=60, y=130)
+            self.Employee_Username_LA = Label(self.Frame_Add_Em, text="Username:")
+            self.username = StringVar()
+            self.Employee_Username_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.username, borderwidth=4)
+            self.Employee_Username_LA.place(x=60, y=160)
+            self.Employee_Username_EN.place(x=60, y=180)
 
-        self.Employee_Username_LA = Label(self.Frame_Add_Em, text="Username:")
-        self.username = StringVar()
-        self.Employee_Username_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.username, borderwidth=4)
-        self.Employee_Username_LA.place(x=60, y=160)
-        self.Employee_Username_EN.place(x=60, y=180)
+            self.Employee_Password_LA = Label(self.Frame_Add_Em, text="Password:")
+            self.password = StringVar()
+            self.Employee_Password_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.password, show="*",
+                                            borderwidth=4)
+            self.Employee_Password_LA.place(x=60, y=210)
+            self.Employee_Password_EN.place(x=60, y=230)
 
-        self.Employee_Password_LA = Label(self.Frame_Add_Em, text="Password:")
-        self.password = StringVar()
-        self.Employee_Password_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.password, show="*",
-                                          borderwidth=4)
-        self.Employee_Password_LA.place(x=60, y=210)
-        self.Employee_Password_EN.place(x=60, y=230)
+            self.Employee_Role_LA = Label(self.Frame_Add_Em, text="Role:")
+            self.chosen_val = tk.StringVar(self.Frame_Add_Em)
+            self.chosen_val.set("Select Role")
+            self.Role = ttk.Combobox(self.Frame_Add_Em, textvariable=self.chosen_val, state='readonly')
+            self.Role['values'] = ('Cashier', 'Manager')
+            self.Role.place(x=60, y=280)
+            self.Employee_Role_LA.place(x=60, y=260)
 
-        self.Employee_Role_LA = Label(self.Frame_Add_Em, text="Role:")
-        self.chosen_val = tk.StringVar(self.Frame_Add_Em)
-        self.chosen_val.set("Select Role")
-        self.Role = ttk.Combobox(self.Frame_Add_Em, textvariable=self.chosen_val, state='readonly')
-        self.Role['values'] = ('Cashier', 'Manager')
-        self.Role.place(x=60, y=280)
-        self.Employee_Role_LA.place(x=60, y=260)
+            self.button_Add = Button(self.Frame_Add_Em, text="Add", padx=20, pady=5, command=self.Click_AddS_Em)
+            self.button_Add.place(x=360, y=330)
+            PageOpen += 1
+            self.Add_Employee.mainloop()
+        else:
+            messagebox.showinfo("Error","The Window already Open!")
 
-        self.button_Add = Button(self.Frame_Add_Em, text="Add", padx=20, pady=5, command=self.Click_AddS_Em)
-        self.button_Add.place(x=360, y=330)
-        self.Add_Employee.mainloop()
 
     def AddProduct(self):
         self.frame_Table.delete(*self.frame_Table.get_children())
@@ -646,315 +690,327 @@ class InvortoryGUI:
         price = item[2]
         price_entry.set(price)
 
+    def Add_Stack_on_close(self):
+        global PageOpen
+        if messagebox.askokcancel('Close', 'Are you sure you want to close Window?'):
+            self.button_Add_Pm['bg']='#54FA9B'
+            PageOpen=1
+            self.Add_Stack.destroy()
+
     def Click_Add_Product(self):
-        self.Add_Del.config(state='disabled')
-        self.button_Add_Em.config(state='disabled')
-        self.button_Add_Pm.config(state='disabled')
-        self.btn_Notification.config(state='disabled')
+        global PageOpen
+        if PageOpen<2:
+            self.button_Add_Pm['bg']='gray'
+            self.Add_Stack = Toplevel()
+            self.Add_Stack.title("Add Product")
+            self.Add_Stack.geometry("800x540")
+            self.Add_Stack.resizable(False, False)
 
-        self.Add_Stack = Toplevel()
-        self.Add_Stack.title("Add Product")
-        self.Add_Stack.geometry("800x540")
-        self.Add_Stack.resizable(False, False)
+            global btn, frame
+            btn = self.button_Add_Pm
+            frame = self.Add_Stack
 
-        global btn, frame
-        btn = self.button_Add_Pm
-        frame = self.Add_Stack
+            self.Add_Stack.protocol("WM_DELETE_WINDOW", self.Add_Stack_on_close)
 
-        self.Add_Stack.protocol("WM_DELETE_WINDOW", self.close_window)
+            self.Frame_Add_St = Frame(self.Add_Stack, width=800, height=505, )
+            self.Frame_Add_St.place(x=0, y=0)
 
-        self.Frame_Add_St = Frame(self.Add_Stack, width=800, height=505, )
-        self.Frame_Add_St.place(x=0, y=0)
+            self.Frma = Label(self.Frame_Add_St, text="Add Product", width=20, font=("Arial", 35), anchor=W)
+            self.Frma.place(x=10, y=10)
 
-        self.Frma = Label(self.Frame_Add_St, text="Add Product", width=20, font=("Arial", 35), anchor=W)
-        self.Frma.place(x=10, y=10)
-
-        a = Product.product()
-
-        self.chosen_val = tk.StringVar(self.Frame_Add_St)
-        self.chosen_val.set("Select Product")
-
-        global lst
-        lst = a.returnall()
-        n = 1
-
-        self.Stack_Product_Name_LA = Label(self.Frame_Add_St, text="Product Name:")
-        self.Stack_Product_Name_EN = ttk.Combobox(self.Frame_Add_St, textvariable=self.chosen_val)
-        self.Stack_Product_Name_LA.place(x=20, y=80)
-        self.Stack_Product_Name_EN.place(x=20, y=100)
-        self.Stack_Product_Name_EN.config(width=50)
-
-        if lst != 'empty':
-            self.Stack_Product_Name_EN['values'] = ([x[n] for x in lst])
-
-        self.Frame_ListAP = Frame(self.Add_Stack, width=800, height=320, padx=10, pady=10, highlightbackground="black",
-                                  highlightthickness=1)
-        self.Frame_ListAP.place(x=0, y=150)
-        # Table
-        self.frame_Table = ttk.Treeview(self.Frame_ListAP, height=17)
-        self.frame_Table['columns'] = ("ID", "Name", "Price")
-        self.frame_Table.column("#0", width=0, stretch=NO)
-        self.frame_Table.column("ID", anchor=W, width=90)
-        self.frame_Table.column("Name", anchor=W, width=555)
-        self.frame_Table.column("Price", anchor=CENTER, width=130)
-        # Table Head
-        self.frame_Table.heading("#0")
-        self.frame_Table.heading("ID", text="ID", anchor=W)
-        self.frame_Table.heading("Name", text="Product Name", anchor=W)
-        self.frame_Table.heading("Price", text="Price", anchor=W)
-        self.frame_Table.pack(fill='both')
-        self.frame_Table.grid(row=1, column=0)
-
-        a = Product.product()
-        res = a.returnall()
-
-        for i in res:
-            self.frame_Table.insert(parent='', index='end', iid=i[0], text=i, values=i)
-
-        def AddProduct_ChangeName(event):
-            global val
-            val = self.chosen_val.get()
-            val = (val)
-
-        def search():
             a = Product.product()
-            res = a.return_one(val)
 
-            self.frame_Table.delete(*self.frame_Table.get_children())
+            self.chosen_val = tk.StringVar(self.Frame_Add_St)
+            self.chosen_val.set("Select Product")
+
+            global lst
+            lst = a.returnall()
+            n = 1
+
+            self.Stack_Product_Name_LA = Label(self.Frame_Add_St, text="Product Name:")
+            self.Stack_Product_Name_EN = ttk.Combobox(self.Frame_Add_St, textvariable=self.chosen_val)
+            self.Stack_Product_Name_LA.place(x=20, y=80)
+            self.Stack_Product_Name_EN.place(x=20, y=100)
+            self.Stack_Product_Name_EN.config(width=50)
+
+            if lst != 'empty':
+                self.Stack_Product_Name_EN['values'] = ([x[n] for x in lst])
+
+            self.Frame_ListAP = Frame(self.Add_Stack, width=800, height=320, padx=10, pady=10, highlightbackground="black",
+                                    highlightthickness=1)
+            self.Frame_ListAP.place(x=0, y=150)
+            # Table
+            self.frame_Table = ttk.Treeview(self.Frame_ListAP, height=17)
+            self.frame_Table['columns'] = ("ID", "Name", "Price")
+            self.frame_Table.column("#0", width=0, stretch=NO)
+            self.frame_Table.column("ID", anchor=W, width=90)
+            self.frame_Table.column("Name", anchor=W, width=555)
+            self.frame_Table.column("Price", anchor=CENTER, width=130)
+            # Table Head
+            self.frame_Table.heading("#0")
+            self.frame_Table.heading("ID", text="ID", anchor=W)
+            self.frame_Table.heading("Name", text="Product Name", anchor=W)
+            self.frame_Table.heading("Price", text="Price", anchor=W)
+            self.frame_Table.pack(fill='both')
+            self.frame_Table.grid(row=1, column=0)
+
+            a = Product.product()
+            res = a.returnall()
+
             for i in res:
                 self.frame_Table.insert(parent='', index='end', iid=i[0], text=i, values=i)
 
-        def edit():
+            def AddProduct_ChangeName(event):
+                global val
+                val = self.chosen_val.get()
+                val = (val)
 
-            var = self.chosen_val.get()
+            def search():
+                a = Product.product()
+                res = a.return_one(val)
 
-            self.Click_Edit_Ref(var)
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for i in res:
+                    self.frame_Table.insert(parent='', index='end', iid=i[0], text=i, values=i)
 
-        self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>", AddProduct_ChangeName)
+            def edit():
+                var = self.chosen_val.get()
+                self.Click_Edit_Ref(var)
 
-        self.button_Find = Button(self.Frame_Add_St, text="Search", padx=20, pady=5, command=search)
-        self.button_Find.place(x=350, y=90)
+            self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>", AddProduct_ChangeName)
 
-        self.button_Add = Button(self.Frame_Add_St, text="Add Product", padx=20, pady=5, command=self.Click_Add_Ref)
-        self.button_Add.place(x=500, y=90)
+            self.button_Find = Button(self.Frame_Add_St, text="Search", padx=20, pady=5, command=search)
+            self.button_Find.place(x=350, y=90)
 
-        self.button_Edit = Button(self.Frame_Add_St, text="Edit", padx=20, pady=5, command=edit)
-        self.button_Edit.place(x=623, y=90)
+            self.button_Add = Button(self.Frame_Add_St, text="Add Product", padx=20, pady=5, command=self.Click_Add_Ref)
+            self.button_Add.place(x=500, y=90)
 
-        self.button_Delete = Button(self.Frame_Add_St, text="Delete", padx=20, pady=5, command=self.Delete)
-        self.button_Delete.place(x=700, y=90)
+            self.button_Edit = Button(self.Frame_Add_St, text="Edit", padx=20, pady=5, command=edit)
+            self.button_Edit.place(x=623, y=90)
 
-        self.Add_Stack.update()
+            self.button_Delete = Button(self.Frame_Add_St, text="Delete", padx=20, pady=5, command=self.Delete)
+            self.button_Delete.place(x=700, y=90)
 
-        self.Add_Stack.mainloop()
+            self.Add_Stack.update()
+            PageOpen += 1
+            self.Add_Stack.mainloop()
+        else:
+            messagebox.showinfo("Error","The Window already Open!")
 
     def Delete(self):
         select = self.frame_Table.selection()[0]
         self.frame_Table.delete(select)
 
+
+    def Add_Notify_on_close(self):
+        global PageOpen
+        if messagebox.askokcancel('Close', 'Are you sure you want to close Window?'):
+            self.btn_Notification['bg']='#54FA9B'
+            PageOpen=1
+            self.Add_Notify.destroy()
+
     # start UI for Notification ---------------
     def notify_UI(self):
-        self.Add_Del.config(state='disabled')
-        self.button_Add_Em.config(state='disabled')
-        self.button_Add_Pm.config(state='disabled')
-        self.btn_Notification.config(state='disabled')
+        global PageOpen
+        if PageOpen<2:
+            self.btn_Notification['bg']='gray'
+            self.Add_Notify = Toplevel()
+            global btn, frame
+            btn = self.btn_Notification
+            frame = self.Add_Notify
 
-        self.Add_Notify = Toplevel()
+            self.Add_Notify.protocol("WM_DELETE_WINDOW", self.Add_Notify_on_close)
+            self.Add_Notify.title("Export to Spreadsheet")
+            self.Add_Notify.geometry("800x583")
+            self.Add_Notify.resizable(False,False)
 
-        global btn, frame
-        btn = self.btn_Notification
-        frame = self.Add_Notify
+            self.Frame_Add_nofi = Frame(self.Add_Notify, width=800, height=200)
+            self.Frame_Add_nofi.place(x=0, y=0)
 
-        self.Add_Notify.protocol("WM_DELETE_WINDOW", self.close_window)
-        self.Add_Notify.title("Export to Spreadsheet")
-        self.Add_Notify.geometry("800x583")
-        self.Add_Notify.resizable(False,False)
+            self.Frma = Label(self.Frame_Add_nofi, text="Export to Spreadsheet", width=20, font=("Arial", 35), anchor=W)
+            self.Frma.place(x=10, y=10)
 
-        self.Frame_Add_nofi = Frame(self.Add_Notify, width=800, height=200)
-        self.Frame_Add_nofi.place(x=0, y=0)
-
-        self.Frma = Label(self.Frame_Add_nofi, text="Export to Spreadsheet", width=20, font=("Arial", 35), anchor=W)
-        self.Frma.place(x=10, y=10)
-
-        def update_scope(selection):
-            if selection == "Day":
-                scope['values']=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
-            elif selection == "Monthly":
-                scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-            elif selection == "Yearly":
-                current_year = datetime.datetime.now().year
-                scope['values']=[year for year in range(1950, current_year+1)]
-            elif selection == "Daily":
-                scope['values']=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
+            def update_scope(selection):
+                if selection == "Day":
+                    scope['values']=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
+                elif selection == "Monthly":
+                    scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+                elif selection == "Yearly":
+                    current_year = datetime.datetime.now().year
+                    scope['values']=[year for year in range(1950, current_year+1)]
+                elif selection == "Daily":
+                    scope['values']=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
 
 
-        Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
-        reports = ttk.Combobox(self.Add_Notify, width=20)
-        reports.place(x=20, y=100)
-        reports['values'] = ("Sales", "Inventory", "Delivery","Forecast")
-        
-        selected = StringVar()
-        Label(self.Add_Notify, text="Select Scope").place(x=170, y=80)
-        scope = ttk.Combobox(self.Add_Notify, width=20,textvariable=selected)
-        scope['values']=['Day','Monthly', 'Yearly','Daily']
-        scope.place(x=170, y=100)
+            Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
+            reports = ttk.Combobox(self.Add_Notify, width=20)
+            reports.place(x=20, y=100)
+            reports['values'] = ("Sales", "Inventory", "Delivery","Forecast")
+            
+            selected = StringVar()
+            Label(self.Add_Notify, text="Select Scope").place(x=170, y=80)
+            scope = ttk.Combobox(self.Add_Notify, width=20,textvariable=selected)
+            scope['values']=['Day','Monthly', 'Yearly','Daily']
+            scope.place(x=170, y=100)
 
-        Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", value='Day',command=lambda:update_scope('Day'))
-        Radio_Day.place(x=330,y=80)
+            Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", value='Day',command=lambda:update_scope('Day'))
+            Radio_Day.place(x=330,y=80)
 
-        Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", value='Monthly',command=lambda:update_scope('Monthly'))
-        Radio_Monthly.place(x=330,y=100)
-        
-        Radio_Yearly=tk.Radiobutton(self.Add_Notify,text="Yearly", value='Yearly',command=lambda:update_scope('Yearly'))
-        Radio_Yearly.place(x=410,y=80)
-        
-        Radio_Daily=tk.Radiobutton(self.Add_Notify,text="Daily", value='Daily',command=lambda:update_scope('Daily'))
-        Radio_Daily.place(x=410,y=100)
+            Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", value='Monthly',command=lambda:update_scope('Monthly'))
+            Radio_Monthly.place(x=330,y=100)
+            
+            Radio_Yearly=tk.Radiobutton(self.Add_Notify,text="Yearly", value='Yearly',command=lambda:update_scope('Yearly'))
+            Radio_Yearly.place(x=410,y=80)
+            
+            Radio_Daily=tk.Radiobutton(self.Add_Notify,text="Daily", value='Daily',command=lambda:update_scope('Daily'))
+            Radio_Daily.place(x=410,y=100)
 
-        Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
-        export = Button(self.Add_Notify, text="Export", state='disabled')
-        export.place(x=740, y=97)
+            Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
+            export = Button(self.Add_Notify, text="Export", state='disabled')
+            export.place(x=740, y=97)
 
-        Table_BOX=Frame(self.Add_Notify,highlightbackground="black", highlightthickness=3)
-        Table_BOX.place(x=0,y=140,relwidth=1.0,relheight=0.76)
-        self.export_Table = ttk.Treeview(Table_BOX,height=25)
+            Table_BOX=Frame(self.Add_Notify,highlightbackground="black", highlightthickness=3)
+            Table_BOX.place(x=0,y=140,relwidth=1.0,relheight=0.76)
+            self.export_Table = ttk.Treeview(Table_BOX,height=25)
 
 
-        # def set_scope(event):
-        #     print("here")
+            # def set_scope(event):
+            #     print("here")
 
-        scope.bind('<<ComboboxSelected>>',update_scope)
+            scope.bind('<<ComboboxSelected>>',update_scope)
 
-        def export_report():
-            report_type = reports.get()
-            man = Manager.Manager()
+            def export_report():
+                report_type = reports.get()
+                man = Manager.Manager()
 
-            if report_type == 'Sales':
+                if report_type == 'Sales':
+                    result = man.get_export_data(report_type)
+                    df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
+                                                    'Discount', 'Date Purchased'])
+                if report_type == 'Inventory':
+                    result = man.get_export_data(report_type)
+                    df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
+
+                if report_type == "Delivery":
+                    result = man.get_export_data(report_type)
+                    df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
+
+                if report_type == 'Forecast':
+                    result, value = man.get_export_data(report_type)
+                    df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price','Items Sold'])
+                    df.insert(5,"30 Day Forecast",value)
+
+                title = str.lower(report_type) + str(date.today()) + '.xlsx'
+                df.to_excel(title, str(report_type))
+                message = "Saved to ", title
+                messagebox.showinfo("Exported Successfully", "Saved to " + title)
+            
+            def reports_callback(event):
+                export.config(state='normal', command=export_report)
+
+                self.export_Table.delete(*self.export_Table.get_children())
+                report_type = reports.get()
+                # date = scope.get_date()
+                man = Manager.Manager()
                 result = man.get_export_data(report_type)
-                df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
-                                                   'Discount', 'Date Purchased'])
-            if report_type == 'Inventory':
-                result = man.get_export_data(report_type)
-                df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
 
-            if report_type == "Delivery":
-                result = man.get_export_data(report_type)
-                df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
+                if report_type == 'Sales':
+                    self.export_Table['columns'] = (
+                    "Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
+                    self.export_Table.column("#0", width=0, stretch=NO)
+                    self.export_Table.column("Invoice Number", anchor=W,)
+                    self.export_Table.column("Purchase ID", anchor=W,)
+                    self.export_Table.column("Item", anchor=W)
+                    self.export_Table.column("Quantity", anchor=E,)
+                    self.export_Table.column("Total Price", anchor=E,)
+                    self.export_Table.column("Discount", anchor=E,)
+                    self.export_Table.column("Date Purchased", anchor=E, )
 
-            if report_type == 'Forecast':
-                result, value = man.get_export_data(report_type)
-                df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price','Items Sold'])
-                df.insert(5,"30 Day Forecast",value)
+                    self.export_Table.heading("#0")
+                    self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
+                    self.export_Table.heading("Purchase ID", text="Purchase ID", anchor=W)
+                    self.export_Table.heading("Item", text="Item", anchor=W)
+                    self.export_Table.heading("Quantity", text="Quantity", anchor=W)
+                    self.export_Table.heading("Total Price", text="Total Price", anchor=W)
+                    self.export_Table.heading("Discount", text="Discount", anchor=W)
+                    self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
 
-            title = str.lower(report_type) + str(date.today()) + '.xlsx'
-            df.to_excel(title, str(report_type))
-            message = "Saved to ", title
-            messagebox.showinfo("Exported Successfully", "Saved to " + title)
-        
-        def reports_callback(event):
-            export.config(state='normal', command=export_report)
+                    self.export_Table.pack()
 
-            self.export_Table.delete(*self.export_Table.get_children())
-            report_type = reports.get()
-            # date = scope.get_date()
-            man = Manager.Manager()
-            result = man.get_export_data(report_type)
+                if report_type == 'Inventory':
+                    self.export_Table['columns'] = (
+                    'Reference ID', "Item", "Price", "Remaining Quantity")
+                    self.export_Table.column("#0", width=0, stretch=NO)
+                    self.export_Table.column("Reference ID", anchor=W, )
+                    self.export_Table.column("Item", anchor=W, )
+                    self.export_Table.column("Price", anchor=E, )
+                    self.export_Table.column("Remaining Quantity", anchor=E, )
+                    
+                    self.export_Table.heading("#0")
+                    self.export_Table.heading("Reference ID", text="Reference ID", anchor=W)
+                    self.export_Table.heading("Item", text="Item", anchor=W)
+                    self.export_Table.heading("Price", text="Price", anchor=W)
+                    self.export_Table.heading("Remaining Quantity", text="Remaining Quantity", anchor=W)
 
-            if report_type == 'Sales':
-                self.export_Table['columns'] = (
-                "Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
-                self.export_Table.column("#0", width=0, stretch=NO)
-                self.export_Table.column("Invoice Number", anchor=W,)
-                self.export_Table.column("Purchase ID", anchor=W,)
-                self.export_Table.column("Item", anchor=W)
-                self.export_Table.column("Quantity", anchor=E,)
-                self.export_Table.column("Total Price", anchor=E,)
-                self.export_Table.column("Discount", anchor=E,)
-                self.export_Table.column("Date Purchased", anchor=E, )
+                    self.export_Table.pack()
 
-                self.export_Table.heading("#0")
-                self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
-                self.export_Table.heading("Purchase ID", text="Purchase ID", anchor=W)
-                self.export_Table.heading("Item", text="Item", anchor=W)
-                self.export_Table.heading("Quantity", text="Quantity", anchor=W)
-                self.export_Table.heading("Total Price", text="Total Price", anchor=W)
-                self.export_Table.heading("Discount", text="Discount", anchor=W)
-                self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
+                if report_type == "Delivery": 
+                    self.export_Table['columns'] = (
+                    'Batch Code', 'Item', 'Quantity', 'Price', 'Status')
+                    self.export_Table.column("#0", width=0, stretch=NO)
+                    self.export_Table.column("Batch Code", anchor=W, )
+                    self.export_Table.column("Item", anchor=W, )
+                    self.export_Table.column("Quantity", anchor=E, )
+                    self.export_Table.column("Price", anchor=E, )
+                    self.export_Table.column("Status", anchor=E, )
+                    
+                    self.export_Table.heading("#0")
+                    self.export_Table.heading("Batch Code", text="Batch Code", anchor=W)
+                    self.export_Table.heading("Item", text="Item", anchor=W)
+                    self.export_Table.heading("Quantity", text="Quantity", anchor=W)
+                    self.export_Table.heading("Price", text="Price", anchor=W)
+                    self.export_Table.heading("Status", text="Status", anchor=W)
 
-                self.export_Table.pack()
+                    self.export_Table.pack()
 
-            if report_type == 'Inventory':
-                self.export_Table['columns'] = (
-                'Reference ID', "Item", "Price", "Remaining Quantity")
-                self.export_Table.column("#0", width=0, stretch=NO)
-                self.export_Table.column("Reference ID", anchor=W, )
-                self.export_Table.column("Item", anchor=W, )
-                self.export_Table.column("Price", anchor=E, )
-                self.export_Table.column("Remaining Quantity", anchor=E, )
-                
-                self.export_Table.heading("#0")
-                self.export_Table.heading("Reference ID", text="Reference ID", anchor=W)
-                self.export_Table.heading("Item", text="Item", anchor=W)
-                self.export_Table.heading("Price", text="Price", anchor=W)
-                self.export_Table.heading("Remaining Quantity", text="Remaining Quantity", anchor=W)
+                if report_type == 'Forecast':
+                    # Label(self.Add_Notify,text="NOTE: Forecast will not be Accurate during the First Time Use, when Data is Limited.").place(x=0, y=150)
+                    
+                    result,values = man.get_export_data(report_type)
+                    self.export_Table['columns'] = (
+                    'Id','Item','Quantity','Price','30 Day Forecast')
+                    self.export_Table.column("#0", width=0, stretch=NO)
+                    self.export_Table.column("Id", anchor=W, )
+                    self.export_Table.column("Item", anchor=W, )
+                    self.export_Table.column("Quantity", anchor=E, )
+                    self.export_Table.column("Price", anchor=E, )
+                    self.export_Table.column("30 Day Forecast", anchor=E, )
+                    
+                    self.export_Table.heading("#0")
+                    self.export_Table.heading("Id", text="Id", anchor=W)
+                    self.export_Table.heading("Item", text="Item", anchor=W)
+                    self.export_Table.heading("Quantity", text="Quantity", anchor=W)
+                    self.export_Table.heading("Price", text="Price", anchor=W)
+                    self.export_Table.heading("30 Day Forecast", text="30 Day Forecast", anchor=W)
 
-                self.export_Table.pack()
+                    self.export_Table.pack()
 
-            if report_type == "Delivery": 
-                self.export_Table['columns'] = (
-                'Batch Code', 'Item', 'Quantity', 'Price', 'Status')
-                self.export_Table.column("#0", width=0, stretch=NO)
-                self.export_Table.column("Batch Code", anchor=W, )
-                self.export_Table.column("Item", anchor=W, )
-                self.export_Table.column("Quantity", anchor=E, )
-                self.export_Table.column("Price", anchor=E, )
-                self.export_Table.column("Status", anchor=E, )
-                
-                self.export_Table.heading("#0")
-                self.export_Table.heading("Batch Code", text="Batch Code", anchor=W)
-                self.export_Table.heading("Item", text="Item", anchor=W)
-                self.export_Table.heading("Quantity", text="Quantity", anchor=W)
-                self.export_Table.heading("Price", text="Price", anchor=W)
-                self.export_Table.heading("Status", text="Status", anchor=W)
+                count = 0
+            
+                if report_type == 'Forecast':
+                    for item in range(len(result)):
+                        self.export_Table.insert('', index='end', iid=count, text=(item,values), values=(result[item][0],result[item][1],result[item][2],result[item][3],values))
+                        count += 1
+                else:
+                    for item in result:
+                        self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
+                        count += 1
 
-                self.export_Table.pack()
-
-            if report_type == 'Forecast':
-                # Label(self.Add_Notify,text="NOTE: Forecast will not be Accurate during the First Time Use, when Data is Limited.").place(x=0, y=150)
-                
-                result,values = man.get_export_data(report_type)
-                self.export_Table['columns'] = (
-                'Id','Item','Quantity','Price','30 Day Forecast')
-                self.export_Table.column("#0", width=0, stretch=NO)
-                self.export_Table.column("Id", anchor=W, )
-                self.export_Table.column("Item", anchor=W, )
-                self.export_Table.column("Quantity", anchor=E, )
-                self.export_Table.column("Price", anchor=E, )
-                self.export_Table.column("30 Day Forecast", anchor=E, )
-                
-                self.export_Table.heading("#0")
-                self.export_Table.heading("Id", text="Id", anchor=W)
-                self.export_Table.heading("Item", text="Item", anchor=W)
-                self.export_Table.heading("Quantity", text="Quantity", anchor=W)
-                self.export_Table.heading("Price", text="Price", anchor=W)
-                self.export_Table.heading("30 Day Forecast", text="30 Day Forecast", anchor=W)
-
-                self.export_Table.pack()
-
-            count = 0
-          
-            if report_type == 'Forecast':
-                for item in range(len(result)):
-                    self.export_Table.insert('', index='end', iid=count, text=(item,values), values=(result[item][0],result[item][1],result[item][2],result[item][3],values))
-                    count += 1
-            else:
-                for item in result:
-                    self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
-                    count += 1
-
-        reports.bind('<<ComboboxSelected>>',reports_callback)
-
-        self.Add_Notify.mainloop()
+            reports.bind('<<ComboboxSelected>>',reports_callback)
+            PageOpen += 1
+            self.Add_Notify.mainloop()
+        else:
+            messagebox.showinfo("Error","The Window already Open!")
 
     # Chick ADD END!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def InvorGUI(self):
@@ -999,8 +1055,10 @@ class InvortoryGUI:
 
         label = Label(self.Frame_Side, text="IMAGE").place(x=100, y=10)
         Add = Label(self.Frame_Side, text="ADD Button", width=37, anchor=W).place(x=40, y=420)
+
+
         self.Add_Del = Button(self.Frame_Side, text="ADD Delivery", padx=10, pady=10, width=10, height=1, bg='#54FA9B',
-                              command=self.Click_Add)
+                              command=self.Click_Add_Delivery)
         self.button_Add_Em = Button(self.Frame_Side, text="ADD Employee", padx=10, pady=10, width=10, height=1,
                                     bg='#54FA9B', command=self.Click_Add_Em)
         self.button_Add_Pm = Button(self.Frame_Side, text="ADD Product", padx=10, pady=10, width=10, height=1,
@@ -1024,83 +1082,94 @@ class InvortoryGUI:
         self.Click_List1()
 
         self.InvorVal.mainloop()
+   
+    def Edit_Stack_close(self):
+            global PageOpen_Sub
+            if messagebox.askokcancel('Close', 'Are you sure you want to close the Add Product Page all the data will not be Save?'):
+                PageOpen_Sub=1
+                self.Edit_Stack.destroy()
 
     def Click_Edit_Ref(self, var):
-        self.Add_Stack = Toplevel()
-        self.Add_Stack.title("Edit Product Reference")
-        self.Add_Stack.geometry("700x350")
+        global PageOpen_Sub
+        if PageOpen_Sub<2:
+            global lst
+            idd = lst[0][0]
+            namee = lst[0][1]
+            pricee = lst[0][2]
 
-        self.Frame_Add_St = Frame(self.Add_Stack, width=700, height=350, )
-        self.Frame_Add_St.grid(row=0, column=0)
+            self.Edit_Stack = Toplevel()
+            self.Edit_Stack.title("Edit Product Reference")
+            self.Edit_Stack.geometry("700x350")
+            self.Edit_Stack.protocol("WM_DELETE_WINDOW",self.Edit_Stack_close)
 
-        self.Frma = Label(self.Frame_Add_St, text="Edit Product!!", width=20, font=("Arial", 35), anchor=W)
-        self.Frma.place(x=20, y=10)
+            self.Edit_Frame_Product = Frame(self.Edit_Stack, width=700, height=350, )
+            self.Edit_Frame_Product.grid(row=0, column=0)
 
-        a = Product.product()
+            self.Frma = Label(self.Edit_Frame_Product, text="Edit Product!!", width=20, font=("Arial", 35), anchor=W)
+            self.Frma.place(x=20, y=10)
 
-        global lst
-        lst = a.return_one(var)
+            a = Product.product()
+            lst = a.return_one(var)
 
-        idd = lst[0][0]
-        namee = lst[0][1]
-        pricee = lst[0][2]
+            self.Old = Label(self.Edit_Frame_Product, text="Old Product Name", width=20, font=("Arial", 15), anchor=W)
+            self.Old.place(x=50, y=70)
 
-        self.Old = Label(self.Frame_Add_St, text="Old Product Name", width=20, font=("Arial", 15), anchor=W)
-        self.Old.place(x=50, y=70)
+            global ref_id_entry, name, price
+            ref_id_entry = StringVar()
+            name = StringVar()
+            price = StringVar()
 
-        global ref_id_entry, name, price
-        ref_id_entry = StringVar()
-        name = StringVar()
-        price = StringVar()
-
-        self.Stack_Product_ID_Label = Label(self.Frame_Add_St, text="ID:").place(x=50, y=110)
-        self.Stack_Product_ID_EN = Entry(self.Frame_Add_St, width=10, borderwidth=5, textvariable=ref_id_entry,
-                                         state="disabled")
-        self.Stack_Product_ID_EN.place(x=50, y=130)
-
-        self.Stack_Product_Item_Label = Label(self.Frame_Add_St, text="Product Name:", ).place(x=130, y=110)
-        self.Stack_Product_Item_ENN = Entry(self.Frame_Add_St, width=70, textvariable=name, borderwidth=5,
+            self.Stack_Product_ID_Label = Label(self.Edit_Frame_Product, text="ID:").place(x=50, y=110)
+            self.Stack_Product_ID_EN = Entry(self.Edit_Frame_Product, width=10, borderwidth=5, textvariable=ref_id_entry,
                                             state="disabled")
-        self.Stack_Product_Item_ENN.place(x=130, y=130)
+            self.Stack_Product_ID_EN.place(x=50, y=130)
 
-        self.Stack_Product_ID_Label = Label(self.Frame_Add_St, text="Price:").place(x=570, y=110)
-        self.Stack_Product_PRICE_EN = Entry(self.Frame_Add_St, textvariable=price, width=15, borderwidth=5,
-                                            state="disabled")
-        self.Stack_Product_PRICE_EN.place(x=570, y=130)
+            self.Stack_Product_Item_Label = Label(self.Edit_Frame_Product, text="Product Name:", ).place(x=130, y=110)
+            self.Stack_Product_Item_ENN = Entry(self.Edit_Frame_Product, width=70, textvariable=name, borderwidth=5,
+                                                state="disabled")
+            self.Stack_Product_Item_ENN.place(x=130, y=130)
 
-        self.Stack_Product_ID_EN.config(state='normal')
-        self.Stack_Product_ID_EN.config(state='normal')
-        self.Stack_Product_PRICE_EN.config(state='normal')
+            self.Stack_Product_ID_Label = Label(self.Edit_Frame_Product, text="Price:").place(x=570, y=110)
+            self.Stack_Product_PRICE_EN = Entry(self.Edit_Frame_Product, textvariable=price, width=15, borderwidth=5,
+                                                state="disabled")
+            self.Stack_Product_PRICE_EN.place(x=570, y=130)
 
-        ref_id_entry.set(idd)
-        name.set(namee)
-        price.set(pricee)
+            self.Stack_Product_ID_EN.config(state='normal')
+            self.Stack_Product_ID_EN.config(state='normal')
+            self.Stack_Product_PRICE_EN.config(state='normal')
 
-        self.Stack_Product_ID_EN.config(state='disabled')
-        self.Stack_Product_ID_EN.config(state='disabled')
-        self.Stack_Product_PRICE_EN.config(state='disabled')
+            ref_id_entry.set(idd)
+            name.set(namee)
+            price.set(pricee)
 
-        self.New = Label(self.Frame_Add_St, text="New Product Name", width=20, font=("Arial", 15), anchor=W)
-        self.New.place(x=50, y=180)
+            self.Stack_Product_ID_EN.config(state='disabled')
+            self.Stack_Product_ID_EN.config(state='disabled')
+            self.Stack_Product_PRICE_EN.config(state='disabled')
 
-        global ref_name_entry
-        ref_name_entry = StringVar()
-        self.Stack_Product_Name_Label = Label(self.Frame_Add_St, text="New Product Name:").place(x=50, y=210)
-        self.Stack_Product_Name_ENN = Entry(self.Frame_Add_St, width=83, borderwidth=5,
-                                            textvariable=ref_name_entry).place(x=50, y=230)
+            self.New = Label(self.Edit_Frame_Product, text="New Product Name", width=20, font=("Arial", 15), anchor=W)
+            self.New.place(x=50, y=180)
 
-        global ref_price_entry
-        ref_price_entry = StringVar()
-        self.Stack_Product_Name_Label = Label(self.Frame_Add_St, text="New Product Price:").place(x=570, y=210)
-        self.Stack_Product_Price_EN = Entry(self.Frame_Add_St, width=15, borderwidth=5,
-                                            textvariable=ref_price_entry).place(x=570, y=230)
+            global ref_name_entry
+            ref_name_entry = StringVar()
+            self.Stack_Product_Name_Label = Label(self.Edit_Frame_Product, text="New Product Name:").place(x=50, y=210)
+            self.Stack_Product_Name_ENN = Entry(self.Edit_Frame_Product, width=83, borderwidth=5,
+                                                textvariable=ref_name_entry).place(x=50, y=230)
 
-        self.submit = Button(self.Frame_Add_St, text="Submit Changes", padx=20, pady=5,
-                             command=self.Click_ref_submit).place(x=450, y=280)
+            global ref_price_entry
+            ref_price_entry = StringVar()
+            self.Stack_Product_Name_Label = Label(self.Edit_Frame_Product, text="New Product Price:").place(x=570, y=210)
+            self.Stack_Product_Price_EN = Entry(self.Edit_Frame_Product, width=15, borderwidth=5,
+                                                textvariable=ref_price_entry).place(x=570, y=230)
 
-        self.button_Out = Button(self.Frame_Add_St, text="Cancel", padx=9, pady=5, bg="green",
-                                 command=self.Add_Stack.destroy)
-        self.button_Out.place(x=600, y=280)
+            self.submit = Button(self.Edit_Frame_Product, text="Submit Changes", padx=20, pady=5,
+                                command=self.Click_ref_submit).place(x=450, y=280)
+
+            self.button_Out = Button(self.Edit_Frame_Product, text="Cancel", padx=9, pady=5, bg="green",
+                                    command=self.Edit_Stack_close)
+            self.button_Out.place(x=600, y=280)
+            PageOpen_Sub += 1
+        else:
+            messagebox.showinfo("Error","The Window is already Open!")
 
     def Click_ref_submit(self):
         id = ref_id_entry.get()
@@ -1127,59 +1196,70 @@ class InvortoryGUI:
         ref_name_entry.set(name)
         ref_id_entry.set(id)
 
+    def Add_Ref_close(self):
+            global PageOpen_Sub
+            if messagebox.askokcancel('Close', 'Are you sure you want to close the Add Product Page all the data will not be Save?'):
+                PageOpen_Sub=1
+                self.Add_Stack.destroy()
+    
     def Click_Add_Ref(self):
+        global PageOpen_Sub
+        if PageOpen_Sub<2:
+            self.Add_Stack = Toplevel()
+            self.Add_Stack.title("Add Product Reference")
+            self.Add_Stack.geometry("700x543")
+            self.Add_Stack.protocol("WM_DELETE_WINDOW",self.Add_Ref_close)
 
-        self.Add_Stack = Toplevel()
-        self.Add_Stack.title("Add Product Reference")
-        self.Add_Stack.geometry("700x543")
+            self.Frame_Add_St = Frame(self.Add_Stack, width=700, height=350, )
+            self.Frame_Add_St.grid(row=0, column=0)
 
-        self.Frame_Add_St = Frame(self.Add_Stack, width=700, height=350, )
-        self.Frame_Add_St.grid(row=0, column=0)
+            self.Frma = Label(self.Frame_Add_St, text="Add Product!!", width=20, font=("Arial", 40), anchor=W)
+            self.Frma.place(x=20, y=10)
 
-        self.Frma = Label(self.Frame_Add_St, text="Add Product!!", width=20, font=("Arial", 40), anchor=W)
-        self.Frma.place(x=20, y=10)
+            self.Stack_Product_Name_Label = Label(self.Frame_Add_St, text="Product Name:").place(x=30, y=90)
+            self.Stack_Product_Name_EN = Entry(self.Frame_Add_St, width=70, borderwidth=5)
+            self.Stack_Product_Name_EN.place(x=30, y=110)
 
-        self.Stack_Product_Name_Label = Label(self.Frame_Add_St, text="Product Name:").place(x=30, y=90)
-        self.Stack_Product_Name_EN = Entry(self.Frame_Add_St, width=70, borderwidth=5)
-        self.Stack_Product_Name_EN.place(x=30, y=110)
+            global price_entry
+            price_entry = tk.StringVar()
+            self.Stack_Product_Price_Label = Label(self.Frame_Add_St, text="Price:").place(x=470, y=90)
+            self.Stack_Product_Price_EN = Entry(self.Frame_Add_St, width=15, borderwidth=5, textvariable=price_entry).place(
+                x=470, y=110)
 
-        global price_entry
-        price_entry = tk.StringVar()
-        self.Stack_Product_Price_Label = Label(self.Frame_Add_St, text="Price:").place(x=470, y=90)
-        self.Stack_Product_Price_EN = Entry(self.Frame_Add_St, width=15, borderwidth=5, textvariable=price_entry).place(
-            x=470, y=110)
+            self.Frame_ListS = Frame(self.Add_Stack, width=800, height=320, highlightbackground="black",
+                                    highlightthickness=3, padx=5, pady=5)
+            self.Frame_ListS.place(x=0, y=200)
+            # Table
+            self.frame_Table = ttk.Treeview(self.Frame_ListS, height=15)
+            self.frame_Table['columns'] = ("ID", "Name", "Price")
+            self.frame_Table.column("#0", width=0, stretch=NO)
+            self.frame_Table.column("ID", anchor=W, width=100)
+            self.frame_Table.column("Name", anchor=W, width=482)
+            self.frame_Table.column("Price", anchor=E, width=100)
+            # Table Head
+            self.frame_Table.heading("#0")
+            self.frame_Table.heading("ID", text="ID", anchor=W)
+            self.frame_Table.heading("Name", text="Product Name", anchor=W)
+            self.frame_Table.heading("Price", text="Price", anchor=W)
 
-        self.Frame_ListS = Frame(self.Add_Stack, width=800, height=320, highlightbackground="black",
-                                 highlightthickness=3, padx=5, pady=5)
-        self.Frame_ListS.place(x=0, y=200)
-        # Table
-        self.frame_Table = ttk.Treeview(self.Frame_ListS, height=15)
-        self.frame_Table['columns'] = ("ID", "Name", "Price")
-        self.frame_Table.column("#0", width=0, stretch=NO)
-        self.frame_Table.column("ID", anchor=W, width=100)
-        self.frame_Table.column("Name", anchor=W, width=482)
-        self.frame_Table.column("Price", anchor=E, width=100)
-        # Table Head
-        self.frame_Table.heading("#0")
-        self.frame_Table.heading("ID", text="ID", anchor=W)
-        self.frame_Table.heading("Name", text="Product Name", anchor=W)
-        self.frame_Table.heading("Price", text="Price", anchor=W)
+            self.frame_Table.pack(fill='both')
+            self.frame_Table.grid(row=1, column=0)
 
-        self.frame_Table.pack(fill='both')
-        self.frame_Table.grid(row=1, column=0)
+            self.button_Add = Button(self.Frame_Add_St, text="Add", padx=20, pady=5, command=self.reference_Done)
+            self.button_Add.place(x=360, y=150)
 
-        self.button_Add = Button(self.Frame_Add_St, text="Add", padx=20, pady=5, command=self.reference_Done)
-        self.button_Add.place(x=360, y=150)
+            self.button_Delete = Button(self.Frame_Add_St, text="Delete", padx=20, pady=5, command=self.Delete)
+            self.button_Delete.place(x=440, y=150)
 
-        self.button_Delete = Button(self.Frame_Add_St, text="Delete", padx=20, pady=5, command=self.Delete)
-        self.button_Delete.place(x=440, y=150)
+            self.button_Finish = Button(self.Frame_Add_St, text="Finish", padx=20, pady=5, state='disabled')
+            self.button_Finish.place(x=530, y=150)
 
-        self.button_Finish = Button(self.Frame_Add_St, text="Finish", padx=20, pady=5, state='disabled')
-        self.button_Finish.place(x=530, y=150)
-
-        self.button_Cancel = Button(self.Frame_Add_St, text="Cancel", padx=9, pady=5, bg="green",
-                                    command=self.Add_Stack.destroy)
-        self.button_Cancel.place(x=620, y=150)
+            self.button_Cancel = Button(self.Frame_Add_St, text="Cancel", padx=9, pady=5, bg="green",
+                                        command=self.Add_Ref_close)
+            self.button_Cancel.place(x=620, y=150)
+            PageOpen_Sub+=1
+        else:
+            messagebox.showinfo("Error","The Window is already Open!")
 
     def reference_Done(self):
         ProductName = self.Stack_Product_Name_EN.get()
