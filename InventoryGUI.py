@@ -1290,10 +1290,3 @@ class InvortoryGUI:
 
     def start(self, id):
         self.InvorGUI()
-
-
-
-
-if __name__=="__main__":
-    ivor=InvortoryGUI()
-    ivor.start(1)
