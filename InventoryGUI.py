@@ -1,8 +1,6 @@
 from logging import root
 import datetime
 from datetime import datetime
-from datetime import date
-import datetime
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -203,11 +201,17 @@ class InvortoryGUI:
 
         def saveChanges():
             selectedItem = self.frame_Table.selection()[0]
-            x = self.frame_Table.item(item)['values'][4]
-            self.frame_Table.item(selectedItem, values=(
-            idd.get(), namee.get(), price.get(), qty.get(), x, self.frame_Table.item(item)['values'][5]))
 
-        self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
+            id=idd.get()
+            name=namee.get()
+            pricee=price.get()
+            quantity=qty.get()
+            orderdate=self.frame_Table.item(selectedItem)['values'][4]
+            expiredate=self.frame_Table.item(selectedItem)['values'][5]
+
+            self.frame_Table.item(selectedItem, text="a", values=(id,name,pricee,quantity,orderdate,expiredate))
+
+        self.button = Button(self.Frame_Add, text="Save",state='disabled')
         self.button.place(x=710, y=150)
 
         def selectItem(event):
@@ -230,6 +234,11 @@ class InvortoryGUI:
             namee.set(name)
             qty.set(quantity)
             price.set(pricee)
+
+            self.Product_Price_EN.config(state='disabled')
+            self.Product_price_EN.config(state='disabled')
+
+            self.button.config(state='normal', command=saveChanges)
 
         count = 0
         for i in result:
@@ -320,9 +329,6 @@ class InvortoryGUI:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
-    # Chick List and stack END~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    # Chick ADD START!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def Click_AddP(self):
         self.add_to_products
 
@@ -414,10 +420,18 @@ class InvortoryGUI:
         price_list.clear()
         date_list.clear()
         expiry_date_list.clear()
-        arrival_date_list.clear()
         order_date_list.clear()
         status_list.clear()
 
+    def search_delivery(self,event):
+        value=event.widget.get()
+        if value !='':
+            data=[]
+            for item in range(len(lst)):
+                if value.lower() in lst[item][1].lower():
+                    data.append(lst[item][1])
+               
+            event.widget['values']=data
 
     def Click_Add(self):
         self.Add_Del.config(state='disabled')
@@ -451,14 +465,15 @@ class InvortoryGUI:
 
         self.APD = Label(self.Frame_Add, text="Add Products on Delivery", font=("Arial", 40)).place(x=10, y=5)
         self.Product_CODE_LA = Label(self.Frame_Add, text="Select Product Name")
-        self.Product_CODE_EN = ttk.Combobox(self.Frame_Add, textvariable=self.chosen_val, state='readonly', width=50)
+        self.Product_CODE_EN = ttk.Combobox(self.Frame_Add, textvariable=self.chosen_val, width=50)
         self.Product_CODE_LA.place(x=20, y=70)
         self.Product_CODE_EN.place(x=20, y=90)
 
         if lst != "empty":
             self.Product_CODE_EN['values'] = ([x[n] for x in lst])
 
-        self.Product_CODE_EN.bind("<<ComboboxSelected>>", self.setPrice)
+        self.Product_CODE_EN.bind("<<ComboboxSelected>>", self.setPrice)    
+        self.Product_CODE_EN.bind("<KeyRelease>",self.search_delivery)
 
         self.Product_date_LA = Label(self.Frame_Add, text="Date")
         self.Product_date_EN = DateEntry(self.Frame_Add, selectmode='day', width=20)
@@ -725,12 +740,11 @@ class InvortoryGUI:
                 self.frame_Table.insert(parent='', index='end', iid=i[0], text=i, values=i)
 
         def edit():
-
             var = self.chosen_val.get()
-
             self.Click_Edit_Ref(var)
 
         self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>", AddProduct_ChangeName)
+        self.Stack_Product_Name_EN.bind('<KeyRelease>',self.search_delivery)
 
         self.button_Find = Button(self.Frame_Add_St, text="Search", padx=20, pady=5, command=search)
         self.button_Find.place(x=350, y=90)
@@ -1113,6 +1127,8 @@ class InvortoryGUI:
 
         Prod = Product.product()
         Prod.editReference(idd, name, priceee)
+        
+        messagebox.showinfo("Edit Success","Edit Success!")
 
     def setRefVals(self, event):
         global choice
@@ -1274,3 +1290,10 @@ class InvortoryGUI:
 
     def start(self, id):
         self.InvorGUI()
+
+
+
+
+if __name__=="__main__":
+    ivor=InvortoryGUI()
+    ivor.start(1)
