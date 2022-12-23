@@ -1,6 +1,6 @@
 from logging import root
 import datetime
-from datetime import datetime
+from datetime import date, datetime
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -832,10 +832,27 @@ class InvortoryGUI:
         Table_BOX=Frame(self.Add_Notify,highlightbackground="black", highlightthickness=3)
         Table_BOX.place(x=0,y=140,relwidth=1.0,relheight=0.76)
         self.export_Table = ttk.Treeview(Table_BOX,height=25)
+        self.export_Table['columns'] = (
+                "Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
+        self.export_Table.column("#0", width=0, stretch=NO)
+        self.export_Table.column("Invoice Number", anchor=W,)
+        self.export_Table.column("Purchase ID", anchor=W,)
+        self.export_Table.column("Item", anchor=W)
+        self.export_Table.column("Quantity", anchor=E,)
+        self.export_Table.column("Total Price", anchor=E,)
+        self.export_Table.column("Discount", anchor=E,)
+        self.export_Table.column("Date Purchased", anchor=E, )
 
+        self.export_Table.heading("#0")
+        self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
+        self.export_Table.heading("Purchase ID", text="Purchase ID", anchor=W)
+        self.export_Table.heading("Item", text="Item", anchor=W)
+        self.export_Table.heading("Quantity", text="Quantity", anchor=W)
+        self.export_Table.heading("Total Price", text="Total Price", anchor=W)
+        self.export_Table.heading("Discount", text="Discount", anchor=W)
+        self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
+        self.export_Table.pack()
 
-        # def set_scope(event):
-        #     print("here")
 
         scope.bind('<<ComboboxSelected>>',update_scope)
 
@@ -1290,3 +1307,4 @@ class InvortoryGUI:
 
     def start(self, id):
         self.InvorGUI()
+
