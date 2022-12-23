@@ -926,8 +926,9 @@ class InvortoryGUI:
 
                 if report_type == 'Forecast':
                     result, value = man.get_export_data(report_type)
-                    df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price','Items Sold'])
-                    df.insert(5,"30 Day Forecast",value)
+                    print("here")
+                    df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price'])
+                    df.insert(4,"30 Day Forecast",value)
 
                 title = str.lower(report_type) + str(date.today()) + '.xlsx'
                 df.to_excel(title, str(report_type))
