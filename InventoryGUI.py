@@ -301,6 +301,94 @@ class InvortoryGUI:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
+        
+    def View_close(self):
+                global PageOpen
+                if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
+                    PageOpen=1
+                    self.Add_Employ.destroy()
+
+    def View_onClick(self):
+            global PageOpen
+            if PageOpen < 2:
+                self.Add_Employ= Toplevel()
+                self.Add_Employ.title("Confirm Delivery")
+                self.Add_Employ.geometry("800x550")
+                self.Add_Employ.resizable(False, False)
+                self.Add_Employ.protocol("WM_DELETE_WINDOW",self.View_close)
+                self.Frame_Empl = Frame(self.Add_Employ, width=800, height=200)
+                self.Frame_Empl.place(x=0, y=0)
+
+                self.Frame_ListE = Frame(self.Add_Employ, width=800, height=320, highlightbackground="black",
+                                    highlightthickness=1, padx=10, pady=10)
+                self.Frame_ListE.place(x=0, y=200)
+
+                global idd, namee, qty, price
+                idd = StringVar()
+                namee = StringVar()
+                qty = StringVar()
+                price = StringVar()
+
+                self.Employ_ID_LA = Label(self.Frame_Empl, text="Employ ID")
+                self.Employ_ID_EN = Entry(self.Frame_Empl, width=10, textvariable=idd, borderwidth=4, state='disabled')
+                self.Employ_ID_LA.place(x=40, y=70)
+                self.Employ_ID_EN.place(x=40, y=90)
+
+                self.Employ_Name_LA = Label(self.Frame_Empl, text="Name")
+                self.Employ_Name_EN = Entry(self.Frame_Empl, width=45, textvariable=namee, borderwidth=4, state='disabled')
+                self.Employ_Name_LA.place(x=115, y=70)
+                self.Employ_Name_EN.place(x=115, y=90)
+
+                self.Empoly_Pass_LA=Label(self.Frame_Empl,text="Password")
+                self.Empoly_Pass_EN= Entry(self.Frame_Empl,width=45,textvariable=price,borderwidth=4,state='disabled')
+                self.Empoly_Pass_LA.place(x=115,y=120)
+                self.Empoly_Pass_EN.place(x=115,y=140)
+
+                self.Employee_Role_LA = Label(self.Frame_Empl, text="Role:")
+                self.chosen_val_Edit = tk.StringVar(self.Frame_Empl)
+                self.chosen_val_Edit.set("Select Role")
+                self.Role_emplo = ttk.Combobox(self.Frame_Empl, textvariable=self.chosen_val_Edit, state='readonly')
+                self.Role_emplo['values'] = ('Cashier', 'Manager')
+                self.Role_emplo.place(x=420,y=90)
+                self.Employee_Role_LA.place(x=420,y=70)
+
+                Button_Edit=Button(self.Frame_Empl,text="Edit",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
+                Button_Edit.place(x=600,y=150)
+                    
+                Button_Save=Button(self.Frame_Empl,text="Save",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
+                Button_Save.place(x=600,y=120)
+                    
+                Button_Delete=Button(self.Frame_Empl,text="Delete",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
+                Button_Delete.place(x=700,y=120)
+
+                Button_Cancel=Button(self.Frame_Empl,text="Cancel",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_close)
+                Button_Cancel.place(x=700,y=150)
+
+                Label(self.Frame_Empl, text="Employee",font=("Arial", 30)).place(x=10, y=10)
+
+                self.frame_Table = ttk.Treeview(self.Frame_ListE, height=15)
+                self.frame_Table['columns'] = ("ID", "Name","Date","WorkingTime")
+                self.frame_Table.column("#0", width=0, stretch=NO)
+                self.frame_Table.column("ID", anchor=W, width=50)
+                self.frame_Table.column("Name", anchor=W, width=246)
+                self.frame_Table.column("Date", anchor=W, width=280)
+                self.frame_Table.column("WorkingTime", anchor=W, width=200)
+
+
+                self.frame_Table.heading("#0")
+                self.frame_Table.heading("ID", text="ID", anchor=W)
+                self.frame_Table.heading("Name", text="Product Name", anchor=W)
+
+                self.frame_Table.heading("Date", text="Date", anchor=W)
+                self.frame_Table.heading("WorkingTime", text="Working Time", anchor=W)
+
+                self.frame_Table.pack(fill='both')
+                self.frame_Table.grid(row=1, column=0)
+
+                PageOpen += 1
+            else:
+                messagebox.showinfo("Error","The Window is already Open!")
+
     def Click_Employee(self):
         self.button_List.config(state="normal")
         self.button_Stack.config(state="normal")
@@ -313,6 +401,9 @@ class InvortoryGUI:
 
         self.Frame_Empl.pack()
         self.Label_title = Label(self.Frame_Empl, text="Employee Page", font=("Arial", 15)).place(x=0, y=0)
+        self.Button_Emplo=Button(self.Frame_Empl,text="Employee Page",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_onClick)
+        self.Button_Emplo.place(x=945,y=0)
+
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
@@ -835,13 +926,26 @@ class InvortoryGUI:
                     scope['values']=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
                 elif selection == "Monthly":
                     scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                elif selection == "Yearly":
+
+            def toggle_radio(value):
+                if Radio_TO.config("value")[-1] == 1:
+                    Radio_TO.config(value=0)
+                    scope_to.configure(state="disabled")
+                else:
+                    Radio_TO.config(value=1)
+                    scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+                    scope_to.configure(state="normal")
+            
+            def year_radio(value):
+                if Radio_Yearly.config("value")[-1] == 1:
+                    Radio_Yearly.config(value=0)
+                    scope_year.configure(state="disabled")
+                else:
                     current_year = datetime.datetime.now().year
-                    scope['values']=[year for year in range(1950, current_year+1)]
-                elif selection == "Daily":
-                    scope['values']=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
-
-
+                    Radio_Yearly.config(value=1)
+                    scope_year['values']=[year for year in range(1950, current_year+1)]
+                    scope_year.configure(state="normal")
+            
             Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
             reports = ttk.Combobox(self.Add_Notify, width=20)
             reports.place(x=20, y=100)
@@ -849,33 +953,42 @@ class InvortoryGUI:
             
             selected = StringVar()
             Label(self.Add_Notify, text="Select Scope").place(x=170, y=80)
-            scope = ttk.Combobox(self.Add_Notify, width=20,textvariable=selected)
-            scope['values']=['Day','Monthly', 'Yearly','Daily']
+            scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
+            scope['values']=['Day','Monthly', 'Yearly','TO']
             scope.place(x=170, y=100)
 
+            selected_to = StringVar()
+            Label(self.Add_Notify, text="").place(x=320, y=80)
+            scope_to = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_to)
+            scope_to.configure(state="disabled")
+            scope_to['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+            scope_to.place(x=320, y=100)
+
+            selected_year = StringVar()
+            Label(self.Add_Notify, text="Year").place(x=490, y=80)
+            scope_year = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_year)
+            scope_year.configure(state="disabled")
+            scope_year.place(x=490, y=100)
+
             Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", value='Day',command=lambda:update_scope('Day'))
-            Radio_Day.place(x=330,y=80)
+            Radio_Day.place(x=630,y=80)
 
             Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", value='Monthly',command=lambda:update_scope('Monthly'))
-            Radio_Monthly.place(x=330,y=100)
-            
-            Radio_Yearly=tk.Radiobutton(self.Add_Notify,text="Yearly", value='Yearly',command=lambda:update_scope('Yearly'))
-            Radio_Yearly.place(x=410,y=80)
-            
-            Radio_Daily=tk.Radiobutton(self.Add_Notify,text="Daily", value='Daily',command=lambda:update_scope('Daily'))
-            Radio_Daily.place(x=410,y=100)
+            Radio_Monthly.place(x=630,y=100)
 
-            Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
+            Radio_TO=tk.Radiobutton(self.Add_Notify,text="TO", value=1,command=lambda:toggle_radio(0))
+            Radio_TO.place(x=280, y=100)
+
+            Radio_Yearly=tk.Radiobutton(self.Add_Notify,text="With", value=1 ,command=lambda:year_radio(0))
+            Radio_Yearly.place(x=430,y=100)
+        
+            # Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
             export = Button(self.Add_Notify, text="Export", state='disabled')
             export.place(x=740, y=97)
 
             Table_BOX=Frame(self.Add_Notify,highlightbackground="black", highlightthickness=3)
             Table_BOX.place(x=0,y=140,relwidth=1.0,relheight=0.76)
             self.export_Table = ttk.Treeview(Table_BOX,height=25)
-
-
-            # def set_scope(event):
-            #     print("here")
 
             scope.bind('<<ComboboxSelected>>',update_scope)
 
