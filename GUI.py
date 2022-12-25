@@ -243,8 +243,8 @@ class GUI():
         return counter
     
     def logout(self):
-        if (self.inTime  == None):
-            messagebox.showerror(title="Not Timed In", message="You Haven't Timed In Yet")
+        if (self.outTime  == None):
+            messagebox.showerror(title="Not Timed In", message="You Haven't Timed Out Yet")
 
         else:
             self.session_user = None

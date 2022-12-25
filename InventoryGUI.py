@@ -1,8 +1,6 @@
 from logging import root
 import datetime
-from datetime import datetime
-from datetime import date
-import datetime
+from datetime import date, datetime
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -120,7 +118,7 @@ class InvortoryGUI:
     def ClickDelivery_onClick(self):
         global PageOpen
         if PageOpen < 2:
-            if self.frame_Table != 0:
+            if self.frame_Table == 0:
                 messagebox.showinfo("Error","Sorry their no Item to Receive!")
             else:
                 item = self.frame_Table.selection()[0]
@@ -219,9 +217,9 @@ class InvortoryGUI:
 
                 def saveChanges():
                     selectedItem = self.frame_Table.selection()[0]
-                    x = self.frame_Table.item(item)['values'][4]
-                    self.frame_Table.item(selectedItem, values=(
-                    idd.get(), namee.get(), price.get(), qty.get(), x, self.frame_Table.item(item)['values'][5]))
+                    x = self.frame_Table.item(selectedItem)['values'][4]
+                    self.frame_Table.item(selectedItem,text="a", values=(
+                    idd.get(), namee.get(), price.get(), qty.get(), x, self.frame_Table.item(selectedItem)['values'][5]))
 
                 self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
                 self.button.place(x=710, y=150)
@@ -247,6 +245,11 @@ class InvortoryGUI:
                     namee.set(name)
                     qty.set(quantity)
                     price.set(pricee)
+
+                    self.Product_Price_EN.config(state='disabled')
+                    self.Product_price_EN.config(state='disabled')
+
+                    self.button.config(state='normal', command=saveChanges)
 
                 count = 0
                 for i in result:
@@ -431,9 +434,8 @@ class InvortoryGUI:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
-    # Chick List and stack END~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    # Chick ADD START!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def Click_AddP(self):
+        self.add_to_products
 
     def add_to_products(self):
         global order_date, arrival_date
@@ -523,10 +525,18 @@ class InvortoryGUI:
         price_list.clear()
         date_list.clear()
         expiry_date_list.clear()
-        arrival_date_list.clear()
         order_date_list.clear()
         status_list.clear()
 
+    def search_delivery(self,event):
+        value=event.widget.get()
+        if value !='':
+            data=[]
+            for item in range(len(lst)):
+                if value.lower() in lst[item][1].lower():
+                    data.append(lst[item][1])
+               
+            event.widget['values']=data
 
   
     def Add_on_close(self):
@@ -567,14 +577,15 @@ class InvortoryGUI:
 
             self.APD = Label(self.Frame_Add, text="Add Products on Delivery", font=("Arial", 40)).place(x=10, y=5)
             self.Product_CODE_LA = Label(self.Frame_Add, text="Select Product Name")
-            self.Product_CODE_EN = ttk.Combobox(self.Frame_Add, textvariable=self.chosen_val, state='readonly', width=50)
+            self.Product_CODE_EN = ttk.Combobox(self.Frame_Add, textvariable=self.chosen_val, width=50)
             self.Product_CODE_LA.place(x=20, y=70)
             self.Product_CODE_EN.place(x=20, y=90)
 
             if lst != "empty":
                 self.Product_CODE_EN['values'] = ([x[n] for x in lst])
 
-            self.Product_CODE_EN.bind("<<ComboboxSelected>>", self.setPrice)
+            self.Product_CODE_EN.bind("<<ComboboxSelected>>", self.setPrice)    
+            self.Product_CODE_EN.bind("<KeyRelease>",self.search_delivery)
 
             self.Product_date_LA = Label(self.Frame_Add, text="Date")
             self.Product_date_EN = DateEntry(self.Frame_Add, selectmode='day', width=20)
@@ -868,23 +879,24 @@ class InvortoryGUI:
                 var = self.chosen_val.get()
                 self.Click_Edit_Ref(var)
 
-            self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>", AddProduct_ChangeName)
+                self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>", AddProduct_ChangeName)
+                self.Stack_Product_Name_EN.bind('<KeyRelease>',self.search_delivery)
 
-            self.button_Find = Button(self.Frame_Add_St, text="Search", padx=20, pady=5, command=search)
-            self.button_Find.place(x=350, y=90)
+                self.button_Find = Button(self.Frame_Add_St, text="Search", padx=20, pady=5, command=search)
+                self.button_Find.place(x=350, y=90)
 
-            self.button_Add = Button(self.Frame_Add_St, text="Add Product", padx=20, pady=5, command=self.Click_Add_Ref)
-            self.button_Add.place(x=500, y=90)
+                self.button_Add = Button(self.Frame_Add_St, text="Add Product", padx=20, pady=5, command=self.Click_Add_Ref)
+                self.button_Add.place(x=500, y=90)
 
-            self.button_Edit = Button(self.Frame_Add_St, text="Edit", padx=20, pady=5, command=edit)
-            self.button_Edit.place(x=623, y=90)
+                self.button_Edit = Button(self.Frame_Add_St, text="Edit", padx=20, pady=5, command=edit)
+                self.button_Edit.place(x=623, y=90)
 
-            self.button_Delete = Button(self.Frame_Add_St, text="Delete", padx=20, pady=5, command=self.Delete)
-            self.button_Delete.place(x=700, y=90)
+                self.button_Delete = Button(self.Frame_Add_St, text="Delete", padx=20, pady=5, command=self.Delete)
+                self.button_Delete.place(x=700, y=90)
 
-            self.Add_Stack.update()
-            PageOpen += 1
-            self.Add_Stack.mainloop()
+                self.Add_Stack.update()
+                PageOpen += 1
+                self.Add_Stack.mainloop()
         else:
             messagebox.showinfo("Error","The Window already Open!")
 
@@ -990,6 +1002,17 @@ class InvortoryGUI:
             Table_BOX.place(x=0,y=140,relwidth=1.0,relheight=0.76)
             self.export_Table = ttk.Treeview(Table_BOX,height=25)
 
+            self.export_Table.heading("#0")
+            self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
+            self.export_Table.heading("Purchase ID", text="Purchase ID", anchor=W)
+            self.export_Table.heading("Item", text="Item", anchor=W)
+            self.export_Table.heading("Quantity", text="Quantity", anchor=W)
+            self.export_Table.heading("Total Price", text="Total Price", anchor=W)
+            self.export_Table.heading("Discount", text="Discount", anchor=W)
+            self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
+            self.export_Table.pack()
+
+
             scope.bind('<<ComboboxSelected>>',update_scope)
 
             def export_report():
@@ -1010,8 +1033,9 @@ class InvortoryGUI:
 
                 if report_type == 'Forecast':
                     result, value = man.get_export_data(report_type)
-                    df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price','Items Sold'])
-                    df.insert(5,"30 Day Forecast",value)
+                    print("here")
+                    df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price'])
+                    df.insert(4,"30 Day Forecast",value)
 
                 title = str.lower(report_type) + str(date.today()) + '.xlsx'
                 df.to_excel(title, str(report_type))
@@ -1295,6 +1319,8 @@ class InvortoryGUI:
 
         Prod = Product.product()
         Prod.editReference(idd, name, priceee)
+        
+        messagebox.showinfo("Edit Success","Edit Success!")
 
     def setRefVals(self, event):
         global choice
@@ -1467,3 +1493,4 @@ class InvortoryGUI:
 
     def start(self, id):
         self.InvorGUI()
+
