@@ -1,10 +1,9 @@
-import Employee, dbConnector, ROP, Product, forecast
+import Employee, dbConnector, Product, forecast
 from datetime import datetime
 import pandas as pd
 class Manager (Employee.Employee):
     def __init__(self):
         self.dbcursor = dbConnector.dbcursor
-        self.ROP=ROP
     def inventoryList(self):
         dbcursor = self.dbcursor
         query = "SELECT ProductID,ProductName,status,price,Quantity FROM products"
