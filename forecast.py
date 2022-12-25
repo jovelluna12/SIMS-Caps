@@ -24,6 +24,5 @@ def forecast(x,y):
     
     X = np.column_stack((x1, x2))
     ans=round(reg.predict(X)[0])
-    print(ans)
 
     return result,ans
