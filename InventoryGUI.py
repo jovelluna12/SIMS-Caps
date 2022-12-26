@@ -1,6 +1,7 @@
 from logging import root
 import datetime
-from datetime import date, datetime
+from datetime import date, datetime 
+
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -118,7 +119,7 @@ class InvortoryGUI:
     def ClickDelivery_onClick(self):
         global PageOpen
         if PageOpen < 2:
-            if self.frame_Table == 0:
+            if len(self.frame_Table.get_children()) == 0:
                 messagebox.showinfo("Error","Sorry their no Item to Receive!")
             else:
                 item = self.frame_Table.selection()[0]
@@ -953,7 +954,7 @@ class InvortoryGUI:
                     Radio_Yearly.config(value=0)
                     scope_year.configure(state="disabled")
                 else:
-                    current_year = datetime.datetime.now().year
+                    current_year = datetime.now().year
                     Radio_Yearly.config(value=1)
                     scope_year['values']=[year for year in range(1950, current_year+1)]
                     scope_year.configure(state="normal")
@@ -966,7 +967,7 @@ class InvortoryGUI:
             selected = StringVar()
             Label(self.Add_Notify, text="Select Scope").place(x=170, y=80)
             scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
-            scope['values']=['Day','Monthly', 'Yearly','TO']
+            scope['values']=['Day','Monthly']
             scope.place(x=170, y=100)
 
             selected_to = StringVar()
