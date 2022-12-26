@@ -122,143 +122,146 @@ class InvortoryGUI:
             if len(self.frame_Table.get_children()) == 0:
                 messagebox.showinfo("Error","Sorry their no Item to Receive!")
             else:
-                item = self.frame_Table.selection()[0]
-                batch = self.frame_Table.item(item)['values'][0]
-                prod = Product.product()
-
-                batch = (batch,)
-                result = prod.retrieveBatch(batch)
-
-                self.Add_Delivery1= Toplevel()
-                self.Add_Delivery1.title("Confirm Delivery")
-                self.Add_Delivery1.geometry("800x550")
-                self.Add_Delivery1.resizable(False, False)
-                self.Add_Delivery1.protocol("WM_DELETE_WINDOW",self.Add_Delivery1_close)
-
-                self.Frame_Add = Frame(self.Add_Delivery1, width=800, height=200)
-                self.Frame_Add.place(x=0, y=0)
-
-                self.Frame_ListD = Frame(self.Add_Delivery1, width=800, height=320, highlightbackground="black",
-                                        highlightthickness=1, padx=10, pady=10)
-                self.Frame_ListD.place(x=0, y=200)
-
-                global idd, namee, qty, price
-                idd = StringVar()
-                namee = StringVar()
-                qty = StringVar()
-                price = StringVar()
-
-                self.Product_ID_LA = Label(self.Frame_Add, text="Product ID")
-                self.Product_ID_EN = Entry(self.Frame_Add, width=10, textvariable=idd, borderwidth=4, state='disabled')
-                self.Product_ID_LA.place(x=40, y=70)
-                self.Product_ID_EN.place(x=40, y=90)
-
-                self.Product_Price_LA = Label(self.Frame_Add, text="Product Name")
-                self.Product_Price_EN = Entry(self.Frame_Add, width=45, textvariable=namee, borderwidth=4, state='disabled')
-                self.Product_Price_LA.place(x=115, y=70)
-                self.Product_Price_EN.place(x=115, y=90)
-
-                self.Product_Stack_LA=Label(self.Frame_Add,text="Price")
-                self.Product_price_EN= Entry(self.Frame_Add,width=10,textvariable=price,borderwidth=4,state='disabled')
-                self.Product_Stack_LA.place(x=400,y=70)
-                self.Product_price_EN.place(x=400,y=90)
-
-                self.Product_Stack_LA=Label(self.Frame_Add,text="Quantity")
-                self.Product_Stack_EN= Entry(self.Frame_Add,width=10,textvariable=qty,borderwidth=4,state='disabled')
-                self.Product_Stack_LA.place(x=475,y=70)
-                self.Product_Stack_EN.place(x=475,y=90)
-
-                self.Product_date_LA = Label(self.Frame_Add, text="Expiry Date")
-                self.Product_date_EN = DateEntry(self.Frame_Add, selectmode='day', width=20, state='disabled')
-                self.Product_date_LA.place(x=550, y=70)
-                self.Product_date_EN.place(x=550, y=90)
-
-                Label(self.Frame_Add, text="Confirming Delivery Received Product",font=("Arial", 30)).place(x=10, y=10)
-
-                self.frame_Table = ttk.Treeview(self.Frame_ListD, height=15)
-                self.frame_Table['columns'] = ("ID", "Name", "Price", "Quantity", "Order Date", "Expiration Date")
-                self.frame_Table.column("#0", width=0, stretch=NO)
-                self.frame_Table.column("ID", anchor=W, width=50)
-                self.frame_Table.column("Name", anchor=W, width=246)
-                self.frame_Table.column("Price", anchor=CENTER, width=100)
-                self.frame_Table.column("Quantity", anchor=E, width=80)
-                self.frame_Table.column("Order Date", anchor=E, width=150)
-                self.frame_Table.column("Expiration Date", anchor=E, width=150)
-
-                self.frame_Table.heading("#0")
-                self.frame_Table.heading("ID", text="ID", anchor=W)
-                self.frame_Table.heading("Name", text="Product Name", anchor=W)
-                self.frame_Table.heading("Price", text="Price", anchor=CENTER)
-                self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
-                self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
-                self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
-
-                self.frame_Table.pack(fill='both')
-                self.frame_Table.grid(row=1, column=0)
-
-
-                def confirm_delivery():
+                if self.frame_Table.focus()!='':
+                    item = self.frame_Table.selection()[0]
+                    batch = self.frame_Table.item(item)['values'][0]
                     prod = Product.product()
-                    id = idd.get()
-                    name = namee.get()
-                    qtyy = qty.get()
 
-                    for item in self.frame_Table.get_children():
-                        id = self.frame_Table.item(item)['values'][0]
-                        name = self.frame_Table.item(item)['values'][1]
-                        priceeee = self.frame_Table.item(item)['values'][2]
-                        qtyyy = self.frame_Table.item(item)['values'][3]
-                        datee = self.frame_Table.item(item)['values'][5]
-                        prod.editDelivery(id, name, priceeee, qtyyy, datee)
+                    batch = (batch,)
+                    result = prod.retrieveBatch(batch)
 
-                    self.frame_Table.delete(*self.frame_Table.get_children())
-                
-                self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
-                self.button.place(x=600, y=150)
+                    self.Add_Delivery1= Toplevel()
+                    self.Add_Delivery1.title("Confirm Delivery")
+                    self.Add_Delivery1.geometry("800x550")
+                    self.Add_Delivery1.resizable(False, False)
+                    self.Add_Delivery1.protocol("WM_DELETE_WINDOW",self.Add_Delivery1_close)
 
-                def saveChanges():
-                    selectedItem = self.frame_Table.selection()[0]
-                    x = self.frame_Table.item(selectedItem)['values'][4]
-                    self.frame_Table.item(selectedItem,text="a", values=(
-                    idd.get(), namee.get(), price.get(), qty.get(), x, self.frame_Table.item(selectedItem)['values'][5]))
+                    self.Frame_Add = Frame(self.Add_Delivery1, width=800, height=200)
+                    self.Frame_Add.place(x=0, y=0)
 
-                self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
-                self.button.place(x=710, y=150)
-                
+                    self.Frame_ListD = Frame(self.Add_Delivery1, width=800, height=320, highlightbackground="black",
+                                            highlightthickness=1, padx=10, pady=10)
+                    self.Frame_ListD.place(x=0, y=200)
 
-                def selectItem(event):
-                    selected_item = self.frame_Table.selection()[0]
-                    id = self.frame_Table.item(selected_item)['values'][0]
-                    name = self.frame_Table.item(selected_item)['values'][1]
-                    pricee = self.frame_Table.item(selected_item)['values'][2]
-                    quantity = self.frame_Table.item(selected_item)['values'][3]
-                    expire = self.frame_Table.item(selected_item)['values'][5]
+                    global idd, namee, qty, price
+                    idd = StringVar()
+                    namee = StringVar()
+                    qty = StringVar()
+                    price = StringVar()
 
-                    self.Product_Price_EN.config(state='normal')
-                    self.Product_Stack_EN.config(state='normal')
-                    self.Product_date_EN.config(state='normal')
-                    self.Product_price_EN.config(state='normal')
+                    self.Product_ID_LA = Label(self.Frame_Add, text="Product ID")
+                    self.Product_ID_EN = Entry(self.Frame_Add, width=10, textvariable=idd, borderwidth=4, state='disabled')
+                    self.Product_ID_LA.place(x=40, y=70)
+                    self.Product_ID_EN.place(x=40, y=90)
 
-                    date = datetime.strptime(expire, '%Y-%m-%d')
+                    self.Product_Price_LA = Label(self.Frame_Add, text="Product Name")
+                    self.Product_Price_EN = Entry(self.Frame_Add, width=45, textvariable=namee, borderwidth=4, state='disabled')
+                    self.Product_Price_LA.place(x=115, y=70)
+                    self.Product_Price_EN.place(x=115, y=90)
 
-                    self.Product_date_EN.set_date(date)
-                    idd.set(id)
-                    namee.set(name)
-                    qty.set(quantity)
-                    price.set(pricee)
+                    self.Product_Stack_LA=Label(self.Frame_Add,text="Price")
+                    self.Product_price_EN= Entry(self.Frame_Add,width=10,textvariable=price,borderwidth=4,state='disabled')
+                    self.Product_Stack_LA.place(x=400,y=70)
+                    self.Product_price_EN.place(x=400,y=90)
 
-                    self.Product_Price_EN.config(state='disabled')
-                    self.Product_price_EN.config(state='disabled')
+                    self.Product_Stack_LA=Label(self.Frame_Add,text="Quantity")
+                    self.Product_Stack_EN= Entry(self.Frame_Add,width=10,textvariable=qty,borderwidth=4,state='disabled')
+                    self.Product_Stack_LA.place(x=475,y=70)
+                    self.Product_Stack_EN.place(x=475,y=90)
 
-                    self.button.config(state='normal', command=saveChanges)
+                    self.Product_date_LA = Label(self.Frame_Add, text="Expiry Date")
+                    self.Product_date_EN = DateEntry(self.Frame_Add, selectmode='day', width=20, state='disabled')
+                    self.Product_date_LA.place(x=550, y=70)
+                    self.Product_date_EN.place(x=550, y=90)
 
-                count = 0
-                for i in result:
-                    self.frame_Table.insert(parent='', index='end', iid=count, text=i, values=i)
-                    count += 1
+                    Label(self.Frame_Add, text="Confirming Delivery Received Product",font=("Arial", 30)).place(x=10, y=10)
 
-                self.frame_Table.bind("<Double-1>", selectItem)
-                PageOpen += 1
+                    self.frame_Table = ttk.Treeview(self.Frame_ListD, height=15)
+                    self.frame_Table['columns'] = ("ID", "Name", "Price", "Quantity", "Order Date", "Expiration Date")
+                    self.frame_Table.column("#0", width=0, stretch=NO)
+                    self.frame_Table.column("ID", anchor=W, width=50)
+                    self.frame_Table.column("Name", anchor=W, width=246)
+                    self.frame_Table.column("Price", anchor=CENTER, width=100)
+                    self.frame_Table.column("Quantity", anchor=E, width=80)
+                    self.frame_Table.column("Order Date", anchor=E, width=150)
+                    self.frame_Table.column("Expiration Date", anchor=E, width=150)
+
+                    self.frame_Table.heading("#0")
+                    self.frame_Table.heading("ID", text="ID", anchor=W)
+                    self.frame_Table.heading("Name", text="Product Name", anchor=W)
+                    self.frame_Table.heading("Price", text="Price", anchor=CENTER)
+                    self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
+                    self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
+                    self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
+
+                    self.frame_Table.pack(fill='both')
+                    self.frame_Table.grid(row=1, column=0)
+
+
+                    def confirm_delivery():
+                        prod = Product.product()
+                        id = idd.get()
+                        name = namee.get()
+                        qtyy = qty.get()
+
+                        for item in self.frame_Table.get_children():
+                            id = self.frame_Table.item(item)['values'][0]
+                            name = self.frame_Table.item(item)['values'][1]
+                            priceeee = self.frame_Table.item(item)['values'][2]
+                            qtyyy = self.frame_Table.item(item)['values'][3]
+                            datee = self.frame_Table.item(item)['values'][5]
+                            prod.editDelivery(id, name, priceeee, qtyyy, datee)
+
+                        self.frame_Table.delete(*self.frame_Table.get_children())
+                    
+                    self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
+                    self.button.place(x=600, y=150)
+
+                    def saveChanges():
+                        selectedItem = self.frame_Table.selection()[0]
+                        x = self.frame_Table.item(selectedItem)['values'][4]
+                        self.frame_Table.item(selectedItem,text="a", values=(
+                        idd.get(), namee.get(), price.get(), qty.get(), x, self.frame_Table.item(selectedItem)['values'][5]))
+
+                    self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
+                    self.button.place(x=710, y=150)
+                    
+
+                    def selectItem(event):
+                        selected_item = self.frame_Table.selection()[0]
+                        id = self.frame_Table.item(selected_item)['values'][0]
+                        name = self.frame_Table.item(selected_item)['values'][1]
+                        pricee = self.frame_Table.item(selected_item)['values'][2]
+                        quantity = self.frame_Table.item(selected_item)['values'][3]
+                        expire = self.frame_Table.item(selected_item)['values'][5]
+
+                        self.Product_Price_EN.config(state='normal')
+                        self.Product_Stack_EN.config(state='normal')
+                        self.Product_date_EN.config(state='normal')
+                        self.Product_price_EN.config(state='normal')
+
+                        date = datetime.strptime(expire, '%Y-%m-%d')
+
+                        self.Product_date_EN.set_date(date)
+                        idd.set(id)
+                        namee.set(name)
+                        qty.set(quantity)
+                        price.set(pricee)
+
+                        self.Product_Price_EN.config(state='disabled')
+                        self.Product_price_EN.config(state='disabled')
+
+                        self.button.config(state='normal', command=saveChanges)
+
+                    count = 0
+                    for i in result:
+                        self.frame_Table.insert(parent='', index='end', iid=count, text=i, values=i)
+                        count += 1
+
+                    self.frame_Table.bind("<Double-1>", selectItem)
+                    PageOpen += 1
+                else:
+                    messagebox.showinfo("Error","No Item Selected")
         else:
             messagebox.showinfo("Error","The Window is already Open!")
 
