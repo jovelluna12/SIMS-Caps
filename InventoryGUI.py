@@ -9,6 +9,7 @@ from tkinter import messagebox
 from tracemalloc import start
 import Employee
 import Manager
+import Owner
 from tkcalendar import DateEntry
 from PIL import Image, ImageTk
 import Product
@@ -120,7 +121,7 @@ class InvortoryGUI:
         global PageOpen
         if PageOpen < 2:
             if len(self.frame_Table.get_children()) == 0:
-                messagebox.showinfo("Error","Sorry their no Item to Receive!")
+                messagebox.showinfo("Error","Sorry there is no Item to Receive!")
             else:
                 if self.frame_Table.focus()!='':
                     item = self.frame_Table.selection()[0]
@@ -315,11 +316,29 @@ class InvortoryGUI:
                     PageOpen=1
                     self.Add_Employ.destroy()
 
+    def deleteEmp(self,id):
+        confirm_Delete=messagebox.askyesno("Confirm Delete","Are you sure you want to Delete this Employee?")
+        if confirm_Delete:
+            own=Owner.Owner()
+            own.deleteEmp(id)
+            messagebox.showinfo("Changes Saved","Employee Deleted Succesfully")
+        else:
+            messagebox.showinfo("Changes not Saved","Changes weren't Saved")
+
+    def editEmp(self,id,name,username,password,role):
+        confirm_Edit=messagebox.askyesno("Confirm Save","Are you sure you want to Save Edited Changes?")
+        if confirm_Edit:
+            own=Owner.Owner()
+            own.EditEmp(id,name,username,password,role)
+            messagebox.showinfo("Changes Saved","Changes Saved")
+        else:
+            messagebox.showinfo("Changes not Saved","Changes weren't Saved")
+
     def View_onClick(self):
             global PageOpen
             if PageOpen < 2:
                 self.Add_Employ= Toplevel()
-                self.Add_Employ.title("Confirm Delivery")
+                self.Add_Employ.title("Employee Profile Window")
                 self.Add_Employ.geometry("800x550")
                 self.Add_Employ.resizable(False, False)
                 self.Add_Employ.protocol("WM_DELETE_WINDOW",self.View_close)
@@ -330,11 +349,11 @@ class InvortoryGUI:
                                     highlightthickness=1, padx=10, pady=10)
                 self.Frame_ListE.place(x=0, y=200)
 
-                global idd, namee, qty, price
+                global idd, namee,username, passwd
                 idd = StringVar()
                 namee = StringVar()
-                qty = StringVar()
-                price = StringVar()
+                username=StringVar()
+                passwd = StringVar()
 
                 self.Employ_ID_LA = Label(self.Frame_Empl, text="Employ ID")
                 self.Employ_ID_EN = Entry(self.Frame_Empl, width=10, textvariable=idd, borderwidth=4, state='disabled')
@@ -346,8 +365,13 @@ class InvortoryGUI:
                 self.Employ_Name_LA.place(x=115, y=70)
                 self.Employ_Name_EN.place(x=115, y=90)
 
+                self.Employ_Uname_LA = Label(self.Frame_Empl, text="Username")
+                self.Employ_Uname_EN = Entry(self.Frame_Empl, width=45, textvariable=username, borderwidth=4, state='disabled')
+                self.Employ_Uname_LA.place(x=400, y=20)
+                self.Employ_Uname_EN.place(x=400, y=35)
+
                 self.Empoly_Pass_LA=Label(self.Frame_Empl,text="Password")
-                self.Empoly_Pass_EN= Entry(self.Frame_Empl,width=45,textvariable=price,borderwidth=4,state='disabled')
+                self.Empoly_Pass_EN= Entry(self.Frame_Empl,width=45,textvariable=passwd,borderwidth=4,state='disabled')
                 self.Empoly_Pass_LA.place(x=115,y=120)
                 self.Empoly_Pass_EN.place(x=115,y=140)
 
@@ -362,35 +386,62 @@ class InvortoryGUI:
                 Button_Edit=Button(self.Frame_Empl,text="Edit",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
                 Button_Edit.place(x=600,y=150)
                     
-                Button_Save=Button(self.Frame_Empl,text="Save",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
-                Button_Save.place(x=600,y=120)
+                # Button_Save=Button(self.Frame_Empl,text="Save",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
+                # Button_Save.place(x=600,y=120)
                     
                 Button_Delete=Button(self.Frame_Empl,text="Delete",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
                 Button_Delete.place(x=700,y=120)
 
-                Button_Cancel=Button(self.Frame_Empl,text="Cancel",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_close)
+                Button_Cancel=Button(self.Frame_Empl,text="Close",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_close)
                 Button_Cancel.place(x=700,y=150)
 
                 Label(self.Frame_Empl, text="Employee",font=("Arial", 30)).place(x=10, y=10)
 
-                self.frame_Table = ttk.Treeview(self.Frame_ListE, height=15)
-                self.frame_Table['columns'] = ("ID", "Name","Date","WorkingTime")
-                self.frame_Table.column("#0", width=0, stretch=NO)
-                self.frame_Table.column("ID", anchor=W, width=50)
-                self.frame_Table.column("Name", anchor=W, width=246)
-                self.frame_Table.column("Date", anchor=W, width=280)
-                self.frame_Table.column("WorkingTime", anchor=W, width=200)
+                self.frame_EmpTable = ttk.Treeview(self.Frame_ListE, height=15)
+                self.frame_EmpTable['columns'] = ("ID", "Name","Role")
+                self.frame_EmpTable.column("#0", width=0, stretch=NO)
+                self.frame_EmpTable.column("ID", anchor=W, width=50)
+                self.frame_EmpTable.column("Name", anchor=W, width=246)
+                self.frame_EmpTable.column("Role", anchor=W, width=280)
+                # self.frame_EmpTable.column("WorkingTime", anchor=W, width=200)
 
+                self.frame_EmpTable.heading("#0")
+                self.frame_EmpTable.heading("ID", text="ID", anchor=W)
+                self.frame_EmpTable.heading("Name", text="Name", anchor=W)
+                self.frame_EmpTable.heading("Role", text="Role", anchor=W)
+                # self.frame_EmpTable.heading("WorkingTime", text="Working Time", anchor=W)
 
-                self.frame_Table.heading("#0")
-                self.frame_Table.heading("ID", text="ID", anchor=W)
-                self.frame_Table.heading("Name", text="Product Name", anchor=W)
+                self.frame_EmpTable.pack(fill='both')
+                self.frame_EmpTable.grid(row=1, column=0)
 
-                self.frame_Table.heading("Date", text="Date", anchor=W)
-                self.frame_Table.heading("WorkingTime", text="Working Time", anchor=W)
+                def selectItem(event):
+                    for items in self.frame_EmpTable.selection():
+                        id=self.frame_EmpTable.item(items)['values'][0]
+                        name=self.frame_EmpTable.item(items)['values'][1]
+                        role=self.frame_EmpTable.item(items)['values'][2]
+                        uname=self.frame_EmpTable.item(items)['values'][3]
+                        passwdd=self.frame_EmpTable.item(items)['values'][4]
+                        
+                        idd.set(id)
+                        namee.set(name)
+                        self.Role_emplo.set(role)
+                        username.set(uname)
+                        passwd.set(passwdd)
 
-                self.frame_Table.pack(fill='both')
-                self.frame_Table.grid(row=1, column=0)
+                        self.Employ_Name_EN.config(state='normal')
+                        self.Employ_Uname_EN.config(state='normal')
+                        self.Empoly_Pass_EN.config(state='normal')
+
+                        Button_Edit.config(command=lambda id=idd.get():self.editEmp(int(id),namee.get(),username.get(),passwd.get(),self.Role_emplo.get()))
+                        Button_Delete.config(command=lambda id=idd.get():self.deleteEmp(int(id)))
+
+                self.frame_EmpTable.bind('<Button-1>',selectItem)
+                Emp=Owner.Owner()
+                res=Emp.viewallEmp()
+                count=0
+                for x in res:
+                    self.frame_EmpTable.insert(parent='', index='end', iid=count, text=x, values=(x[0],x[1],x[4],x[2],x[3]))
+                    count+=1
 
                 PageOpen += 1
             else:
