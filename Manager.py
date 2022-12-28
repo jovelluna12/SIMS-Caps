@@ -29,6 +29,7 @@ class Manager (Employee.Employee):
         dbcursor = self.dbcursor
         if report=="Sales":
             query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item,purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.DatePurchased FROM salestransaction, purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND DATE(salestransaction.DatePurchased) >= (DATE(NOW()) - INTERVAL 30 DAY) ORDER BY DatePurchased;"
+            # SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item,purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.DatePurchased FROM salestransaction, purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND salestransaction.DatePurchased <= 2022-12-15 AND salestransaction.DatePurchased >=2022-12-18 ORDER BY DatePurchased;
             dbcursor.execute(query)
             return dbcursor.fetchall()
 
