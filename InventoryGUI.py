@@ -323,21 +323,21 @@ class InvortoryGUI:
                 self.Add_Employ.geometry("800x550")
                 self.Add_Employ.resizable(False, False)
                 self.Add_Employ.protocol("WM_DELETE_WINDOW",self.View_close)
-                self.Frame_Empl_VIEW_View = Frame(self.Add_Employ, width=800, height=200)
-                self.Frame_Empl_VIEW_View.place(x=0, y=0)
+                self.Frame_Empl_VIEW = Frame(self.Add_Employ, width=800, height=200)
+                self.Frame_Empl_VIEW_.place(x=0, y=0)
 
                 self.Frame_ListE = Frame(self.Add_Employ, width=800, height=320, highlightbackground="black",
                                     highlightthickness=1, padx=10, pady=10)
                 self.Frame_ListE.place(x=0, y=200)
 
-                global idd, namee, qty, price
+                global idd, namee, username, passwd
                 idd = StringVar()
                 namee = StringVar()
-                qty = StringVar()
-                price = StringVar()
+                username = StringVar()
+                passwd = StringVar()
 
-                self.Employ_ID_LA = Label(self.Frame_Empl_VIEW_View, text="Employ ID")
-                self.Employ_ID_EN = Entry(self.Frame_Empl_VIEW_View, width=10, textvariable=idd, borderwidth=4, state='disabled')
+                self.Employ_ID_LA = Label(self.Frame_Empl_VIEW, text="Employ ID")
+                self.Employ_ID_EN = Entry(self.Frame_Empl_VIEW, width=10, textvariable=idd, borderwidth=4, state='disabled')
                 self.Employ_ID_LA.place(x=40, y=70)
                 self.Employ_ID_EN.place(x=40, y=90)
 
