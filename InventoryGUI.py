@@ -923,6 +923,8 @@ class InvortoryGUI:
     # start UI for Notification ---------------
     def notify_UI(self):
         global PageOpen, to,fromm
+        to=None
+        fromm=None
         if PageOpen<2:
             self.btn_Notification['bg']='gray'
             self.Add_Notify = Toplevel()
@@ -944,11 +946,9 @@ class InvortoryGUI:
             def update_scope(selection):
                 if selection == "Day":
                     scope['values']=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
-                    print(radio_scope.get())
 
                 elif selection == "Monthly":
                     scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                    print(radio_scope.get())
 
             def toggle_radio(value):
                 if Radio_TO.config("value")[-1] == 1:
@@ -1037,24 +1037,50 @@ class InvortoryGUI:
 
             scope.bind('<<ComboboxSelected>>',update_scope)
 
-            def export_report(to,fromm):
+            def export_report():
+                print(radio_scope.get())
+                to=selected.get()
+                from_month=selected_to.get()
+                year=selected_year.get()
+
                 report_type = reports.get()
                 man = Manager.Manager()
 
                 if report_type == 'Sales':
-                    result = man.get_export_data(report_type,to,fromm)
+                    if radio_scope.get()=="Monthly":
+                        month_num=datetime.strptime(to, '%B').month
+                        date_obj=datetime(int(year), month_num, 1)
+
+                        date_str_to = date_obj.strftime('%Y-%m-%d')
+
+                        from_mnth=datetime.strptime(from_month, '%B').month
+                        from_mnth_obj=datetime(int(year), from_mnth, 30)
+
+                        frm_mtnh_str=from_mnth_obj.strftime('%Y-%m-%d')
+                        result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
+                    
+                    if radio_scope.get()=="Day":
+                        day=to
+                        month=from_month
+
+                        month_num=datetime.strptime(month, '%B').month
+                        date_obj=datetime(int(year), month_num, int(day))
+                        date_str = date_obj.strftime('%Y-%m-%d')
+
+                        result = man.get_export_data(report_type,date_str,date_str)
+
                     df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
                                                     'Discount', 'Date Purchased'])
                 if report_type == 'Inventory':
-                    result = man.get_export_data(report_type)
+                    result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
 
                 if report_type == "Delivery":
-                    result = man.get_export_data(report_type)
+                    result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
 
                 if report_type == 'Forecast':
-                    result, value = man.get_export_data(report_type)
+                    result, value = man.get_export_data(report_type,None,None)
                     print("here")
                     df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price'])
                     df.insert(4,"30 Day Forecast",value)
@@ -1065,13 +1091,13 @@ class InvortoryGUI:
                 messagebox.showinfo("Exported Successfully", "Saved to " + title)
             
             def reports_callback(event):
-                export.config(state='normal', command=export_report(to,fromm))
+                export.config(state='normal', command=lambda :export_report())
 
                 self.export_Table.delete(*self.export_Table.get_children())
                 report_type = reports.get()
 
-                # man = Manager.Manager()
-                # result = man.get_export_data(report_type)
+                man = Manager.Manager()
+                result = man.get_export_data(report_type,to,fromm)
 
                 if report_type == 'Sales':
                     self.export_Table['columns'] = (
@@ -1095,8 +1121,6 @@ class InvortoryGUI:
                     self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
 
                     self.export_Table.pack()
-
-
 
                 if report_type == 'Inventory':
                     self.export_Table['columns'] = (
