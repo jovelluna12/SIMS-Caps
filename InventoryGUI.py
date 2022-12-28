@@ -324,7 +324,7 @@ class InvortoryGUI:
                 self.Add_Employ.resizable(False, False)
                 self.Add_Employ.protocol("WM_DELETE_WINDOW",self.View_close)
                 self.Frame_Empl_VIEW = Frame(self.Add_Employ, width=800, height=200)
-                self.Frame_Empl_VIEW_.place(x=0, y=0)
+                self.Frame_Empl_VIEW.place(x=0, y=0)
 
                 self.Frame_ListE = Frame(self.Add_Employ, width=800, height=320, highlightbackground="black",
                                     highlightthickness=1, padx=10, pady=10)
@@ -367,7 +367,7 @@ class InvortoryGUI:
                 Button_Edit=Button(self.Frame_Empl_VIEW,text="Edit",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
                 Button_Edit.place(x=600,y=150)
                     
-                Button_Save=Button(self.Frame_Empl_View,text="Save",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
+                Button_Save=Button(self.Frame_Empl_VIEW,text="Save",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
                 Button_Save.place(x=600,y=120)
                     
                 Button_Delete=Button(self.Frame_Empl_VIEW,text="Delete",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
