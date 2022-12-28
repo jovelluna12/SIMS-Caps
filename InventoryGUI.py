@@ -1169,6 +1169,7 @@ class InvortoryGUI:
         else:
             messagebox.showinfo("Error","The Window already Open!")
 
+    # Chick ADD END!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def InvorGUI(self):
         self.InvorVal = Tk()
         self.InvorVal.title("Cresdel Pharmacy!!")
