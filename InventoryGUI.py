@@ -323,8 +323,8 @@ class InvortoryGUI:
                 self.Add_Employ.geometry("800x550")
                 self.Add_Employ.resizable(False, False)
                 self.Add_Employ.protocol("WM_DELETE_WINDOW",self.View_close)
-                self.Frame_Empl_View = Frame(self.Add_Employ, width=800, height=200)
-                self.Frame_Empl_View.place(x=0, y=0)
+                self.Frame_Empl_VIEW_View = Frame(self.Add_Employ, width=800, height=200)
+                self.Frame_Empl_VIEW_View.place(x=0, y=0)
 
                 self.Frame_ListE = Frame(self.Add_Employ, width=800, height=320, highlightbackground="black",
                                     highlightthickness=1, padx=10, pady=10)
@@ -336,42 +336,47 @@ class InvortoryGUI:
                 qty = StringVar()
                 price = StringVar()
 
-                self.Employ_ID_LA = Label(self.Frame_Empl_View, text="Employ ID")
-                self.Employ_ID_EN = Entry(self.Frame_Empl_View, width=10, textvariable=idd, borderwidth=4, state='disabled')
+                self.Employ_ID_LA = Label(self.Frame_Empl_VIEW_View, text="Employ ID")
+                self.Employ_ID_EN = Entry(self.Frame_Empl_VIEW_View, width=10, textvariable=idd, borderwidth=4, state='disabled')
                 self.Employ_ID_LA.place(x=40, y=70)
                 self.Employ_ID_EN.place(x=40, y=90)
 
-                self.Employ_Name_LA = Label(self.Frame_Empl_View, text="Name")
-                self.Employ_Name_EN = Entry(self.Frame_Empl_View, width=45, textvariable=namee, borderwidth=4, state='disabled')
+                self.Employ_Name_LA = Label(self.Frame_Empl_VIEW, text="Name")
+                self.Employ_Name_EN = Entry(self.Frame_Empl_VIEW, width=45, textvariable=namee, borderwidth=4, state='disabled')
                 self.Employ_Name_LA.place(x=115, y=70)
                 self.Employ_Name_EN.place(x=115, y=90)
 
-                self.Empoly_Pass_LA=Label(self.Frame_Empl_View,text="Password")
-                self.Empoly_Pass_EN= Entry(self.Frame_Empl_View,width=45,textvariable=price,borderwidth=4,state='disabled')
+                self.Employ_Uname_LA = Label(self.Frame_Empl_VIEW, text="Username")
+                self.Employ_Uname_EN = Entry(self.Frame_Empl_VIEW, width=45, textvariable=username, borderwidth=4, state='disabled')
+                self.Employ_Uname_LA.place(x=400, y=20)
+                self.Employ_Uname_EN.place(x=400, y=35)
+
+                self.Empoly_Pass_LA=Label(self.Frame_Empl_VIEW,text="Password")
+                self.Empoly_Pass_EN= Entry(self.Frame_Empl_VIEW,width=45,textvariable=passwd,borderwidth=4,state='disabled')
                 self.Empoly_Pass_LA.place(x=115,y=120)
                 self.Empoly_Pass_EN.place(x=115,y=140)
 
-                self.Employee_Role_LA = Label(self.Frame_Empl_View, text="Role:")
-                self.chosen_val_Edit = tk.StringVar(self.Frame_Empl_View)
+                self.Employee_Role_LA = Label(self.Frame_Empl_VIEW, text="Role:")
+                self.chosen_val_Edit = tk.StringVar(self.Frame_Empl_VIEW)
                 self.chosen_val_Edit.set("Select Role")
-                self.Role_emplo = ttk.Combobox(self.Frame_Empl_View, textvariable=self.chosen_val_Edit, state='readonly')
+                self.Role_emplo = ttk.Combobox(self.Frame_Empl_VIEW, textvariable=self.chosen_val_Edit, state='readonly')
                 self.Role_emplo['values'] = ('Cashier', 'Manager')
                 self.Role_emplo.place(x=420,y=90)
                 self.Employee_Role_LA.place(x=420,y=70)
 
-                Button_Edit=Button(self.Frame_Empl_View,text="Edit",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
+                Button_Edit=Button(self.Frame_Empl_VIEW,text="Edit",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
                 Button_Edit.place(x=600,y=150)
                     
                 Button_Save=Button(self.Frame_Empl_View,text="Save",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
                 Button_Save.place(x=600,y=120)
                     
-                Button_Delete=Button(self.Frame_Empl_View,text="Delete",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
+                Button_Delete=Button(self.Frame_Empl_VIEW,text="Delete",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
                 Button_Delete.place(x=700,y=120)
 
-                Button_Cancel=Button(self.Frame_Empl_View,text="Cancel",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_close)
+                Button_Cancel=Button(self.Frame_Empl_VIEW,text="Close",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_close)
                 Button_Cancel.place(x=700,y=150)
 
-                Label(self.Frame_Empl_View, text="Employee",font=("Arial", 30)).place(x=10, y=10)
+                Label(self.Frame_Empl_VIEW, text="Employee",font=("Arial", 30)).place(x=10, y=10)
 
                 self.frame_Table = ttk.Treeview(self.Frame_ListE, height=15)
                 self.frame_Table['columns'] = ("ID", "Name","Date","WorkingTime")
