@@ -917,7 +917,7 @@ class InvortoryGUI:
 
     # start UI for Notification ---------------
     def notify_UI(self):
-        global PageOpen
+        global PageOpen, to,fromm
         if PageOpen<2:
             self.btn_Notification['bg']='gray'
             self.Add_Notify = Toplevel()
@@ -939,8 +939,11 @@ class InvortoryGUI:
             def update_scope(selection):
                 if selection == "Day":
                     scope['values']=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
+                    print(radio_scope.get())
+
                 elif selection == "Monthly":
                     scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+                    print(radio_scope.get())
 
             def toggle_radio(value):
                 if Radio_TO.config("value")[-1] == 1:
@@ -967,9 +970,8 @@ class InvortoryGUI:
             reports['values'] = ("Sales", "Inventory", "Delivery","Forecast")
             
             selected = StringVar()
-            Label(self.Add_Notify, text="Select Scope").place(x=170, y=80)
+            Label(self.Add_Notify, text="From").place(x=170, y=80)
             scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
-            scope['values']=['Day','Monthly']
             scope.place(x=170, y=100)
 
             selected_to = StringVar()
@@ -985,10 +987,12 @@ class InvortoryGUI:
             scope_year.configure(state="disabled")
             scope_year.place(x=490, y=100)
 
-            Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", value='Day',command=lambda:update_scope('Day'))
+            radio_scope=StringVar()
+
+            Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", variable=radio_scope,value='Day',command=lambda:update_scope('Day'))
             Radio_Day.place(x=630,y=80)
 
-            Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", value='Monthly',command=lambda:update_scope('Monthly'))
+            Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", variable=radio_scope,value='Monthly',command=lambda:update_scope('Monthly'))
             Radio_Monthly.place(x=630,y=100)
 
             Radio_TO=tk.Radiobutton(self.Add_Notify,text="TO", value=1,command=lambda:toggle_radio(0))
@@ -1028,12 +1032,12 @@ class InvortoryGUI:
 
             scope.bind('<<ComboboxSelected>>',update_scope)
 
-            def export_report():
+            def export_report(to,fromm):
                 report_type = reports.get()
                 man = Manager.Manager()
 
                 if report_type == 'Sales':
-                    result = man.get_export_data(report_type)
+                    result = man.get_export_data(report_type,to,fromm)
                     df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
                                                     'Discount', 'Date Purchased'])
                 if report_type == 'Inventory':
@@ -1056,13 +1060,13 @@ class InvortoryGUI:
                 messagebox.showinfo("Exported Successfully", "Saved to " + title)
             
             def reports_callback(event):
-                export.config(state='normal', command=export_report)
+                export.config(state='normal', command=export_report(to,fromm))
 
                 self.export_Table.delete(*self.export_Table.get_children())
                 report_type = reports.get()
-                # date = scope.get_date()
-                man = Manager.Manager()
-                result = man.get_export_data(report_type)
+
+                # man = Manager.Manager()
+                # result = man.get_export_data(report_type)
 
                 if report_type == 'Sales':
                     self.export_Table['columns'] = (
@@ -1086,6 +1090,8 @@ class InvortoryGUI:
                     self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
 
                     self.export_Table.pack()
+
+
 
                 if report_type == 'Inventory':
                     self.export_Table['columns'] = (
@@ -1126,7 +1132,8 @@ class InvortoryGUI:
                 if report_type == 'Forecast':
                     # Label(self.Add_Notify,text="NOTE: Forecast will not be Accurate during the First Time Use, when Data is Limited.").place(x=0, y=150)
                     
-                    result,values = man.get_export_data(report_type)
+                    # result,values = man.get_export_data(report_type)
+
                     self.export_Table['columns'] = (
                     'Id','Item','Quantity','Price','30 Day Forecast')
                     self.export_Table.column("#0", width=0, stretch=NO)
@@ -1145,16 +1152,16 @@ class InvortoryGUI:
 
                     self.export_Table.pack()
 
-                count = 0
+                # count = 0
             
-                if report_type == 'Forecast':
-                    for item in range(len(result)):
-                        self.export_Table.insert('', index='end', iid=count, text=(item,values), values=(result[item][0],result[item][1],result[item][2],result[item][3],values))
-                        count += 1
-                else:
-                    for item in result:
-                        self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
-                        count += 1
+                # if report_type == 'Forecast':
+                #     for item in range(len(result)):
+                #         self.export_Table.insert('', index='end', iid=count, text=(item,values), values=(result[item][0],result[item][1],result[item][2],result[item][3],values))
+                #         count += 1
+                # else:
+                #     for item in result:
+                #         self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
+                #         count += 1
 
             reports.bind('<<ComboboxSelected>>',reports_callback)
             PageOpen += 1
@@ -1162,7 +1169,6 @@ class InvortoryGUI:
         else:
             messagebox.showinfo("Error","The Window already Open!")
 
-    # Chick ADD END!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def InvorGUI(self):
         self.InvorVal = Tk()
         self.InvorVal.title("Cresdel Pharmacy!!")
