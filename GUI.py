@@ -1,9 +1,9 @@
+import Employee, Manager
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from functools import partial
 from tkinter.ttk import Treeview
-import Employee, Manager
 from datetime import date, datetime
 ## pip install pillow
 from PIL import Image, ImageTk

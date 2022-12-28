@@ -7,6 +7,14 @@ import forecast
 class Owner(Employee.Employee):
     def __init__(self):
         self.dbcursor = dbConnector.dbcursor
+    
+    def viewallEmp(self):
+        query="SELECT * FROM employees"
+        cursor = self.dbcursor
+        cursor.execute(query)
+        result = cursor.fetchall()
+        dbConnector.db.commit()
+        return result
 
     def selectEmp(self,id):
         query = "SELECT * FROM employees where EmpID=%s"
@@ -34,15 +42,14 @@ class Owner(Employee.Employee):
 
     def EditEmp(self,id,name,username,password,role):
         dbcursor = self.dbcursor
-        query = "UPDATE employees SET Name='%s', username='%s', password='%s',role='%s' WHERE EmpID=%s"
+        query = "UPDATE employees SET Name=%s, username=%s, password=%s,role=%s WHERE EmpID=%s"
         value = (name, username, password, role, id)
         dbcursor.execute(query, value)
         dbConnector.db.commit()
-        dbConnector.db.close()
+
     def deleteEmp(self,id):
         dbcursor = dbConnector.db.cursor()
         query = "DELETE FROM employees where EmpID=%s"
-        value = (id)
+        value = (id,)
         dbcursor.execute(query, value)
         dbConnector.db.commit()
-        dbConnector.db.close()

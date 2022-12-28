@@ -55,7 +55,7 @@ def start(m,id,user,time):
             frame_Table.place(x=1,y=49)
 
 
-            button_Out= Button(frame_Receipt,text="Time Out",padx=9,pady=5,bg="green",command=root.destroy())
+            button_Out= Button(frame_Receipt,text="Time Out",padx=9,pady=5,bg="green",command=root.destroy)
             button_Out.place(x=910,y=8)
 
             #Detailed("This the new Update of the POS")
