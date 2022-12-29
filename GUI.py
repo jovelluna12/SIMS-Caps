@@ -125,7 +125,7 @@ class GUI():
     PageOpen = 1
     def on_close(self):
             global PageOpen
-            if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
+            if messagebox.askokcancel('Close', 'Are you sure you want to close the Page? all the data will not be Saved'):
                 PageOpen=1
                 self.NotifGUI.destroy()
 
