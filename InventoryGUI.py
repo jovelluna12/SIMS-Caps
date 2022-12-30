@@ -11,6 +11,7 @@ import Employee
 import Manager
 from tkcalendar import DateEntry
 from PIL import Image, ImageTk
+import Owner
 import Product
 import randomNumGen
 import pandas as pd
@@ -46,14 +47,14 @@ class InvortoryGUI:
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
-        self.frame_Table = ttk.Treeview(self.Frame_List, height=21)
+        self.frame_Table = ttk.Treeview(self.Frame_List, height=23)
         self.frame_Table['columns'] = ("ID", "Name", "Status", "Price", "Quantity")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=100, stretch=NO)
-        self.frame_Table.column("Name", anchor=W, width=400, stretch=NO)
-        self.frame_Table.column("Status", anchor=E, width=200, stretch=NO)
+        self.frame_Table.column("Name", anchor=W, width=500, stretch=NO)
+        self.frame_Table.column("Status", anchor=W, width=150, stretch=NO)
         self.frame_Table.column("Price", anchor=CENTER, width=131, stretch=NO)
-        self.frame_Table.column("Quantity", anchor=E, width=200, stretch=NO)
+        self.frame_Table.column("Quantity", anchor=E, width=150, stretch=NO)
         # Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID", text="ID", anchor=W)
@@ -84,20 +85,20 @@ class InvortoryGUI:
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
-        self.frame_Table = ttk.Treeview(self.Frame_stack, height=21)
+        self.frame_Table = ttk.Treeview(self.Frame_stack, height=23)
         self.frame_Table['columns'] = ("ID", "Name", "Items Sold", "Price", "Sales", "Date Purchased")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=100, stretch=NO)
-        self.frame_Table.column("Name", anchor=W, width=400, stretch=NO)
-        self.frame_Table.column("Items Sold", anchor=W, width=100, stretch=NO)
+        self.frame_Table.column("Name", anchor=W, width=450, stretch=NO)
+        self.frame_Table.column("Items Sold", anchor=CENTER, width=100, stretch=NO)
         self.frame_Table.column("Price", anchor=CENTER, width=131, stretch=NO)
         self.frame_Table.column("Sales", anchor=E, width=100, stretch=NO)
-        self.frame_Table.column("Date Purchased", anchor=E, width=200, stretch=NO)
+        self.frame_Table.column("Date Purchased", anchor=E, width=150, stretch=NO)
         # Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID", text="Purchase ID", anchor=W)
         self.frame_Table.heading("Name", text="Product Name", anchor=W)
-        self.frame_Table.heading("Items Sold", text="Items Sold", anchor=W)
+        self.frame_Table.heading("Items Sold", text="Items Sold", anchor=CENTER)
         self.frame_Table.heading("Price", text="Price", anchor=CENTER)
         self.frame_Table.heading("Sales", text="Sales", anchor=W)
         self.frame_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
@@ -282,12 +283,12 @@ class InvortoryGUI:
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
-        self.frame_Table = ttk.Treeview(self.Frame_Del, height=21)
+        self.frame_Table = ttk.Treeview(self.Frame_Del, height=23)
         self.frame_Table['columns'] = ("ID", "Name", "Detail", "Price", "Quantity", "Arrival")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=100, stretch=NO)
-        self.frame_Table.column("Name", anchor=W, width=400, stretch=NO)
-        self.frame_Table.column("Detail", anchor=W, width=200, stretch=NO)
+        self.frame_Table.column("Name", anchor=W, width=450, stretch=NO)
+        self.frame_Table.column("Detail", anchor=W, width=150, stretch=NO)
         self.frame_Table.column("Price", anchor=CENTER, width=91, stretch=NO)
         self.frame_Table.column("Quantity", anchor=E, width=100, stretch=OFF)
         self.frame_Table.column("Arrival", anchor=E, width=140, stretch=OFF)
@@ -307,6 +308,27 @@ class InvortoryGUI:
         for x in result:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+    
+    def deleteEmp(self,id):
+        confirm_Delete=messagebox.askyesno("Confirm Delete","Are you sure you want to Delete this Employee?")
+        if confirm_Delete:
+            own=Owner.Owner()
+            own.deleteEmp(id)
+            messagebox.showinfo("Changes Saved","Employee Deleted Succesfully")
+            self.Add_Employ.destroy()
+            global PageOpen
+            PageOpen=1
+        else:
+            messagebox.showinfo("Changes not Saved","Changes weren't Saved")
+
+    def editEmp(self,id,name,username,password,role):
+        confirm_Edit=messagebox.askyesno("Confirm Save","Are you sure you want to Save Edited Changes?")
+        if confirm_Edit:
+            own=Owner.Owner()
+            own.EditEmp(id,name,username,password,role)
+            messagebox.showinfo("Changes Saved","Changes Saved")
+        else:
+            messagebox.showinfo("Changes not Saved","Changes weren't Saved")
 
         
     def View_close(self):
@@ -317,83 +339,118 @@ class InvortoryGUI:
 
     def View_onClick(self):
             global PageOpen
-            if PageOpen < 2:
-                self.Add_Employ= Toplevel()
-                self.Add_Employ.title("Confirm Delivery")
-                self.Add_Employ.geometry("800x550")
-                self.Add_Employ.resizable(False, False)
-                self.Add_Employ.protocol("WM_DELETE_WINDOW",self.View_close)
-                self.Frame_Empl_View = Frame(self.Add_Employ, width=800, height=200)
-                self.Frame_Empl_View.place(x=0, y=0)
-
-                self.Frame_ListE = Frame(self.Add_Employ, width=800, height=320, highlightbackground="black",
-                                    highlightthickness=1, padx=10, pady=10)
-                self.Frame_ListE.place(x=0, y=200)
-
-                global idd, namee, qty, price
-                idd = StringVar()
-                namee = StringVar()
-                qty = StringVar()
-                price = StringVar()
-
-                self.Employ_ID_LA = Label(self.Frame_Empl_View, text="Employ ID")
-                self.Employ_ID_EN = Entry(self.Frame_Empl_View, width=10, textvariable=idd, borderwidth=4, state='disabled')
-                self.Employ_ID_LA.place(x=40, y=70)
-                self.Employ_ID_EN.place(x=40, y=90)
-
-                self.Employ_Name_LA = Label(self.Frame_Empl_View, text="Name")
-                self.Employ_Name_EN = Entry(self.Frame_Empl_View, width=45, textvariable=namee, borderwidth=4, state='disabled')
-                self.Employ_Name_LA.place(x=115, y=70)
-                self.Employ_Name_EN.place(x=115, y=90)
-
-                self.Empoly_Pass_LA=Label(self.Frame_Empl_View,text="Password")
-                self.Empoly_Pass_EN= Entry(self.Frame_Empl_View,width=45,textvariable=price,borderwidth=4,state='disabled')
-                self.Empoly_Pass_LA.place(x=115,y=120)
-                self.Empoly_Pass_EN.place(x=115,y=140)
-
-                self.Employee_Role_LA = Label(self.Frame_Empl_View, text="Role:")
-                self.chosen_val_Edit = tk.StringVar(self.Frame_Empl_View)
-                self.chosen_val_Edit.set("Select Role")
-                self.Role_emplo = ttk.Combobox(self.Frame_Empl_View, textvariable=self.chosen_val_Edit, state='readonly')
-                self.Role_emplo['values'] = ('Cashier', 'Manager')
-                self.Role_emplo.place(x=420,y=90)
-                self.Employee_Role_LA.place(x=420,y=70)
-
-                Button_Edit=Button(self.Frame_Empl_View,text="Edit",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
-                Button_Edit.place(x=600,y=150)
-                    
-                Button_Save=Button(self.Frame_Empl_View,text="Save",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
-                Button_Save.place(x=600,y=120)
-                    
-                Button_Delete=Button(self.Frame_Empl_View,text="Delete",padx=5,pady=2,width=10,height=0,bg='#54FA9B')
-                Button_Delete.place(x=700,y=120)
-
-                Button_Cancel=Button(self.Frame_Empl_View,text="Cancel",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_close)
-                Button_Cancel.place(x=700,y=150)
-
-                Label(self.Frame_Empl_View, text="Employee",font=("Arial", 30)).place(x=10, y=10)
-
-                self.frame_Table = ttk.Treeview(self.Frame_ListE, height=15)
-                self.frame_Table['columns'] = ("ID", "Name","Date","WorkingTime")
-                self.frame_Table.column("#0", width=0, stretch=NO)
-                self.frame_Table.column("ID", anchor=W, width=50)
-                self.frame_Table.column("Name", anchor=W, width=246)
-                self.frame_Table.column("Date", anchor=W, width=280)
-                self.frame_Table.column("WorkingTime", anchor=W, width=200)
-
-
-                self.frame_Table.heading("#0")
-                self.frame_Table.heading("ID", text="ID", anchor=W)
-                self.frame_Table.heading("Name", text="Name", anchor=W)
-                self.frame_Table.heading("Date", text="Date", anchor=W)
-                self.frame_Table.heading("WorkingTime", text="Working Time", anchor=W)
-
-                self.frame_Table.pack(fill='both')
-                self.frame_Table.grid(row=1, column=0)
-
-                PageOpen += 1
+            if self.frame_Table.focus()=='':
+                messagebox.showerror("No Item Selected","Please Select an Item First")
             else:
-                messagebox.showinfo("Error","The Window is already Open!")
+                items=self.frame_Table.focus()
+                if PageOpen < 2:
+                    self.Add_Employ= Toplevel()
+                    self.Add_Employ.title("Employee Page")
+                    self.Add_Employ.geometry("800x550")
+                    self.Add_Employ.resizable(False, False)
+                    self.Add_Employ.protocol("WM_DELETE_WINDOW",self.View_close)
+                    self.Frame_Empl_VIEW = Frame(self.Add_Employ, width=800, height=200)
+                    self.Frame_Empl_VIEW.place(x=0, y=0)
+
+                    self.Frame_ListE = Frame(self.Add_Employ, width=800, height=320, highlightbackground="black",
+                                        highlightthickness=1, padx=10, pady=10)
+                    self.Frame_ListE.place(x=0, y=200)
+
+                    global idd, namee, username, passwd
+                    idd = StringVar()
+                    namee = StringVar()
+                    username = StringVar()
+                    passwd = StringVar()
+
+                    self.Employ_ID_LA = Label(self.Frame_Empl_VIEW, text="Employ ID")
+                    self.Employ_ID_EN = Entry(self.Frame_Empl_VIEW, width=10, textvariable=idd, borderwidth=4, state='disabled')
+                    self.Employ_ID_LA.place(x=40, y=70)
+                    self.Employ_ID_EN.place(x=40, y=90)
+
+                    self.Employ_Name_LA = Label(self.Frame_Empl_VIEW, text="Name")
+                    self.Employ_Name_EN = Entry(self.Frame_Empl_VIEW, width=45, textvariable=namee, borderwidth=4, state='disabled')
+                    self.Employ_Name_LA.place(x=115, y=70)
+                    self.Employ_Name_EN.place(x=115, y=90)
+
+                    self.Employ_Uname_LA = Label(self.Frame_Empl_VIEW, text="Username")
+                    self.Employ_Uname_EN = Entry(self.Frame_Empl_VIEW, width=40, textvariable=username, borderwidth=4, state='disabled')
+                    self.Employ_Uname_LA.place(x=40, y=120)
+                    self.Employ_Uname_EN.place(x=40, y=140)
+
+                    self.Empoly_Pass_LA=Label(self.Frame_Empl_VIEW,text="Password")
+                    self.Empoly_Pass_EN= Entry(self.Frame_Empl_VIEW,width=40,textvariable=passwd,borderwidth=4,state='disabled')
+                    self.Empoly_Pass_LA.place(x=300,y=120)
+                    self.Empoly_Pass_EN.place(x=300,y=140)
+
+                    self.Employee_Role_LA = Label(self.Frame_Empl_VIEW, text="Role:")
+                    self.chosen_val_Edit = tk.StringVar(self.Frame_Empl_VIEW)
+                    self.chosen_val_Edit.set("Select Role")
+                    self.Role_emplo = ttk.Combobox(self.Frame_Empl_VIEW, textvariable=self.chosen_val_Edit, state='disabled')
+                    self.Role_emplo['values'] = ('Cashier', 'Manager')
+                    self.Role_emplo.place(x=420,y=90)
+                    self.Employee_Role_LA.place(x=420,y=70)
+
+                    def edit():
+                        self.Employ_Name_EN.config(state='normal')
+                        self.Employ_Uname_EN.config(state='normal')
+                        self.Empoly_Pass_EN.config(state='normal')
+                        self.Role_emplo.config(state='readonly')
+
+                    def save():
+                        self.Employ_Name_EN.config(state='disabled')
+                        self.Employ_Uname_EN.config(state='disabled')
+                        self.Empoly_Pass_EN.config(state='disabled')
+                        self.editEmp(int(idd.get()),namee.get(),username.get(),passwd.get(),self.Role_emplo.get())
+
+                    Button_Edit=Button(self.Frame_Empl_VIEW,text="Edit",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=lambda: edit())
+                    Button_Edit.place(x=600,y=150)
+                        
+                    Button_Save=Button(self.Frame_Empl_VIEW,text="Save",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=lambda: save())
+                    Button_Save.place(x=600,y=120)
+                        
+                    Button_Delete=Button(self.Frame_Empl_VIEW,text="Delete",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=lambda: self.deleteEmp(int(idd.get())))
+                    Button_Delete.place(x=700,y=120)
+
+                    Button_Cancel=Button(self.Frame_Empl_VIEW,text="Close",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_close)
+                    Button_Cancel.place(x=700,y=150)
+
+                    Label(self.Frame_Empl_VIEW, text="Employee",font=("Arial", 30)).place(x=10, y=10)
+
+                    id=self.frame_Table.item(items)['values'][0]
+                    emp=Manager.Manager()
+                    res=emp.selectEmp(id)
+                    val1,val2,val3,val4,val5=[tuple for tuple in res]
+                    idd.set(val1)
+                    namee.set(val2)
+                    self.Role_emplo.set(val5)
+                    username.set(val3)
+                    passwd.set(val4)
+        
+                    self.emp_Table = ttk.Treeview(self.Frame_ListE, height=15)
+                    self.emp_Table['columns'] = ("Time In","Time Out","Date")
+                    self.emp_Table.column("#0", width=0, stretch=NO)
+                    self.emp_Table.column("Time In", anchor=W, width=246)
+                    self.emp_Table.column("Time Out", anchor=W, width=280)
+                    self.emp_Table.column("Date", anchor=W, width=200)
+
+                    self.emp_Table.heading("#0")
+                    self.emp_Table.heading("Time In", text="Time In", anchor=W)
+                    self.emp_Table.heading("Time Out", text="Time Out", anchor=W)
+                    self.emp_Table.heading("Date", text="Date", anchor=W)
+
+                    self.emp_Table.pack(fill='both')
+                    self.emp_Table.grid(row=1, column=0)
+
+                    EmpData=Employee.Employee()
+                    ress=EmpData.getAttendance(val1)
+                    count = 0
+                    for x in ress:
+                        self.emp_Table.insert(parent='', index='end', iid=count, text=(x[3],x[4],x[2]), values=(x[3],x[4],x[2]))
+                        count += 1
+
+                    PageOpen += 1
+                else:
+                    messagebox.showinfo("Error","The Window is already Open!")
 
     def Click_Employee(self):
         self.button_List.config(state="normal")
@@ -414,7 +471,7 @@ class InvortoryGUI:
         style.theme_use("default")
         style.configure("Treeview")
 
-        self.frame_Table = ttk.Treeview(self.Frame_Empl, height=21)
+        self.frame_Table = ttk.Treeview(self.Frame_Empl, height=23)
         self.frame_Table['columns'] = ("ID", "Name", "Username", "Detail")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=98, stretch=NO)
@@ -436,6 +493,16 @@ class InvortoryGUI:
         for x in result:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+        
+        if len(self.frame_Table.get_children())==0:
+            self.Button_Emplo.config(state='disabled')
+        else:
+            self.Button_Emplo.config(state='normal')
+
+        if len(self.frame_Table.get_children())==0:
+            self.Button_Emplo.config(state='disabled')
+        else:
+            self.Button_Emplo.config(state='normal')
 
     def Click_AddP(self):
         self.add_to_products
@@ -664,10 +731,12 @@ class InvortoryGUI:
         Fname = self.Fname.get()
         role = self.chosen_val.get()
 
-        print(username, password, Fname, role)
         man = Manager.Manager()
         id = randomNumGen.generateEmpID()
         man.AddEmp(id, Fname, username, password, role)
+        self.Add_Employee.destroy()
+        global PageOpen
+        PageOpen=0
     
     def Employee_on_close(self):
             global PageOpen
@@ -1212,27 +1281,27 @@ class InvortoryGUI:
         width = self.InvorVal.winfo_screenwidth()
         height = self.InvorVal.winfo_screenheight()
         self.InvorVal.geometry("%dx%d" % (width, height))
-        self.InvorVal.resizable(False, False)
+        # self.InvorVal.resizable(False, False)
 
         # For the Page 1 Detail
         self.Frame_Detail = Frame(self.InvorVal, width=1063, height=200, highlightbackground="black",
-                                  highlightthickness=3, padx=10, pady=10)
+                                  highlightthickness=1, padx=10, pady=10)
         self.Frame_Detail.place(x=0, y=0)
         # self.img = PhotoImage(Image.open(r"C:\Users\Administrator\Documents\GitHub\Logo\123.jpg"))
         # self.label=Label(self.Frame_Detail,image=self.img,width=37,height=10)
         # self.label.place(x=0,y=0)
 
         # For the Page LIST
-        self.Frame_main = Frame(self.InvorVal, width=1063, height=498, highlightbackground="black",
-                                highlightthickness=3)
+        self.Frame_main = Frame(self.InvorVal, width=1063, height=540, highlightbackground="black",
+                                highlightthickness=2)
         self.Frame_main.place(x=0, y=199)
-        self.Frame_List = Frame(self.Frame_main, width=1058, height=498, padx=10, pady=10)
-        self.Frame_stack = Frame(self.Frame_main, width=1058, height=498, padx=10, pady=10)
-        self.Frame_Empl = Frame(self.Frame_main, width=1058, height=498, padx=10, pady=10)
-        self.Frame_Del = Frame(self.Frame_main, width=1058, height=498, padx=10, pady=10)
+        self.Frame_List = Frame(self.Frame_main, width=1058, height=540, padx=10, pady=10)
+        self.Frame_stack = Frame(self.Frame_main, width=1058, height=540, padx=10, pady=10)
+        self.Frame_Empl = Frame(self.Frame_main, width=1058, height=540, padx=10, pady=10)
+        self.Frame_Del = Frame(self.Frame_main, width=1058, height=540, padx=10, pady=10)
 
         # For the Side
-        self.Frame_Side = Frame(self.InvorVal, width=300, height=697, highlightbackground="black", highlightthickness=3,
+        self.Frame_Side = Frame(self.InvorVal, width=300, height=743, highlightbackground="black", highlightthickness=3,
                                 padx=10, pady=10)
         self.Frame_Side.place(x=1060, y=0)
 
@@ -1248,7 +1317,6 @@ class InvortoryGUI:
 
         label = Label(self.Frame_Side, text="IMAGE").place(x=100, y=10)
         Add = Label(self.Frame_Side, text="ADD Button", width=37, anchor=W).place(x=40, y=420)
-
 
         self.Add_Del = Button(self.Frame_Side, text="ADD Delivery", padx=10, pady=10, width=10, height=1, bg='#54FA9B',
                               command=self.Click_Add_Delivery)

@@ -50,6 +50,8 @@ class Owner(Employee.Employee):
     def deleteEmp(self,id):
         dbcursor = dbConnector.db.cursor()
         query = "DELETE FROM employees where EmpID=%s"
+        query2="DELETE FROM attendance WHERE employee=%s"
         value = (id,)
+        dbcursor.execute(query2, value)
         dbcursor.execute(query, value)
         dbConnector.db.commit()

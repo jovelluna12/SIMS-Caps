@@ -25,7 +25,7 @@ def start(m,id,user,time):
 
             # Frame Receipt
             global frame_Receipt
-            frame_Receipt = Frame(root, width=1000,height=560,highlightbackground="black", highlightthickness=3)
+            frame_Receipt = Frame(root, width=1000,height=605,highlightbackground="black", highlightthickness=3)
             frame_Receipt.grid(row=0, column=0)
             myLabel1 = Label(frame_Receipt, text="Cresdel Pharmacy!!",font=("Arial",30,'bold'))
             myLabel1.place(x=0,y=0)
@@ -35,11 +35,11 @@ def start(m,id,user,time):
             style.theme_use("default")
             style.configure("Treeview")
             global frame_Table
-            frame_Table = ttk.Treeview(frame_Receipt, height=24)
+            frame_Table = ttk.Treeview(frame_Receipt, height=25)
             frame_Table['columns'] = ("ID", "Name", "Price", "QTY", "Total")
             frame_Table.column("#0", width=0, stretch=NO)
-            frame_Table.column("ID",anchor=W,stretch=NO)
-            frame_Table.column("Name",anchor=W,width=500,stretch=NO)
+            frame_Table.column("ID",anchor=W,width=80,stretch=NO)
+            frame_Table.column("Name",anchor=W,width=610,stretch=NO)
             frame_Table.column("Price",anchor=E,width=100,stretch=NO)
             frame_Table.column("QTY",anchor=CENTER,width=100,stretch=NO)
             frame_Table.column("Total",anchor=E,width=93,stretch=NO)
@@ -48,42 +48,42 @@ def start(m,id,user,time):
             frame_Table.heading("#0")
             frame_Table.heading("ID", text="ID", anchor=W)
             frame_Table.heading("Name", text="Product", anchor=W)
-            frame_Table.heading("Price", text="Prices", anchor=E)
+            frame_Table.heading("Price", text="Prices", anchor=W)
             frame_Table.heading("QTY", text="QTY", anchor=CENTER)
-            frame_Table.heading("Total", text="TOTAL", anchor=E)
+            frame_Table.heading("Total", text="TOTAL", anchor=W)
             frame_Table.pack(expand=True,fill=X)
             frame_Table.place(x=1,y=49)
 
 
-            button_Out= Button(frame_Receipt,text="Time Out",padx=9,pady=5,bg="green",command=root.destroy)
+            button_Out= Button(frame_Receipt,text="TIMEOUT",padx=9,pady=5,bg="green",command=root.destroy)
             button_Out.place(x=910,y=8)
 
             #Detailed("This the new Update of the POS")
             global frame_Total
-            frame_Total=Frame(root,width=1000,height=130,highlightbackground="black", highlightthickness=3)
-            frame_Total.place(x=0,y=563)
+            frame_Total=Frame(root,width=1000,height=135,highlightbackground="black", highlightthickness=3)
+            frame_Total.place(x=0,y=610)
 
-            user_Em=Label(frame_Total,text="NAME:",width=0,height=0,font=("Arial",16,'bold')).place(x=10,y=10)
-            user_FD=Label(frame_Total,text=user,width=25,height=0,anchor=W,font=("Arial",16,'bold')).place(x=80,y=10)
+            user_Em=Label(frame_Total,text="NAME:",width=0,height=0,font=("Arial",20,'bold')).place(x=10,y=10)
+            user_FD=Label(frame_Total,text=user,width=25,height=0,anchor=W,font=("Arial",20,'bold')).place(x=100,y=10)
 
-            user_Timein=Label(frame_Total,text="TIME IN:",width=10,height=0,anchor=W,font=("Arial",10,'bold')).place(x=10,y=50)
-            user_FD=Label(frame_Total,text=time,width=50,height=0,anchor=W,font=("Arial",10,'bold')).place(x=90,y=50)
+            user_Timein=Label(frame_Total,text="TIME IN:",width=10,height=0,anchor=W,font=("Arial",12,'bold')).place(x=10,y=50)
+            user_FD=Label(frame_Total,text=time,width=50,height=0,anchor=W,font=("Arial",12,'bold')).place(x=90,y=50)
 
             # def temp_text(e):
             #     Totalprince_Entry.delete(0,"end")
             
             global Totalprince_Entry,Totalchange_Entry
             Totalprince_Entry=Label(frame_Total,text="",font=("Arial", 20,'bold'))
-            Totalprince_Entry.place(x=800,y=40,height=35)
-            Totalprince_Lbl=Label(frame_Total,text="Total:",font=("Arial", 20,'bold')).place(x=676,y=40)
+            Totalprince_Entry.place(x=800,y=10,height=35)
+            Totalprince_Lbl=Label(frame_Total,text="Total:",font=("Arial", 20,'bold')).place(x=676,y=10)
             # Totalprince_Lbl.place(x=800,y=40,height=35)
             # Totalprince_Entry=Entry(frame_Total,width=8,borderwidth=3,fg='green',font=("Arial",30,'bold'))
             
             # Totalprince_Entry.insert(END,'0.00')
             # Totalprince_Entry.bind("<FocusIn>",temp_text)
-            Totalchange_Label=Label(frame_Total,text="Change:",font=("Arial", 20,'bold')).place(x=676,y=80)
+            Totalchange_Label=Label(frame_Total,text="Change:",font=("Arial", 20,'bold')).place(x=676,y=50)
             Totalchange_Entry=Label(frame_Total,text="",font=("Arial", 20,'bold'))
-            Totalchange_Entry.place(x=800,y=80,height=35)
+            Totalchange_Entry.place(x=800,y=50,height=35)
 
             # Totalchange_Entry.insert(END,'0.00')
             # Totalchange_Entry.bind("<FocusIn>",temp_text)
@@ -99,7 +99,7 @@ def start(m,id,user,time):
             global Product_Prices_EN
             global Product_Prices_LA
 
-            frame_Detail = Frame(root, width=360, height=693,highlightbackground="black", highlightthickness=3)
+            frame_Detail = Frame(root, width=360, height=744,highlightbackground="black", highlightthickness=3)
             frame_Detail.place(x=1001,y=0)
 
             Product_PIMG = Label(frame_Detail, text="IMAGE")
@@ -111,7 +111,6 @@ def start(m,id,user,time):
             Product_Name_EN = Entry(frame_Detail,width=50, borderwidth=5,state="disabled")
             Product_Prices_LA = Label(frame_Detail, text="Product Prices:")
             Product_Prices_EN = Entry(frame_Detail, width=50, borderwidth=5,state="disabled")
-
 
             Product_CODE_LA = Label(frame_Detail, text="Enter Product Code:")
             Product_CODE_EN = Entry(frame_Detail, width=50, borderwidth=5)

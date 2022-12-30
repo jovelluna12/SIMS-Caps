@@ -2,6 +2,7 @@ import Employee, dbConnector, Product, forecast
 from datetime import datetime
 import pandas as pd
 class Manager (Employee.Employee):
+
     def __init__(self):
         self.dbcursor = dbConnector.dbcursor
     def inventoryList(self):
@@ -118,11 +119,10 @@ class Manager (Employee.Employee):
         query = "SELECT * FROM employees where EmpID=%s"
         id = EmpID
         cursor=self.dbcursor
-        cursor.execute(query, id)
-        result = cursor.fetchall()
+        cursor.execute(query, (id,))
+        result = cursor.fetchone()
 
         dbConnector.db.commit()
-        dbConnector.db.close()
         return result
 
     def AddEmp(self,EmpID,name, username, password, role):
@@ -132,7 +132,6 @@ class Manager (Employee.Employee):
         dbcursor.execute(query, value)
 
         dbConnector.db.commit()
-        dbConnector.db.close()
 
     def AddEmpMany(self,val):
         dbcursor = self.dbcursor
@@ -140,8 +139,6 @@ class Manager (Employee.Employee):
         dbcursor.executemany(query, val)
 
         dbConnector.db.commit()
-        dbConnector.db.close()
-
 
     def EditEmp(self,id,name,username,password,role):
         dbcursor = self.dbcursor
@@ -150,7 +147,6 @@ class Manager (Employee.Employee):
         dbcursor.execute(query, value)
 
         dbConnector.db.commit()
-        dbConnector.db.close()
 
     def deleteEmp(self,id):
         dbcursor = dbConnector.db.cursor()
@@ -159,4 +155,3 @@ class Manager (Employee.Employee):
         dbcursor.execute(query, value)
 
         dbConnector.db.commit()
-        dbConnector.db.close()

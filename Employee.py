@@ -1,29 +1,23 @@
 import dbConnector,randomNumGen
 class Employee:
     def __init__(self):
-        self.username=""
-        self.password=""
-        self.AccID=""
-        self.name=""
-        self.role=""
         self.cursor=dbConnector.dbcursor
+        self.Db=dbConnector.db
 
     def login(self,username,password):
-        dbcursor =  dbConnector.db.cursor(buffered=True)
+        dbcursor =  self.cursor
         query="SELECT * FROM employees where username = %s and password = %s limit 1"
         value=(username,password)
         dbcursor.execute(query,value)
-
+    
+        rows = dbcursor.fetchall()
         if dbcursor.rowcount > 0:
-            row = dbcursor.fetchone()
-            print("User found; returning 1")
+            row = rows[0]
             return {'result': 1, 'user': row}
         else:
-            print("Not found; returning 0")
             return {'result': 0, 'user': None}
 
     def getAttendance(self, employeeID):
-        dbcursor =  dbConnector.db.cursor(buffered=True)
         query=f"""
             SELECT 
                 AttendanceCode, 
@@ -35,19 +29,17 @@ class Employee:
             left join employees t2 on t1.employee = t2.EmpID 
             WHERE employee = {employeeID}
             """
-        dbcursor.execute(query)
-        rows = dbcursor.fetchall()
-
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
         return rows
 
     def attendance(self,date, timeIn, timeOut,employeeID):
-        dbcursor =  dbConnector.db.cursor()
+        dbcursor =  self.cursor
         query="INSERT INTO attendance (Date, TimeIn, TimeOut, employee) VALUES(%s,%s,%s,%s)"
         value=(date,timeIn, timeOut, employeeID)
         dbcursor.execute(query,value)
         dbcursor.close()
         # print(date," ", timeIn," ",timeOut, " ",employeeID)
-
         # print(dbcursor.lastrowid)
 
         dbConnector.db.commit()
