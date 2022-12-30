@@ -608,6 +608,12 @@ class InvortoryGUI:
                
             event.widget['values']=data
 
+        else:
+            a = Product.product()
+            re = a.returnall()
+            n = 1
+            event.widget['values']=([x[n] for x in re])
+
   
     def Add_on_close(self):
             global PageOpen
