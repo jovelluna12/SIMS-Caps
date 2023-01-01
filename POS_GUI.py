@@ -216,16 +216,18 @@ def Click_List():
         global Search_Table
         window_list = Toplevel()
         window_list.title("PRODUCT LISTS!")
-        window_list.geometry("600x370")
+        List_width=600
+        List_height=670
+        window_list.geometry(f'{List_width}x{List_height}+{400}+{30}')
         window_list.protocol("WM_DELETE_WINDOW",on_close)
 
         window_FrameL = Frame(window_list, width=600, height=100)
         window_FrameL.grid(row=0, column=0)
 
-        window_Frame2 = Frame(window_list, width=600, height=270,highlightbackground="black", highlightthickness=1, padx=5, pady=5)
+        window_Frame2 = Frame(window_list, width=600, height=600,highlightbackground="black", highlightthickness=1, padx=5, pady=5)
         window_Frame2.place(x=0,y=100)
 
-        Search_Table = ttk.Treeview(window_Frame2, height=12)
+        Search_Table = ttk.Treeview(window_Frame2, height=27)
         Search_Table['column'] = ("ID", "Name", "Price",'Batch Number',"Stack")
         Search_Table.column("#0", width=0, stretch=NO, anchor=W)
         Search_Table.column("ID", width=50, stretch=NO, anchor=W)
@@ -240,6 +242,9 @@ def Click_List():
         Search_Table.heading("Batch Number", text="Batch No", anchor=W)
         Search_Table.heading("Price", text="Price", anchor=W)
         Search_Table.heading("Stack", text="Stack", anchor=W)
+        scrollbar = ttk.Scrollbar(window_Frame2, orient="vertical", command=Search_Table.yview)
+        scrollbar.place(relx=1.0, rely=0.0, anchor="ne")
+        Search_Table.configure(yscrollcommand=scrollbar.set)
         Search_Table.place(x=0,y=0)
 
         Label_ListT = Label(window_FrameL, text="Product List",font=("Arial", 25, "bold"))
@@ -269,9 +274,9 @@ def Click_List():
         Entry_Search = Entry(window_FrameL, width=50, borderwidth=3)
         button_Search = Button(window_FrameL, text="Search", padx=5, pady=0, command=search)
 
-        Label_Search.place(x=50,y=70)
-        Entry_Search.place(x=100,y=70)
-        button_Search.place(x=410,y=68)
+        Label_Search.place(x=20,y=70)
+        Entry_Search.place(x=63,y=70)
+        button_Search.place(x=380,y=68)
 
         m = Manager.Manager()
         m1 = m.viewInv()
