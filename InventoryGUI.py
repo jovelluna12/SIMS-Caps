@@ -349,10 +349,10 @@ class InvortoryGUI:
                     self.Add_Employ.geometry("800x550")
                     self.Add_Employ.resizable(False, False)
                     self.Add_Employ.protocol("WM_DELETE_WINDOW",self.View_close)
-                    self.Frame_Empl_VIEW = Frame(self.Add_Employ, width=800, height=200)
+                    self.Frame_Empl_VIEW = Frame(self.Add_Employ, width=790, height=195)
                     self.Frame_Empl_VIEW.place(x=0, y=0)
 
-                    self.Frame_ListE = Frame(self.Add_Employ, width=800, height=320, highlightbackground="black",
+                    self.Frame_ListE = Frame(self.Add_Employ, width=790, height=300, highlightbackground="black",
                                         highlightthickness=1, padx=10, pady=10)
                     self.Frame_ListE.place(x=0, y=200)
 
@@ -431,15 +431,17 @@ class InvortoryGUI:
                     self.emp_Table.column("#0", width=0, stretch=NO)
                     self.emp_Table.column("Time In", anchor=W, width=246)
                     self.emp_Table.column("Time Out", anchor=W, width=280)
-                    self.emp_Table.column("Date", anchor=W, width=200)
+                    self.emp_Table.column("Date", anchor=W, width=230)
 
                     self.emp_Table.heading("#0")
                     self.emp_Table.heading("Time In", text="Time In", anchor=W)
                     self.emp_Table.heading("Time Out", text="Time Out", anchor=W)
                     self.emp_Table.heading("Date", text="Date", anchor=W)
-
+                    scrollbar = ttk.Scrollbar(self.Frame_ListE, orient="vertical", command=self.emp_Table.yview)
+                    self.emp_Table.configure(yscrollcommand=scrollbar.set)
                     self.emp_Table.pack(fill='both')
                     self.emp_Table.grid(row=1, column=0)
+                    scrollbar.grid(row=1, column=1, sticky="ns")
 
                     EmpData=Employee.Employee()
                     ress=EmpData.getAttendance(val1)
@@ -701,7 +703,7 @@ class InvortoryGUI:
             self.frame_Table.column("Price", anchor=CENTER, width=100)
             self.frame_Table.column("Quantity", anchor=E, width=80)
             self.frame_Table.column("Order Date", anchor=E, width=150)
-            self.frame_Table.column("Expiration Date", anchor=E, width=150)
+            self.frame_Table.column("Expiration Date", anchor=E, width=140)
             # Table Head
             self.frame_Table.heading("#0")
             self.frame_Table.heading("ID", text="ID", anchor=W)
@@ -710,9 +712,12 @@ class InvortoryGUI:
             self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
             self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
             self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
-
+            scrollbar = ttk.Scrollbar(self.Frame_List1, orient="vertical", command=self.frame_Table.yview)
+            self.frame_Table.configure(yscrollcommand=scrollbar.set)
             self.frame_Table.pack(fill='both')
             self.frame_Table.grid(row=1, column=0)
+            scrollbar.grid(row=1, column=1, sticky="ns")
+
             PageOpen += 1
             self.Add_Delivery.mainloop()
         else:
@@ -919,14 +924,17 @@ class InvortoryGUI:
             self.frame_Table.column("#0", width=0, stretch=NO)
             self.frame_Table.column("ID", anchor=W, width=90)
             self.frame_Table.column("Name", anchor=W, width=555)
-            self.frame_Table.column("Price", anchor=CENTER, width=130)
+            self.frame_Table.column("Price", anchor=CENTER, width=120)
             # Table Head
             self.frame_Table.heading("#0")
             self.frame_Table.heading("ID", text="ID", anchor=W)
             self.frame_Table.heading("Name", text="Product Name", anchor=W)
             self.frame_Table.heading("Price", text="Price", anchor=W)
+            scrollbar = ttk.Scrollbar(self.Frame_ListAP, orient="vertical", command=self.frame_Table.yview)
+            self.frame_Table.configure(yscrollcommand=scrollbar.set)
             self.frame_Table.pack(fill='both')
             self.frame_Table.grid(row=1, column=0)
+            scrollbar.grid(row=1, column=1, sticky="ns")
 
             a = Product.product()
             res = a.returnall()
@@ -1064,7 +1072,10 @@ class InvortoryGUI:
             self.export_Table.heading("Total Price", text="Total Price", anchor=W)
             self.export_Table.heading("Discount", text="Discount", anchor=W)
             self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
+            scrollbar = ttk.Scrollbar(Table_BOX, orient="vertical", command=self.export_Table)
+            scrollbar.pack(side="right", fill="y")
 
+            self.export_Table.configure(yscrollcommand=scrollbar.set)    
             self.export_Table.pack()
 
             def export_report(to,fromm):
