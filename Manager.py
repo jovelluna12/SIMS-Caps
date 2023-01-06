@@ -35,18 +35,18 @@ class Manager (Employee.Employee):
             dbcursor.execute(query,(scope_from,scope_to))
             return dbcursor.fetchall()
 
-        if report=="Inventory":
+        if report=="Inventory" and scope_from==None and scope_to==None:
             query="SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,SUM(products.quantity) AS QUANTITY FROM products_directory, products WHERE products.ref_id=products_directory.ref_id GROUP BY products.ref_id;;"
             dbcursor.execute(query)
 
             return dbcursor.fetchall()
-        if report=="Delivery":
+        if report=="Delivery" and scope_from==None and scope_to==None:
             query="SELECT batch_code,ProductName,quantity,price,deliverylist.status FROM products,deliverylist WHERE deliverylist.status='Under Delivery' AND products.batch_code=deliverylist.BatchCode;"
             dbcursor.execute(query)
 
             return dbcursor.fetchall()
 
-        if report=="Forecast":
+        if report=="Forecast" and scope_from==None and scope_to==None:
             query="SELECT products.ProductID,products.ProductName,products.Quantity+SUM(purchasedproducts.Quantity ) as Quantity,products.price,SUM(purchasedproducts.Quantity ) AS NumberOfItemsSold FROM products, purchasedproducts,salestransaction WHERE STRCMP(purchasedproducts.Item , products.ProductName)=0 AND DATE(salestransaction.DatePurchased) >= (DATE(NOW()) - INTERVAL 30 DAY) GROUP BY purchasedproducts.Item;"
             dbcursor.execute(query)
 

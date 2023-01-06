@@ -9,6 +9,11 @@ from tkinter import messagebox
 from tracemalloc import start
 import Employee
 import Manager
+
+import datetime
+from datetime import datetime
+import calendar
+
 from tkcalendar import DateEntry
 from PIL import Image, ImageTk
 import Owner
@@ -1000,9 +1005,13 @@ class InvortoryGUI:
 
     # start UI for Notification ---------------
     def notify_UI(self):
-        global PageOpen, to,fromm
+        global PageOpen, to,fromm, num_days
         to=None
         fromm=None
+
+        now = datetime.now()
+        num_days = calendar.monthrange(now.year, now.month)[1]
+
         if PageOpen<2:
             self.btn_Notification['bg']='gray'
             self.Add_Notify = Toplevel()
@@ -1023,12 +1032,12 @@ class InvortoryGUI:
 
             def update_scope(selection):
                 if selection == "Day":
-                    self.scope['values']=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
-                    print(self.radio_scope.get())
+                    self.scope['values']=[day for day in range(1, num_days+1)]
+                    print(radio_scope.get())
 
                 elif selection == "Monthly":
                     self.scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                    print(self.radio_scope.get())
+                    print(radio_scope.get())
 
             def toggle_radio(value):
                 if self.Radio_TO.config("value")[-1] == 1:
@@ -1102,10 +1111,13 @@ class InvortoryGUI:
                         date_str_to = date_obj.strftime('%Y-%m-%d')
 
                         from_mnth=datetime.strptime(from_month, '%B').month
-                        from_mnth_obj=datetime(int(year), from_mnth, 30)
+                        from_mnth_obj=datetime(int(year), from_mnth, calendar.monthrange(int(year), from_mnth)[1])
 
                         frm_mtnh_str=from_mnth_obj.strftime('%Y-%m-%d')
                         result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
+
+                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
+                                                    'Discount', 'Date Purchased'])
                     
                     if radio_scope.get()=="Day":
                         day=to
@@ -1116,20 +1128,20 @@ class InvortoryGUI:
                         date_str = date_obj.strftime('%Y-%m-%d')
 
                         result = man.get_export_data(report_type,date_str,date_str)
-                    df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
+                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
                                                     'Discount', 'Date Purchased'])
 
 
                 if report_type == 'Inventory':
-                    result = man.get_export_data(report_type)
+                    result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
 
                 if report_type == "Delivery":
-                    result = man.get_export_data(report_type)
+                    result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
 
                 if report_type == 'Forecast':
-                    result, value = man.get_export_data(report_type)
+                    result, value = man.get_export_data(report_type,None,None)
                     print("here")
                     df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price'])
                     df.insert(4,"30 Day Forecast",value)
@@ -1145,13 +1157,15 @@ class InvortoryGUI:
                 self.export_Table.delete(*self.export_Table.get_children())
                 report_type = reports.get()
 
-                # man = Manager.Manager()
-                # result = man.get_export_data(report_type)
+                man = Manager.Manager()
+                result = man.get_export_data(report_type,None,None)
 
                 if report_type == 'Sales':
                     # reports.remove(report_type)
                     # reports['values']= report_type
-                    
+                    global sales_UI
+                    sales_UI=1
+
                     self.FLabel=Label(self.Add_Notify, text="From")
                     self.FLabel.place(x=170, y=80)
                     self.scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
@@ -1214,16 +1228,18 @@ class InvortoryGUI:
                     self.export_Table.pack()
 
                 if report_type == 'Inventory':
-                    self.FLabel.destroy()
-                    self.TOLabel.destroy()
-                    self.YLabel.destroy()
-                    self.scope.destroy()
-                    self.scope_to.destroy()
-                    self.scope_year.destroy()
-                    self.Radio_Day.destroy()
-                    self.Radio_Monthly.destroy()
-                    self.Radio_TO.destroy()
-                    self.Radio_Yearly.destroy()
+                    if sales_UI==1:
+                        self.FLabel.destroy()
+                        self.TOLabel.destroy()
+                        self.YLabel.destroy()
+                        self.scope.destroy()
+                        self.scope_to.destroy()
+                        self.scope_year.destroy()
+                        self.Radio_Day.destroy()
+                        self.Radio_Monthly.destroy()
+                        self.Radio_TO.destroy()
+                        self.Radio_Yearly.destroy()
+                        sales_UI=0
 
                     self.export_Table['columns'] = (
                     'Reference ID', "Item", "Price", "Remaining Quantity")
@@ -1242,16 +1258,18 @@ class InvortoryGUI:
                     self.export_Table.pack()
 
                 if report_type == "Delivery":
-                    self.FLabel.destroy()
-                    self.TOLabel.destroy()
-                    self.YLabel.destroy()
-                    self.scope.destroy()
-                    self.scope_to.destroy()
-                    self.scope_year.destroy()
-                    self.Radio_Day.destroy()
-                    self.Radio_Monthly.destroy()
-                    self.Radio_TO.destroy()
-                    self.Radio_Yearly.destroy()
+                    if sales_UI==1:
+                        self.FLabel.destroy()
+                        self.TOLabel.destroy()
+                        self.YLabel.destroy()
+                        self.scope.destroy()
+                        self.scope_to.destroy()
+                        self.scope_year.destroy()
+                        self.Radio_Day.destroy()
+                        self.Radio_Monthly.destroy()
+                        self.Radio_TO.destroy()
+                        self.Radio_Yearly.destroy()
+                        sales_UI=0
 
                     self.export_Table['columns'] = (
                     'Batch Code', 'Item', 'Quantity', 'Price', 'Status')
@@ -1272,16 +1290,18 @@ class InvortoryGUI:
                     self.export_Table.pack()
 
                 if report_type == 'Forecast':
-                    self.FLabel.destroy()
-                    self.TOLabel.destroy()
-                    self.YLabel.destroy()
-                    self.scope.destroy()
-                    self.scope_to.destroy()
-                    self.scope_year.destroy()
-                    self.Radio_Day.destroy()
-                    self.Radio_Monthly.destroy()
-                    self.Radio_TO.destroy()
-                    self.Radio_Yearly.destroy()
+                    if sales_UI==1:
+                        self.FLabel.destroy()
+                        self.TOLabel.destroy()
+                        self.YLabel.destroy()
+                        self.scope.destroy()
+                        self.scope_to.destroy() 
+                        self.scope_year.destroy()
+                        self.Radio_Day.destroy()
+                        self.Radio_Monthly.destroy()
+                        self.Radio_TO.destroy()
+                        self.Radio_Yearly.destroy()
+                        sales_UI=0
 
                     # Label(self.Add_Notify,text="NOTE: Forecast will not be Accurate during the First Time Use, when Data is Limited.").place(x=0, y=150)
                     
@@ -1305,7 +1325,10 @@ class InvortoryGUI:
 
                     self.export_Table.pack()
 
-                # count = 0
+                count = 0
+                for item in result:
+                        self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
+                        count += 1
             
                 # if report_type == 'Forecast':
                 #     for item in range(len(result)):
