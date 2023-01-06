@@ -38,7 +38,6 @@ class Employee:
         query="INSERT INTO attendance (Date, TimeIn, TimeOut, employee) VALUES(%s,%s,%s,%s)"
         value=(date,timeIn, timeOut, employeeID)
         dbcursor.execute(query,value)
-        dbcursor.close()
         # print(date," ", timeIn," ",timeOut, " ",employeeID)
         # print(dbcursor.lastrowid)
 

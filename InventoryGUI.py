@@ -121,7 +121,7 @@ class InvortoryGUI:
         global PageOpen
         if PageOpen < 2:
             if len(self.frame_Table.get_children()) == 0:
-                messagebox.showinfo("Error","Sorry their no Item to Receive!")
+                messagebox.showinfo("Error","Sorry there's no Item to Receive!")
             else:
                 if self.frame_Table.focus()!='':
                     item = self.frame_Table.selection()[0]
@@ -218,11 +218,11 @@ class InvortoryGUI:
                     self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
                     self.button.place(x=600, y=150)
 
-                    def saveChanges():
+                    def saveChanges(): 
                         selectedItem = self.frame_Table.selection()[0]
                         x = self.frame_Table.item(selectedItem)['values'][4]
                         self.frame_Table.item(selectedItem,text="a", values=(
-                        idd.get(), namee.get(), price.get(), qty.get(), x, self.frame_Table.item(selectedItem)['values'][5]))
+                        idd.get(), namee.get(), price.get(), qty.get(), x, self.Product_date_EN.get_date()))
 
                     self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
                     self.button.place(x=710, y=150)
@@ -516,7 +516,7 @@ class InvortoryGUI:
         expiry_date = self.Product_EXdate_EN.get_date()
         quantity = self.Product_Stack_EN.get()
         ProductIDD = randomNumGen.generateProductID()
-        price = float(int(self.Product_Price_EN.get()))
+        price = float(self.Product_Price_EN.get())
         order_date = self.Product_date_EN.get_date()
         arrival_date = self.Product_Arrive_EN.get_date()
 
@@ -1001,6 +1001,8 @@ class InvortoryGUI:
     # start UI for Notification ---------------
     def notify_UI(self):
         global PageOpen, to,fromm
+        to=None
+        fromm=None
         if PageOpen<2:
             self.btn_Notification['bg']='gray'
             self.Add_Notify = Toplevel()
@@ -1084,14 +1086,40 @@ class InvortoryGUI:
             self.export_Table.configure(yscrollcommand=scrollbar.set)    
             self.export_Table.pack()
 
-            def export_report(to,fromm):
+            def export_report():
+                to=selected.get()
+                from_month=selected_to.get()
+                year=selected_year.get()
+
                 report_type = reports.get()
                 man = Manager.Manager()
 
                 if report_type == 'Sales':
-                    result = man.get_export_data(report_type,to,fromm)
+                    if radio_scope.get()=="Monthly":
+                        month_num=datetime.strptime(to, '%B').month
+                        date_obj=datetime(int(year), month_num, 1)
+
+                        date_str_to = date_obj.strftime('%Y-%m-%d')
+
+                        from_mnth=datetime.strptime(from_month, '%B').month
+                        from_mnth_obj=datetime(int(year), from_mnth, 30)
+
+                        frm_mtnh_str=from_mnth_obj.strftime('%Y-%m-%d')
+                        result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
+                    
+                    if radio_scope.get()=="Day":
+                        day=to
+                        month=from_month
+
+                        month_num=datetime.strptime(month, '%B').month
+                        date_obj=datetime(int(year), month_num, int(day))
+                        date_str = date_obj.strftime('%Y-%m-%d')
+
+                        result = man.get_export_data(report_type,date_str,date_str)
                     df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
                                                     'Discount', 'Date Purchased'])
+
+
                 if report_type == 'Inventory':
                     result = man.get_export_data(report_type)
                     df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
@@ -1112,7 +1140,7 @@ class InvortoryGUI:
                 messagebox.showinfo("Exported Successfully", "Saved to " + title)
             
             def reports_callback(event):
-                export.config(state='normal',)
+                export.config(state='normal',command=lambda:export_report())
 
                 self.export_Table.delete(*self.export_Table.get_children())
                 report_type = reports.get()
@@ -1129,6 +1157,7 @@ class InvortoryGUI:
                     self.scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
                     self.scope.place(x=170, y=100)
 
+                    global selected_to
                     selected_to = StringVar()
                     self.TOLabel=Label(self.Add_Notify, text="")
                     self.TOLabel.place(x=320, y=80)
@@ -1137,19 +1166,21 @@ class InvortoryGUI:
                     self.scope_to['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
                     self.scope_to.place(x=320, y=100)
 
+                    global selected_year
                     selected_year = StringVar()
                     self.YLabel=Label(self.Add_Notify, text="Year")
                     self.YLabel.place(x=490, y=80)
                     self.scope_year = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_year)
                     self.scope_year.configure(state="disabled")
                     self.scope_year.place(x=490, y=100)
+                    
+                    global radio_scope
+                    radio_scope=StringVar()
 
-                    self.radio_scope=StringVar()
-
-                    self.Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", variable=self.radio_scope,value='Day',command=lambda:update_scope('Day'))
+                    self.Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", variable=radio_scope,value='Day',command=lambda:update_scope('Day'))
                     self.Radio_Day.place(x=630,y=80)
 
-                    self.Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", variable=self.radio_scope,value='Monthly',command=lambda:update_scope('Monthly'))
+                    self.Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", variable=radio_scope,value='Monthly',command=lambda:update_scope('Monthly'))
                     self.Radio_Monthly.place(x=630,y=100)
 
                     self.Radio_TO=tk.Radiobutton(self.Add_Notify,text="TO", value=1,command=lambda:toggle_radio(0))

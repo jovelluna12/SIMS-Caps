@@ -69,6 +69,10 @@ def start(m,id,user,time):
             user_Timein=Label(frame_Total,text="TIME IN:",width=10,height=0,anchor=W,font=("Arial",12,'bold')).place(x=10,y=50)
             user_FD=Label(frame_Total,text=time,width=50,height=0,anchor=W,font=("Arial",12,'bold')).place(x=90,y=50)
 
+            global NextTransact
+            NextTransact=Button(frame_Total,text="Next Transaction")
+            NextTransact.place(x=540,y=20)
+
             # def temp_text(e):
             #     Totalprince_Entry.delete(0,"end")
             
@@ -559,7 +563,7 @@ def record(discount):
         Discount_Entry.config(state="disabled")
 
         windowASK.destroy()
-        Button(frame_Total,text="Next Transaction", command=newTransact).place(x=550,y=80)
+        NextTransact.config(command=newTransact)
         # button_Quantity.config(text="Done", command=windowASK.destroy)
     
         for x in frame_Table.get_children():
