@@ -97,7 +97,7 @@ class GUI():
         self.POSButton.place(x=50, y=320)
 
         if result['user'][4]=="Manager" or result['user'][4]=="Owner":
-            self.inventoryButton=Button(self.dashboardGUI, text="Inventory", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda: self.startInventory(result['user'][0]))
+            self.inventoryButton=Button(self.dashboardGUI, text="Inventory", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda: self.startInventory())
             self.inventoryButton.place(x=50, y=370)
 
 
@@ -202,9 +202,9 @@ class GUI():
         else:
             messagebox.showinfo("Error","The Window is already Open!")
 
-    def startInventory(self, id):
+    def startInventory(self):
         INVOR=InventoryGUI.InvortoryGUI()
-        INVOR.start(result['user'][0])
+        INVOR.start(result['user'][0], result['user'][4])
 
     def timeIn(self, idx, binst):
         print(idx)

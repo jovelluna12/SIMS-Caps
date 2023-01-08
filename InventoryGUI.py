@@ -419,6 +419,11 @@ class InvortoryGUI:
                     Button_Cancel=Button(self.Frame_Empl_VIEW,text="Close",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_close)
                     Button_Cancel.place(x=700,y=150)
 
+                    if user_role=='Manager':
+                        Button_Edit.config(state='disabled')
+                        Button_Save.config(state='disabled')
+                        Button_Delete.config(state='disabled')
+
                     Label(self.Frame_Empl_VIEW, text="Employee",font=("Arial", 30)).place(x=10, y=10)
 
                     id=self.frame_Table.item(items)['values'][0]
@@ -765,55 +770,57 @@ class InvortoryGUI:
     def Click_Add_Em(self):
         global PageOpen
         if PageOpen<2:
-            self.button_Add_Em['bg']='gray'
-            self.Add_Employee = Toplevel()
-            self.Add_Employee.title("Employeee!")
-            self.Add_Employee.geometry("500x400")
-            self.Add_Employee.resizable(False, False)
+            if user_role=='Manager': messagebox.showerror("Access not Granted","Only the Owner is allowed to Open this")
+            else:
+                self.button_Add_Em['bg']='gray'
+                self.Add_Employee = Toplevel()
+                self.Add_Employee.title("Employeee!")
+                self.Add_Employee.geometry("500x400")
+                self.Add_Employee.resizable(False, False)
 
-            global btn, frame
-            btn = self.button_Add_Em
-            frame = self.Add_Employee
+                global btn, frame
+                btn = self.button_Add_Em
+                frame = self.Add_Employee
 
-            self.Add_Employee.protocol("WM_DELETE_WINDOW", self.Employee_on_close)
+                self.Add_Employee.protocol("WM_DELETE_WINDOW", self.Employee_on_close)
 
-            self.Frame_Add_Em = Frame(self.Add_Employee, width=800, height=500, )
-            self.Frame_Add_Em.place(x=0, y=0)
+                self.Frame_Add_Em = Frame(self.Add_Employee, width=800, height=500, )
+                self.Frame_Add_Em.place(x=0, y=0)
 
-            Frma = Label(self.Frame_Add_Em, text="Add Employee", width=20, font=("Arial", 35), anchor=W)
-            Frma.place(x=20, y=20)
+                Frma = Label(self.Frame_Add_Em, text="Add Employee", width=20, font=("Arial", 35), anchor=W)
+                Frma.place(x=20, y=20)
 
-            self.Fname = StringVar()
-            self.Employee_Lname_LA = Label(self.Frame_Add_Em, text="Full Name:")
-            self.Employee_Lname_EN = Entry(self.Frame_Add_Em, width=60, borderwidth=4, textvariable=self.Fname)
-            self.Employee_Lname_LA.place(x=60, y=110)
-            self.Employee_Lname_EN.place(x=60, y=130)
+                self.Fname = StringVar()
+                self.Employee_Lname_LA = Label(self.Frame_Add_Em, text="Full Name:")
+                self.Employee_Lname_EN = Entry(self.Frame_Add_Em, width=60, borderwidth=4, textvariable=self.Fname)
+                self.Employee_Lname_LA.place(x=60, y=110)
+                self.Employee_Lname_EN.place(x=60, y=130)
 
-            self.Employee_Username_LA = Label(self.Frame_Add_Em, text="Username:")
-            self.username = StringVar()
-            self.Employee_Username_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.username, borderwidth=4)
-            self.Employee_Username_LA.place(x=60, y=160)
-            self.Employee_Username_EN.place(x=60, y=180)
+                self.Employee_Username_LA = Label(self.Frame_Add_Em, text="Username:")
+                self.username = StringVar()
+                self.Employee_Username_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.username, borderwidth=4)
+                self.Employee_Username_LA.place(x=60, y=160)
+                self.Employee_Username_EN.place(x=60, y=180)
 
-            self.Employee_Password_LA = Label(self.Frame_Add_Em, text="Password:")
-            self.password = StringVar()
-            self.Employee_Password_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.password, show="*",
-                                            borderwidth=4)
-            self.Employee_Password_LA.place(x=60, y=210)
-            self.Employee_Password_EN.place(x=60, y=230)
+                self.Employee_Password_LA = Label(self.Frame_Add_Em, text="Password:")
+                self.password = StringVar()
+                self.Employee_Password_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.password, show="*",
+                                                borderwidth=4)
+                self.Employee_Password_LA.place(x=60, y=210)
+                self.Employee_Password_EN.place(x=60, y=230)
 
-            self.Employee_Role_LA = Label(self.Frame_Add_Em, text="Role:")
-            self.chosen_val = tk.StringVar(self.Frame_Add_Em)
-            self.chosen_val.set("Select Role")
-            self.Role = ttk.Combobox(self.Frame_Add_Em, textvariable=self.chosen_val, state='readonly')
-            self.Role['values'] = ('Cashier', 'Manager')
-            self.Role.place(x=60, y=280)
-            self.Employee_Role_LA.place(x=60, y=260)
+                self.Employee_Role_LA = Label(self.Frame_Add_Em, text="Role:")
+                self.chosen_val = tk.StringVar(self.Frame_Add_Em)
+                self.chosen_val.set("Select Role")
+                self.Role = ttk.Combobox(self.Frame_Add_Em, textvariable=self.chosen_val, state='readonly')
+                self.Role['values'] = ('Cashier', 'Manager')
+                self.Role.place(x=60, y=280)
+                self.Employee_Role_LA.place(x=60, y=260)
 
-            self.button_Add = Button(self.Frame_Add_Em, text="Add", padx=20, pady=5, command=self.Click_AddS_Em)
-            self.button_Add.place(x=360, y=330)
-            PageOpen += 1
-            self.Add_Employee.mainloop()
+                self.button_Add = Button(self.Frame_Add_Em, text="Add", padx=20, pady=5, command=self.Click_AddS_Em)
+                self.button_Add.place(x=360, y=330)
+                PageOpen += 1
+                self.Add_Employee.mainloop()
         else:
             messagebox.showinfo("Error","The Window already Open!")
 
@@ -1393,6 +1400,8 @@ class InvortoryGUI:
                               command=self.Click_Add_Delivery)
         self.button_Add_Em = Button(self.Frame_Side, text="ADD Employee", padx=10, pady=10, width=10, height=1,
                                     bg='#54FA9B', command=self.Click_Add_Em)
+
+
         self.button_Add_Pm = Button(self.Frame_Side, text="ADD Product", padx=10, pady=10, width=10, height=1,
                                     bg='#54FA9B', command=self.Click_Add_Product)
         self.btn_Notification = Button(self.Frame_Side, text="Export", padx=10, pady=10, width=10, height=1,
@@ -1686,6 +1695,9 @@ class InvortoryGUI:
         self.btn_Notification.config(state='normal')
         frame.destroy()
 
-    def start(self, id):
+    def start(self, id, role):
+        global user_role, user_id
+        user_role=role
+        user_id=id
         self.InvorGUI()
 
