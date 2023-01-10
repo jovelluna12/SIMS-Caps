@@ -30,14 +30,12 @@ class Owner(Employee.Employee):
         query = "INSERT INTO employees (EmpID,name,username,password,role) VALUES(%s,%s,%s,%s,%s)"
         value = (EmpID, name, username, password, role)
         dbcursor.execute(query, value)
-        dbConnector.db.commit()
         dbConnector.db.close()
 
     def AddEmpMany(self,val):
         dbcursor = self.dbcursor
         query = "INSERT INTO employees (EmpID,name,username,password,role) VALUES(%s,%s,%s,%s,%s)"
         dbcursor.executemany(query, val)
-        dbConnector.db.commit()
         dbConnector.db.close()
 
     def EditEmp(self,id,name,username,password,role):

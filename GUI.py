@@ -97,7 +97,7 @@ class GUI():
         self.POSButton.place(x=50, y=320)
 
         if result['user'][4]=="Manager" or result['user'][4]=="Owner":
-            self.inventoryButton=Button(self.dashboardGUI, text="Inventory", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda: self.startInventory(result['user'][0]))
+            self.inventoryButton=Button(self.dashboardGUI, text="Inventory", width=10, font=("Arial", 15), bg='#54FA9B',command = lambda: self.startInventory())
             self.inventoryButton.place(x=50, y=370)
 
 
@@ -134,7 +134,7 @@ class GUI():
         if PageOpen<2:
             self.NotifGUI=Tk()
             self.NotifGUI.title("Notification")
-            self.NotifGUI.geometry("483x520")
+            self.NotifGUI.geometry("500x520")
             self.NotifGUI.resizable(False,False)
             self.NotifGUI.protocol("WM_DELETE_WINDOW",self.on_close)
 
@@ -146,10 +146,10 @@ class GUI():
 
 
             #BOX
-            self.Noti_BOX=Frame(self.NotifGUI,width=450,height=460,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
+            self.Noti_BOX=Frame(self.NotifGUI,width=520,height=460,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
             self.Noti_BOX.place(x=0,y=35)
 
-            self.Noti_canvas=Canvas(self.Noti_BOX,width=450,height=460)
+            self.Noti_canvas=Canvas(self.Noti_BOX,width=465,height=460)
             self.Noti_canvas.pack(side=LEFT,fill=BOTH,expand=1)
 
             self.my_scrollbar= ttk.Scrollbar(self.Noti_BOX,orient=VERTICAL,command=self.Noti_canvas.yview)
@@ -170,25 +170,25 @@ class GUI():
             
             for thing in message:
                 
-                self.Noti_NotiBOX=Frame(self.Noti_post,width=400,height=70,padx=5,pady=5)
+                self.Noti_NotiBOX=Frame(self.Noti_post,width=570,height=70,padx=5,pady=5)
                 self.Noti_NotiBOX.grid(row=x,column=0)
                 widgets.append(self.Noti_NotiBOX)
-                self.Noti_MessageBOX=Frame(self.Noti_NotiBOX,width=395,height=70,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
+                self.Noti_MessageBOX=Frame(self.Noti_NotiBOX,width=410,height=100,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
                 self.Noti_MessageBOX.grid(row=0,column=0)
 
-                self.Noti_MTitle=Label(self.Noti_MessageBOX,text=name[x]+" of Batch "+str(batch[x])+" with an ID of "+str(id[x]),font=("Arial", 12),width=40,anchor=W)
+                self.Noti_MTitle=Label(self.Noti_MessageBOX,text=name[x]+" of Batch "+str(batch[x])+" with an ID of "+str(id[x]),font=("Arial", 12),width=43,height=2,anchor=W,wraplength=400)
                 ids.append(id[x])
-                self.Noti_MTitle.grid(row=0,column=0)
-                self.Noti_MBody=Label(self.Noti_MessageBOX,text=thing,font=("Arial", 10))
-                
-                self.Noti_MBody.grid(row=1,column=0)
+                self.Noti_MTitle.place(x=0,y=0)
+                self.Noti_MBody=Label(self.Noti_MessageBOX,text=thing,font=("Arial", 10),wraplength=400,)
+                self.Noti_MBody.place(x=0,y=50)
+
                 for widget in widgets:
                     for i in ids:
                         # wid=lambda w=widget: check(w)
                         # noted=lambda id=i: noteChecked(id)
                         
                         self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Close",command=lambda w=widget, id=i: (check(w), noteChecked(id)))
-                        self.Noti_NotiButton.grid(row=0,column=1)
+                        self.Noti_NotiButton.grid(row=0,column=1,padx=10)
 
                 x+=1
             def check(w):
@@ -202,9 +202,9 @@ class GUI():
         else:
             messagebox.showinfo("Error","The Window is already Open!")
 
-    def startInventory(self, id):
+    def startInventory(self):
         INVOR=InventoryGUI.InvortoryGUI()
-        INVOR.start(result['user'][0])
+        INVOR.start(result['user'][0], result['user'][4])
 
     def timeIn(self, idx, binst):
         print(idx)

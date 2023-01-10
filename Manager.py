@@ -21,7 +21,8 @@ class Manager (Employee.Employee):
         
     def viewInv(self):
         dbcursor = self.dbcursor
-        query="SELECT ProductID as ProdID ,ProductName,price,batch_code, quantity FROM products,deliverylist WHERE quantity!=0 AND products.status = 'Sellable' AND products.batch_code=deliverylist.BatchCode ORDER BY deliverylist.datepurchased ASC"
+        # SELECT ProductID as ProdID ,ProductName,price,batch_code, SUM(quantity) FROM products,deliverylist WHERE quantity!=0 AND products.status = 'Sellable' AND products.batch_code=deliverylist.BatchCode GROUP BY ProductName ORDER BY deliverylist.datepurchased ASC
+        query="SELECT ProductID ,ProductName,price,batch_code,quantity FROM products,deliverylist WHERE quantity!=0 AND products.status = 'Sellable' AND products.batch_code=deliverylist.BatchCode GROUP BY ProductName ORDER BY deliverylist.datepurchased ASC"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result
@@ -35,18 +36,18 @@ class Manager (Employee.Employee):
             dbcursor.execute(query,(scope_from,scope_to))
             return dbcursor.fetchall()
 
-        if report=="Inventory":
+        if report=="Inventory" and scope_from==None and scope_to==None:
             query="SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,SUM(products.quantity) AS QUANTITY FROM products_directory, products WHERE products.ref_id=products_directory.ref_id GROUP BY products.ref_id;;"
             dbcursor.execute(query)
 
             return dbcursor.fetchall()
-        if report=="Delivery":
+        if report=="Delivery" and scope_from==None and scope_to==None:
             query="SELECT batch_code,ProductName,quantity,price,deliverylist.status FROM products,deliverylist WHERE deliverylist.status='Under Delivery' AND products.batch_code=deliverylist.BatchCode;"
             dbcursor.execute(query)
 
             return dbcursor.fetchall()
 
-        if report=="Forecast":
+        if report=="Forecast" and scope_from==None and scope_to==None:
             query="SELECT products.ProductID,products.ProductName,products.Quantity+SUM(purchasedproducts.Quantity ) as Quantity,products.price,SUM(purchasedproducts.Quantity ) AS NumberOfItemsSold FROM products, purchasedproducts,salestransaction WHERE STRCMP(purchasedproducts.Item , products.ProductName)=0 AND DATE(salestransaction.DatePurchased) >= (DATE(NOW()) - INTERVAL 30 DAY) GROUP BY purchasedproducts.Item;"
             dbcursor.execute(query)
 
@@ -67,7 +68,7 @@ class Manager (Employee.Employee):
 
     def notify_expiry(self):
         dbcursor=self.dbcursor
-        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable' AND note!='Checked'"
+        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable' AND status!='Under Delivery' AND note!='Checked'"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
     
@@ -86,14 +87,14 @@ class Manager (Employee.Employee):
                     man=Product.product()
                     man.editStatus('Unsellable',result[x][0])
                     
-                    message="Product "+ str(result[x][1])+" of Batch "+str(result[x][3])+" is Expired and Unsellable"
+                    message=str(result[x][1])+ "of Batch "+str(result[x][3])+" is Expired and Unsellable"
                     messages.append(message)
                     id.append(result[x][0])
                     name.append(result[x][1])
                     batch.append(result[x][3])
 
                 if today_left<=days_left:
-                    message="Product "+ str(result[x][1])+" of Batch "+str(result[x][3])+" is about to Expire in "+str(today_left)+" days"
+                    message=str(result[x][1])+ "of Batch "+str(result[x][3])+" is about to Expire in "+str(today_left)+" days"
                     messages.append(message)
                     id.append(result[x][0])
                     name.append(result[x][1])
@@ -110,7 +111,7 @@ class Manager (Employee.Employee):
 
     def viewEMPList(self):
         dbcursor = self.dbcursor
-        query="SELECT EmpID,Name,username,role FROM employees"
+        query="SELECT EmpID,Name,username,role FROM employees WHERE role!='Owner'"
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         return result

@@ -9,6 +9,11 @@ from tkinter import messagebox
 from tracemalloc import start
 import Employee
 import Manager
+
+import datetime
+from datetime import datetime
+import calendar
+
 from tkcalendar import DateEntry
 from PIL import Image, ImageTk
 import Owner
@@ -121,7 +126,7 @@ class InvortoryGUI:
         global PageOpen
         if PageOpen < 2:
             if len(self.frame_Table.get_children()) == 0:
-                messagebox.showinfo("Error","Sorry their no Item to Receive!")
+                messagebox.showinfo("Error","Sorry there's no Item to Receive!")
             else:
                 if self.frame_Table.focus()!='':
                     item = self.frame_Table.selection()[0]
@@ -218,11 +223,11 @@ class InvortoryGUI:
                     self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
                     self.button.place(x=600, y=150)
 
-                    def saveChanges():
+                    def saveChanges(): 
                         selectedItem = self.frame_Table.selection()[0]
                         x = self.frame_Table.item(selectedItem)['values'][4]
                         self.frame_Table.item(selectedItem,text="a", values=(
-                        idd.get(), namee.get(), price.get(), qty.get(), x, self.frame_Table.item(selectedItem)['values'][5]))
+                        idd.get(), namee.get(), price.get(), qty.get(), x, self.Product_date_EN.get_date()))
 
                     self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
                     self.button.place(x=710, y=150)
@@ -414,6 +419,11 @@ class InvortoryGUI:
                     Button_Cancel=Button(self.Frame_Empl_VIEW,text="Close",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_close)
                     Button_Cancel.place(x=700,y=150)
 
+                    if user_role=='Manager':
+                        Button_Edit.config(state='disabled')
+                        Button_Save.config(state='disabled')
+                        Button_Delete.config(state='disabled')
+
                     Label(self.Frame_Empl_VIEW, text="Employee",font=("Arial", 30)).place(x=10, y=10)
 
                     id=self.frame_Table.item(items)['values'][0]
@@ -516,7 +526,7 @@ class InvortoryGUI:
         expiry_date = self.Product_EXdate_EN.get_date()
         quantity = self.Product_Stack_EN.get()
         ProductIDD = randomNumGen.generateProductID()
-        price = float(int(self.Product_Price_EN.get()))
+        price = float(self.Product_Price_EN.get())
         order_date = self.Product_date_EN.get_date()
         arrival_date = self.Product_Arrive_EN.get_date()
 
@@ -760,55 +770,57 @@ class InvortoryGUI:
     def Click_Add_Em(self):
         global PageOpen
         if PageOpen<2:
-            self.button_Add_Em['bg']='gray'
-            self.Add_Employee = Toplevel()
-            self.Add_Employee.title("Employeee!")
-            self.Add_Employee.geometry("500x400")
-            self.Add_Employee.resizable(False, False)
+            if user_role=='Manager': messagebox.showerror("Access not Granted","Only the Owner is allowed to Open this")
+            else:
+                self.button_Add_Em['bg']='gray'
+                self.Add_Employee = Toplevel()
+                self.Add_Employee.title("Employeee!")
+                self.Add_Employee.geometry("500x400")
+                self.Add_Employee.resizable(False, False)
 
-            global btn, frame
-            btn = self.button_Add_Em
-            frame = self.Add_Employee
+                global btn, frame
+                btn = self.button_Add_Em
+                frame = self.Add_Employee
 
-            self.Add_Employee.protocol("WM_DELETE_WINDOW", self.Employee_on_close)
+                self.Add_Employee.protocol("WM_DELETE_WINDOW", self.Employee_on_close)
 
-            self.Frame_Add_Em = Frame(self.Add_Employee, width=800, height=500, )
-            self.Frame_Add_Em.place(x=0, y=0)
+                self.Frame_Add_Em = Frame(self.Add_Employee, width=800, height=500, )
+                self.Frame_Add_Em.place(x=0, y=0)
 
-            Frma = Label(self.Frame_Add_Em, text="Add Employee", width=20, font=("Arial", 35), anchor=W)
-            Frma.place(x=20, y=20)
+                Frma = Label(self.Frame_Add_Em, text="Add Employee", width=20, font=("Arial", 35), anchor=W)
+                Frma.place(x=20, y=20)
 
-            self.Fname = StringVar()
-            self.Employee_Lname_LA = Label(self.Frame_Add_Em, text="Full Name:")
-            self.Employee_Lname_EN = Entry(self.Frame_Add_Em, width=60, borderwidth=4, textvariable=self.Fname)
-            self.Employee_Lname_LA.place(x=60, y=110)
-            self.Employee_Lname_EN.place(x=60, y=130)
+                self.Fname = StringVar()
+                self.Employee_Lname_LA = Label(self.Frame_Add_Em, text="Full Name:")
+                self.Employee_Lname_EN = Entry(self.Frame_Add_Em, width=60, borderwidth=4, textvariable=self.Fname)
+                self.Employee_Lname_LA.place(x=60, y=110)
+                self.Employee_Lname_EN.place(x=60, y=130)
 
-            self.Employee_Username_LA = Label(self.Frame_Add_Em, text="Username:")
-            self.username = StringVar()
-            self.Employee_Username_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.username, borderwidth=4)
-            self.Employee_Username_LA.place(x=60, y=160)
-            self.Employee_Username_EN.place(x=60, y=180)
+                self.Employee_Username_LA = Label(self.Frame_Add_Em, text="Username:")
+                self.username = StringVar()
+                self.Employee_Username_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.username, borderwidth=4)
+                self.Employee_Username_LA.place(x=60, y=160)
+                self.Employee_Username_EN.place(x=60, y=180)
 
-            self.Employee_Password_LA = Label(self.Frame_Add_Em, text="Password:")
-            self.password = StringVar()
-            self.Employee_Password_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.password, show="*",
-                                            borderwidth=4)
-            self.Employee_Password_LA.place(x=60, y=210)
-            self.Employee_Password_EN.place(x=60, y=230)
+                self.Employee_Password_LA = Label(self.Frame_Add_Em, text="Password:")
+                self.password = StringVar()
+                self.Employee_Password_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.password, show="*",
+                                                borderwidth=4)
+                self.Employee_Password_LA.place(x=60, y=210)
+                self.Employee_Password_EN.place(x=60, y=230)
 
-            self.Employee_Role_LA = Label(self.Frame_Add_Em, text="Role:")
-            self.chosen_val = tk.StringVar(self.Frame_Add_Em)
-            self.chosen_val.set("Select Role")
-            self.Role = ttk.Combobox(self.Frame_Add_Em, textvariable=self.chosen_val, state='readonly')
-            self.Role['values'] = ('Cashier', 'Manager')
-            self.Role.place(x=60, y=280)
-            self.Employee_Role_LA.place(x=60, y=260)
+                self.Employee_Role_LA = Label(self.Frame_Add_Em, text="Role:")
+                self.chosen_val = tk.StringVar(self.Frame_Add_Em)
+                self.chosen_val.set("Select Role")
+                self.Role = ttk.Combobox(self.Frame_Add_Em, textvariable=self.chosen_val, state='readonly')
+                self.Role['values'] = ('Cashier', 'Manager')
+                self.Role.place(x=60, y=280)
+                self.Employee_Role_LA.place(x=60, y=260)
 
-            self.button_Add = Button(self.Frame_Add_Em, text="Add", padx=20, pady=5, command=self.Click_AddS_Em)
-            self.button_Add.place(x=360, y=330)
-            PageOpen += 1
-            self.Add_Employee.mainloop()
+                self.button_Add = Button(self.Frame_Add_Em, text="Add", padx=20, pady=5, command=self.Click_AddS_Em)
+                self.button_Add.place(x=360, y=330)
+                PageOpen += 1
+                self.Add_Employee.mainloop()
         else:
             messagebox.showinfo("Error","The Window already Open!")
 
@@ -1000,7 +1012,13 @@ class InvortoryGUI:
 
     # start UI for Notification ---------------
     def notify_UI(self):
-        global PageOpen, to,fromm
+        global PageOpen, to,fromm, num_days
+        to=None
+        fromm=None
+
+        now = datetime.now()
+        num_days = calendar.monthrange(now.year, now.month)[1]
+
         if PageOpen<2:
             self.btn_Notification['bg']='gray'
             self.Add_Notify = Toplevel()
@@ -1021,12 +1039,12 @@ class InvortoryGUI:
 
             def update_scope(selection):
                 if selection == "Day":
-                    self.scope['values']=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)
-                    print(self.radio_scope.get())
+                    self.scope['values']=[day for day in range(1, num_days+1)]
+                    print(radio_scope.get())
 
                 elif selection == "Monthly":
                     self.scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                    print(self.radio_scope.get())
+                    print(radio_scope.get())
 
             def toggle_radio(value):
                 if self.Radio_TO.config("value")[-1] == 1:
@@ -1084,24 +1102,53 @@ class InvortoryGUI:
             self.export_Table.configure(yscrollcommand=scrollbar.set)    
             self.export_Table.pack()
 
-            def export_report(to,fromm):
+            def export_report():
+                to=selected.get()
+                from_month=selected_to.get()
+                year=selected_year.get()
+
                 report_type = reports.get()
                 man = Manager.Manager()
 
                 if report_type == 'Sales':
-                    result = man.get_export_data(report_type,to,fromm)
-                    df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
+                    if radio_scope.get()=="Monthly":
+                        month_num=datetime.strptime(to, '%B').month
+                        date_obj=datetime(int(year), month_num, 1)
+
+                        date_str_to = date_obj.strftime('%Y-%m-%d')
+
+                        from_mnth=datetime.strptime(from_month, '%B').month
+                        from_mnth_obj=datetime(int(year), from_mnth, calendar.monthrange(int(year), from_mnth)[1])
+
+                        frm_mtnh_str=from_mnth_obj.strftime('%Y-%m-%d')
+                        result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
+
+                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
                                                     'Discount', 'Date Purchased'])
+                    
+                    if radio_scope.get()=="Day":
+                        day=to
+                        month=from_month
+
+                        month_num=datetime.strptime(month, '%B').month
+                        date_obj=datetime(int(year), month_num, int(day))
+                        date_str = date_obj.strftime('%Y-%m-%d')
+
+                        result = man.get_export_data(report_type,date_str,date_str)
+                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
+                                                    'Discount', 'Date Purchased'])
+
+
                 if report_type == 'Inventory':
-                    result = man.get_export_data(report_type)
+                    result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
 
                 if report_type == "Delivery":
-                    result = man.get_export_data(report_type)
+                    result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
 
                 if report_type == 'Forecast':
-                    result, value = man.get_export_data(report_type)
+                    result, value = man.get_export_data(report_type,None,None)
                     print("here")
                     df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price'])
                     df.insert(4,"30 Day Forecast",value)
@@ -1112,23 +1159,26 @@ class InvortoryGUI:
                 messagebox.showinfo("Exported Successfully", "Saved to " + title)
             
             def reports_callback(event):
-                export.config(state='normal',)
+                export.config(state='normal',command=lambda:export_report())
 
                 self.export_Table.delete(*self.export_Table.get_children())
                 report_type = reports.get()
 
-                # man = Manager.Manager()
-                # result = man.get_export_data(report_type)
+                man = Manager.Manager()
+                result = man.get_export_data(report_type,None,None)
 
                 if report_type == 'Sales':
                     # reports.remove(report_type)
                     # reports['values']= report_type
-                    
+                    global sales_UI
+                    sales_UI=1
+
                     self.FLabel=Label(self.Add_Notify, text="From")
                     self.FLabel.place(x=170, y=80)
                     self.scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
                     self.scope.place(x=170, y=100)
 
+                    global selected_to
                     selected_to = StringVar()
                     self.TOLabel=Label(self.Add_Notify, text="")
                     self.TOLabel.place(x=320, y=80)
@@ -1137,19 +1187,21 @@ class InvortoryGUI:
                     self.scope_to['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
                     self.scope_to.place(x=320, y=100)
 
+                    global selected_year
                     selected_year = StringVar()
                     self.YLabel=Label(self.Add_Notify, text="Year")
                     self.YLabel.place(x=490, y=80)
                     self.scope_year = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_year)
                     self.scope_year.configure(state="disabled")
                     self.scope_year.place(x=490, y=100)
+                    
+                    global radio_scope
+                    radio_scope=StringVar()
 
-                    self.radio_scope=StringVar()
-
-                    self.Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", variable=self.radio_scope,value='Day',command=lambda:update_scope('Day'))
+                    self.Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", variable=radio_scope,value='Day',command=lambda:update_scope('Day'))
                     self.Radio_Day.place(x=630,y=80)
 
-                    self.Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", variable=self.radio_scope,value='Monthly',command=lambda:update_scope('Monthly'))
+                    self.Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", variable=radio_scope,value='Monthly',command=lambda:update_scope('Monthly'))
                     self.Radio_Monthly.place(x=630,y=100)
 
                     self.Radio_TO=tk.Radiobutton(self.Add_Notify,text="TO", value=1,command=lambda:toggle_radio(0))
@@ -1183,16 +1235,18 @@ class InvortoryGUI:
                     self.export_Table.pack()
 
                 if report_type == 'Inventory':
-                    self.FLabel.destroy()
-                    self.TOLabel.destroy()
-                    self.YLabel.destroy()
-                    self.scope.destroy()
-                    self.scope_to.destroy()
-                    self.scope_year.destroy()
-                    self.Radio_Day.destroy()
-                    self.Radio_Monthly.destroy()
-                    self.Radio_TO.destroy()
-                    self.Radio_Yearly.destroy()
+                    if sales_UI==1:
+                        self.FLabel.destroy()
+                        self.TOLabel.destroy()
+                        self.YLabel.destroy()
+                        self.scope.destroy()
+                        self.scope_to.destroy()
+                        self.scope_year.destroy()
+                        self.Radio_Day.destroy()
+                        self.Radio_Monthly.destroy()
+                        self.Radio_TO.destroy()
+                        self.Radio_Yearly.destroy()
+                        sales_UI=0
 
                     self.export_Table['columns'] = (
                     'Reference ID', "Item", "Price", "Remaining Quantity")
@@ -1211,16 +1265,18 @@ class InvortoryGUI:
                     self.export_Table.pack()
 
                 if report_type == "Delivery":
-                    self.FLabel.destroy()
-                    self.TOLabel.destroy()
-                    self.YLabel.destroy()
-                    self.scope.destroy()
-                    self.scope_to.destroy()
-                    self.scope_year.destroy()
-                    self.Radio_Day.destroy()
-                    self.Radio_Monthly.destroy()
-                    self.Radio_TO.destroy()
-                    self.Radio_Yearly.destroy()
+                    if sales_UI==1:
+                        self.FLabel.destroy()
+                        self.TOLabel.destroy()
+                        self.YLabel.destroy()
+                        self.scope.destroy()
+                        self.scope_to.destroy()
+                        self.scope_year.destroy()
+                        self.Radio_Day.destroy()
+                        self.Radio_Monthly.destroy()
+                        self.Radio_TO.destroy()
+                        self.Radio_Yearly.destroy()
+                        sales_UI=0
 
                     self.export_Table['columns'] = (
                     'Batch Code', 'Item', 'Quantity', 'Price', 'Status')
@@ -1241,16 +1297,18 @@ class InvortoryGUI:
                     self.export_Table.pack()
 
                 if report_type == 'Forecast':
-                    self.FLabel.destroy()
-                    self.TOLabel.destroy()
-                    self.YLabel.destroy()
-                    self.scope.destroy()
-                    self.scope_to.destroy()
-                    self.scope_year.destroy()
-                    self.Radio_Day.destroy()
-                    self.Radio_Monthly.destroy()
-                    self.Radio_TO.destroy()
-                    self.Radio_Yearly.destroy()
+                    if sales_UI==1:
+                        self.FLabel.destroy()
+                        self.TOLabel.destroy()
+                        self.YLabel.destroy()
+                        self.scope.destroy()
+                        self.scope_to.destroy() 
+                        self.scope_year.destroy()
+                        self.Radio_Day.destroy()
+                        self.Radio_Monthly.destroy()
+                        self.Radio_TO.destroy()
+                        self.Radio_Yearly.destroy()
+                        sales_UI=0
 
                     # Label(self.Add_Notify,text="NOTE: Forecast will not be Accurate during the First Time Use, when Data is Limited.").place(x=0, y=150)
                     
@@ -1274,7 +1332,10 @@ class InvortoryGUI:
 
                     self.export_Table.pack()
 
-                # count = 0
+                count = 0
+                for item in result:
+                        self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
+                        count += 1
             
                 # if report_type == 'Forecast':
                 #     for item in range(len(result)):
@@ -1339,6 +1400,8 @@ class InvortoryGUI:
                               command=self.Click_Add_Delivery)
         self.button_Add_Em = Button(self.Frame_Side, text="ADD Employee", padx=10, pady=10, width=10, height=1,
                                     bg='#54FA9B', command=self.Click_Add_Em)
+
+
         self.button_Add_Pm = Button(self.Frame_Side, text="ADD Product", padx=10, pady=10, width=10, height=1,
                                     bg='#54FA9B', command=self.Click_Add_Product)
         self.btn_Notification = Button(self.Frame_Side, text="Export", padx=10, pady=10, width=10, height=1,
@@ -1632,6 +1695,9 @@ class InvortoryGUI:
         self.btn_Notification.config(state='normal')
         frame.destroy()
 
-    def start(self, id):
+    def start(self, id, role):
+        global user_role, user_id
+        user_role=role
+        user_id=id
         self.InvorGUI()
 

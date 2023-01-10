@@ -69,6 +69,10 @@ def start(m,id,user,time):
             user_Timein=Label(frame_Total,text="TIME IN:",width=10,height=0,anchor=W,font=("Arial",12,'bold')).place(x=10,y=50)
             user_FD=Label(frame_Total,text=time,width=50,height=0,anchor=W,font=("Arial",12,'bold')).place(x=90,y=50)
 
+            global NextTransact
+            NextTransact=Button(frame_Total,text="Next Transaction")
+            NextTransact.place(x=540,y=20)
+
             # def temp_text(e):
             #     Totalprince_Entry.delete(0,"end")
             
@@ -208,9 +212,10 @@ def Click_List():
     global PageOpen
     def on_close():
         global PageOpen
-        if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
-            PageOpen=1
-            window_list.destroy()
+        # if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
+        PageOpen=1
+        window_list.destroy()
+
     if PageOpen<2:
         global Entry_Search
         global Search_Table
@@ -255,7 +260,7 @@ def Click_List():
             code=Search_Table.item(curItem)['values'][0]
             product=Search_Table.item(curItem)['values'][1]
             price=Search_Table.item(curItem)['values'][2]
-            qty=Search_Table.item(curItem)['values'][3]
+            qty=Search_Table.item(curItem)['values'][4]
             ProductCODE.config(state='normal')
             Product_Name_EN.config(state='normal')
             Product_Prices_EN.config(state='normal')
@@ -384,17 +389,17 @@ def SearchItem(buttonpress):
 
                 result1=(result[0],result[1],result[2],result[3])
 
-                button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(result1))
+                button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
     elif ProdCode.index("end")==0 and ProductCODE.index('end')!=0 and Product_Name_EN.index('end')!=0 and Product_Prices_EN.index('end')!=0:
         ProdCodee.append(code)
         prod=Product.product()
 
-        button_confirm.config(state="active",command=lambda m="confirm":Click_Enter((code,product,price,qty)))
+        button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
 
     else: messagebox.showerror("Product Search", "Product Code Empty")
 
 # Button Enter/search the item
-def Click_Enter(result):
+def Click_Enter(code,product,price,qty):
 
     window_Qty = Toplevel()
     window_Qty.title("Quantity!")
@@ -413,12 +418,13 @@ def Click_Enter(result):
     Label_Quantity.place(x=10,y=20)
     Entry_Quantity.place(x=30,y=70)
     button_Quantity.place(x=120,y=100)
-
-    ProdID=result[0]
-    ProdName=result[1]
-    ProdPrice=result[2]
+    
+    ProdID=code
+    ProdName=product
+    ProdPrice=price
     # ProdQTY=result[3]
-    RemainingQTY=result[3]
+    RemainingQTY=qty
+    print(ProdID, ProdName, ProdPrice, RemainingQTY)
     def setQTY(val):
         call=0
         global ProdQTY
@@ -427,11 +433,12 @@ def Click_Enter(result):
         except ValueError:
             call=1
             messagebox.showerror("Product Search", "Invalid Input")
-            Click_Enter(result)
+            Click_Enter(code,product,price,qty)
             window_Qty.destroy()
 
         if call==0:
             if (ProdQTY>RemainingQTY):
+                print(ProdQTY, RemainingQTY)
                 messagebox.showerror("POS Transaction", "Not Enough QTY in Stock")
             else:
                 itemsLIST.append(ProdName)
@@ -559,7 +566,7 @@ def record(discount):
         Discount_Entry.config(state="disabled")
 
         windowASK.destroy()
-        Button(frame_Total,text="Next Transaction", command=newTransact).place(x=550,y=80)
+        NextTransact.config(command=newTransact)
         # button_Quantity.config(text="Done", command=windowASK.destroy)
     
         for x in frame_Table.get_children():
