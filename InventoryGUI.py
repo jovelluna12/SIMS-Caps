@@ -23,6 +23,8 @@ import pandas as pd
 from openpyxl.workbook import Workbook
 import os
 
+import openpyxl
+
 
 class InvortoryGUI:
 
@@ -1102,14 +1104,14 @@ class InvortoryGUI:
             self.export_Table.pack()
 
             def export_report():
-                to=selected.get()
-                from_month=selected_to.get()
-                year=selected_year.get()
-
                 report_type = reports.get()
                 man = Manager.Manager()
 
                 if report_type == 'Sales':
+                    to=selected.get()
+                    from_month=selected_to.get()
+                    year=selected_year.get()
+                    
                     if radio_scope.get()=="Monthly":
                         month_num=datetime.strptime(to, '%B').month
                         date_obj=datetime(int(year), month_num, 1)
@@ -1137,10 +1139,20 @@ class InvortoryGUI:
                         df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
                                                     'Discount', 'Date Purchased'])
 
+                SIMS_TEMPLATE = 'SIMS_TEMPLATE.xlsx'
 
                 if report_type == 'Inventory':
                     result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
+                    wb=openpyxl.load_workbook(SIMS_TEMPLATE)
+                    ws=wb.active
+                    start_row=5
+                    for row in df.iterrows():
+                        for column in range(len(row[1])):
+                            ws.cell(row=start_row,column=column+2).value=row[1][column]
+
+                    title = str.lower(report_type) + str(date.today()) + '.xlsx'
+                    wb.save(title)
 
                 if report_type == "Delivery":
                     result = man.get_export_data(report_type,None,None)
@@ -1151,9 +1163,9 @@ class InvortoryGUI:
                     df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price'])
                     df.insert(4,"30 Day Forecast",value)
 
-                title = str.lower(report_type) + str(date.today()) + '.xlsx'
-                df.to_excel(title, str(report_type))
-                message = "Saved to ", title
+                # title = str.lower(report_type) + str(date.today()) + '.xlsx'
+                # df.to_excel(title, str(report_type))
+                # message = "Saved to ", title
                 messagebox.showinfo("Exported Successfully", "Saved to " + title)
             
             def reports_callback(event):
@@ -1432,7 +1444,6 @@ class InvortoryGUI:
     def Click_Edit_Ref(self, var):
         global PageOpen_Sub
         if PageOpen_Sub<2:
-            global lst
             a = Product.product()
             lst = a.returnall()
             idd = lst[0][0]
