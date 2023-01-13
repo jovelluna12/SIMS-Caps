@@ -424,7 +424,6 @@ def Click_Enter(code,product,price,qty):
     ProdPrice=price
     # ProdQTY=result[3]
     RemainingQTY=qty
-    print(ProdID, ProdName, ProdPrice, RemainingQTY)
     def setQTY(val):
         call=0
         global ProdQTY
@@ -438,7 +437,6 @@ def Click_Enter(code,product,price,qty):
 
         if call==0:
             if (ProdQTY>RemainingQTY):
-                print(ProdQTY, RemainingQTY)
                 messagebox.showerror("POS Transaction", "Not Enough QTY in Stock")
             else:
                 itemsLIST.append(ProdName)
@@ -584,5 +582,15 @@ def newTransact():
 
 # Button Delete
 def Click_Delete():
-    selected_Product = frame_Table.get_children()
+    selected_Product = frame_Table.selection()
     frame_Table.delete(selected_Product)
+
+    subtotal=[]
+    for x in frame_Table.get_children():
+        subtotal.append(frame_Table.item(x)["values"][2]*frame_Table.item(x)["values"][3])
+
+    global totalprice
+    totalprice = sum(subtotal)
+                    
+    Totalprince_Entry.config(text=totalprice)
+    button_final_payment.config(state='active')

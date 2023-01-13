@@ -1043,29 +1043,29 @@ class InvortoryGUI:
 
             def update_scope(selection):
                 if selection == "Day":
-                    self.scope['values']=[day for day in range(1, num_days+1)]
+                    scope['values']=[day for day in range(1, num_days+1)]
 
                 elif selection == "Monthly":
-                    self.scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+                    scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
 
             def toggle_radio(value):
-                if self.Radio_TO.config("value")[-1] == 1:
-                    self.Radio_TO.config(value=0)
-                    self.scope_to.configure(state="disabled")
+                if Radio_TO.config("value")[-1] == 1:
+                    Radio_TO.config(value=0)
+                    scope_to.configure(state="disabled")
                 else:
-                    self.Radio_TO.config(value=1)
-                    self.scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                    self.scope_to.configure(state="normal")
+                    Radio_TO.config(value=1)
+                    scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+                    scope_to.configure(state="normal")
             
             def year_radio(value):
-                if self.Radio_Yearly.config("value")[-1] == 1:
-                    self.Radio_Yearly.config(value=0)
-                    self.scope_year.configure(state="disabled")
+                if Radio_Yearly.config("value")[-1] == 1:
+                    Radio_Yearly.config(value=0)
+                    scope_year.configure(state="disabled")
                 else:
                     current_year = datetime.now().year
-                    self.Radio_Yearly.config(value=1)
-                    self.scope_year['values']=[year for year in range(1950, current_year+1)]
-                    self.scope_year.configure(state="normal")
+                    Radio_Yearly.config(value=1)
+                    scope_year['values']=[year for year in range(1950, current_year+1)]
+                    scope_year.configure(state="normal")
             
             selected = StringVar()
             Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
@@ -1108,6 +1108,8 @@ class InvortoryGUI:
                 report_type = reports.get()
                 man = Manager.Manager()
 
+                SIMS_TEMPLATE = 'SIMS_TEMPLATE.xlsx'
+
                 if report_type == 'Sales':
                     to=selected.get()
                     from_month=selected_to.get()
@@ -1125,8 +1127,7 @@ class InvortoryGUI:
                         frm_mtnh_str=from_mnth_obj.strftime('%Y-%m-%d')
                         result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
 
-                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
-                                                    'Discount', 'Date Purchased'])
+                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
                     
                     if radio_scope.get()=="Day":
                         day=to
@@ -1137,10 +1138,18 @@ class InvortoryGUI:
                         date_str = date_obj.strftime('%Y-%m-%d')
 
                         result = man.get_export_data(report_type,date_str,date_str)
-                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
-                                                    'Discount', 'Date Purchased'])
+                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
 
-                SIMS_TEMPLATE = 'SIMS_TEMPLATE.xlsx'
+                    wb=openpyxl.load_workbook(SIMS_TEMPLATE)
+                    ws=wb.worksheets[1]
+                    start_row=12
+                    for row in df.iterrows():
+                        for column in range(len(row[1])):
+                            ws.cell(row=start_row,column=column+2).value=row[1][column]
+                        start_row+=1
+                        ws.insert_rows(start_row,1)
+                    path=fd.asksaveasfilename(defaultextension=".xlsx")
+                    wb.save(path) 
 
                 if report_type == 'Inventory':
                     result = man.get_export_data(report_type,None,None)
@@ -1168,6 +1177,8 @@ class InvortoryGUI:
                             ws.cell(row=start_row,column=column+2).value=row[1][column]
                         start_row+=1
                         ws.insert_rows(start_row,1)
+
+                    print()
 
                     path=fd.asksaveasfilename(defaultextension=".xlsx")
                     wb.save(path)        
