@@ -14,6 +14,7 @@ import datetime
 from datetime import datetime
 import calendar
 
+from tkinter import filedialog as fd
 from tkcalendar import DateEntry
 from PIL import Image, ImageTk
 import Owner
@@ -1145,18 +1146,31 @@ class InvortoryGUI:
                     result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
                     wb=openpyxl.load_workbook(SIMS_TEMPLATE)
-                    ws=wb.active
-                    start_row=5
+                    ws=wb.worksheets[0]
+                    start_row=5 
                     for row in df.iterrows():
                         for column in range(len(row[1])):
                             ws.cell(row=start_row,column=column+2).value=row[1][column]
+                        start_row+=1
+                        ws.insert_rows(start_row,1)
 
-                    title = str.lower(report_type) + str(date.today()) + '.xlsx'
-                    wb.save(title)
+                    path=fd.asksaveasfilename(defaultextension=".xlsx")
+                    wb.save(path) 
 
                 if report_type == "Delivery":
                     result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
+                    wb=openpyxl.load_workbook(SIMS_TEMPLATE)    
+                    ws=wb.worksheets[2]
+                    start_row=28
+                    for row in df.iterrows():
+                        for column in range (len(row[1])):
+                            ws.cell(row=start_row,column=column+2).value=row[1][column]
+                        start_row+=1
+                        ws.insert_rows(start_row,1)
+
+                    path=fd.asksaveasfilename(defaultextension=".xlsx")
+                    wb.save(path)        
 
                 if report_type == 'Forecast':
                     result, value = man.get_export_data(report_type,None,None)
@@ -1166,7 +1180,7 @@ class InvortoryGUI:
                 # title = str.lower(report_type) + str(date.today()) + '.xlsx'
                 # df.to_excel(title, str(report_type))
                 # message = "Saved to ", title
-                messagebox.showinfo("Exported Successfully", "Saved to " + title)
+                messagebox.showinfo("Exported Successfully", "Saved to " + path)
             
             def reports_callback(event):
                 export.config(state='normal',command=lambda:export_report())
