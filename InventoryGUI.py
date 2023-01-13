@@ -1215,13 +1215,13 @@ class InvortoryGUI:
                     self.export_Table['columns'] = (
                     "Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
                     self.export_Table.column("#0", width=0, stretch=NO)
-                    self.export_Table.column("Invoice Number", anchor=W,)
-                    self.export_Table.column("Purchase ID", anchor=W,)
-                    self.export_Table.column("Item", anchor=W)
-                    self.export_Table.column("Quantity", anchor=E,)
-                    self.export_Table.column("Total Price", anchor=E,)
-                    self.export_Table.column("Discount", anchor=E,)
-                    self.export_Table.column("Date Purchased", anchor=E, )
+                    self.export_Table.column("Invoice Number", anchor=W,width=60)
+                    self.export_Table.column("Purchase ID", anchor=W,width=50)
+                    self.export_Table.column("Item", anchor=W,width=330)
+                    self.export_Table.column("Quantity", anchor=E,width=30)
+                    self.export_Table.column("Total Price", anchor=E,width=30)
+                    self.export_Table.column("Discount", anchor=E,width=30)
+                    self.export_Table.column("Date Purchased", anchor=E,width=50)
 
                     self.export_Table.heading("#0")
                     self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
@@ -1251,10 +1251,10 @@ class InvortoryGUI:
                     self.export_Table['columns'] = (
                     'Reference ID', "Item", "Price", "Remaining Quantity")
                     self.export_Table.column("#0", width=0, stretch=NO)
-                    self.export_Table.column("Reference ID", anchor=W, )
-                    self.export_Table.column("Item", anchor=W, )
-                    self.export_Table.column("Price", anchor=E, )
-                    self.export_Table.column("Remaining Quantity", anchor=E, )
+                    self.export_Table.column("Reference ID", anchor=W,width=50)
+                    self.export_Table.column("Item", anchor=W,width=300)
+                    self.export_Table.column("Price", anchor=E,width=50)
+                    self.export_Table.column("Remaining Quantity", anchor=E,width=70)
                     
                     self.export_Table.heading("#0")
                     self.export_Table.heading("Reference ID", text="Reference ID", anchor=W)
@@ -1281,11 +1281,11 @@ class InvortoryGUI:
                     self.export_Table['columns'] = (
                     'Batch Code', 'Item', 'Quantity', 'Price', 'Status')
                     self.export_Table.column("#0", width=0, stretch=NO)
-                    self.export_Table.column("Batch Code", anchor=W, )
-                    self.export_Table.column("Item", anchor=W, )
-                    self.export_Table.column("Quantity", anchor=E, )
-                    self.export_Table.column("Price", anchor=E, )
-                    self.export_Table.column("Status", anchor=E, )
+                    self.export_Table.column("Batch Code", anchor=W,width=50 )
+                    self.export_Table.column("Item", anchor=W,width=300 )
+                    self.export_Table.column("Quantity", anchor=E,width=30 )
+                    self.export_Table.column("Price", anchor=E,width=30 )
+                    self.export_Table.column("Status", anchor=E,width=50 )
                     
                     self.export_Table.heading("#0")
                     self.export_Table.heading("Batch Code", text="Batch Code", anchor=W)
@@ -1317,11 +1317,11 @@ class InvortoryGUI:
                     self.export_Table['columns'] = (
                     'Id','Item','Quantity','Price','30 Day Forecast')
                     self.export_Table.column("#0", width=0, stretch=NO)
-                    self.export_Table.column("Id", anchor=W, )
-                    self.export_Table.column("Item", anchor=W, )
-                    self.export_Table.column("Quantity", anchor=E, )
-                    self.export_Table.column("Price", anchor=E, )
-                    self.export_Table.column("30 Day Forecast", anchor=E, )
+                    self.export_Table.column("Id", anchor=W, width=50)
+                    self.export_Table.column("Item", anchor=W,width=340 )
+                    self.export_Table.column("Quantity", anchor=E,width=30 )
+                    self.export_Table.column("Price", anchor=E,width=30 )
+                    self.export_Table.column("30 Day Forecast", anchor=E,width=50 )
                     
                     self.export_Table.heading("#0")
                     self.export_Table.heading("Id", text="Id", anchor=W)
@@ -1390,7 +1390,7 @@ class InvortoryGUI:
                                    command=self.Click_Stack)
         self.button_Delivery = Button(self.Frame_Side, text="Delivery", padx=10, pady=10, width=10, height=1,
                                       bg='#54FA9B', command=self.Click_Delivery)
-        self.button_Employee = Button(self.Frame_Side, text="Employeee", padx=10, pady=10, width=10, height=1,
+        self.button_Employee = Button(self.Frame_Side, text="Employee", padx=10, pady=10, width=10, height=1,
                                       bg='#54FA9B', command=self.Click_Employee)
 
         label = Label(self.Frame_Side, text="IMAGE").place(x=100, y=10)
@@ -1692,7 +1692,7 @@ class InvortoryGUI:
         self.Add_Del.config(state='normal')
         self.button_Add_Em.config(state='normal')
         self.button_Add_Pm.config(state='normal')
-        self.btn_Notification.config(state='normal')
+        # self.btn_Notification.config(state='normal')
         frame.destroy()
 
     def start(self, id, role):
