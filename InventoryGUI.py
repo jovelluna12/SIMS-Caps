@@ -1427,11 +1427,14 @@ class InvortoryGUI:
             if messagebox.askokcancel('Close', 'Are you sure you want to close the Add Product Page all the data will not be Save?'):
                 PageOpen_Sub=1
                 self.Edit_Stack.destroy()
+                
 
     def Click_Edit_Ref(self, var):
         global PageOpen_Sub
         if PageOpen_Sub<2:
             global lst
+            a = Product.product()
+            lst = a.returnall()
             idd = lst[0][0]
             namee = lst[0][1]
             pricee = lst[0][2]
@@ -1444,7 +1447,7 @@ class InvortoryGUI:
             self.Edit_Frame_Product = Frame(self.Edit_Stack, width=700, height=350, )
             self.Edit_Frame_Product.grid(row=0, column=0)
 
-            self.Frma = Label(self.Edit_Frame_Product, text="Edit Product!!", width=20, font=("Arial", 35), anchor=W)
+            self.Frma = Label(self.Edit_Frame_Product, text="Edit Product", width=20, font=("Arial", 35), anchor=W)
             self.Frma.place(x=20, y=10)
 
             a = Product.product()
