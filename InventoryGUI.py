@@ -1108,7 +1108,9 @@ class InvortoryGUI:
                 report_type = reports.get()
                 man = Manager.Manager()
 
-                SIMS_TEMPLATE = 'SIMS_TEMPLATE.xlsx'
+                SALES_TEMPLATE = 'SALES_TEMPLATE.xlsx'
+                INVENTORY_TEMPLATE = 'INVENTORY_TEMPLATE.xlsx'
+                DELIVERY_TEMPLATE = 'PO_TEMPLATE.xlsx'
 
                 if report_type == 'Sales':
                     to=selected.get()
@@ -1140,7 +1142,7 @@ class InvortoryGUI:
                         result = man.get_export_data(report_type,date_str,date_str)
                         df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
 
-                    wb=openpyxl.load_workbook(SIMS_TEMPLATE)
+                    wb=openpyxl.load_workbook(SALES_TEMPLATE)
                     ws=wb.worksheets[1]
                     start_row=12
                     for row in df.iterrows():
@@ -1154,7 +1156,7 @@ class InvortoryGUI:
                 if report_type == 'Inventory':
                     result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
-                    wb=openpyxl.load_workbook(SIMS_TEMPLATE)
+                    wb=openpyxl.load_workbook(INVENTORY_TEMPLATE)
                     ws=wb.worksheets[0]
                     start_row=5 
                     for row in df.iterrows():
@@ -1169,7 +1171,7 @@ class InvortoryGUI:
                 if report_type == "Delivery":
                     result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
-                    wb=openpyxl.load_workbook(SIMS_TEMPLATE)    
+                    wb=openpyxl.load_workbook(DELIVERY_TEMPLATE)    
                     ws=wb.worksheets[2]
                     start_row=28
                     for row in df.iterrows():
@@ -1177,8 +1179,6 @@ class InvortoryGUI:
                             ws.cell(row=start_row,column=column+2).value=row[1][column]
                         start_row+=1
                         ws.insert_rows(start_row,1)
-
-                    print()
 
                     path=fd.asksaveasfilename(defaultextension=".xlsx")
                     wb.save(path)        

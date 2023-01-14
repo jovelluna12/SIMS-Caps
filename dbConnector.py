@@ -1,9 +1,12 @@
 import mysql.connector
+import os
+from dotenv import load_dotenv
+load_dotenv('.env')
 
 db=mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="simscaps"
+    host=os.getenv('HOST'),
+    user=os.getenv('USER'),
+    password=os.getenv('PASSWORD'),
+    database=os.getenv('DB')
 )
 dbcursor=db.cursor()
