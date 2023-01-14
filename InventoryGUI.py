@@ -231,9 +231,17 @@ class InvortoryGUI:
 
                     def delete_delivery():
                         if len(self.frame_Table.selection())!=0:
+                            selected_items=self.frame_Table.item(self.frame_Table.selection())
+                            id=selected_items['values'][0]
+                            a=Product.product()
+                            a.delete_del(id)
                             self.frame_Table.delete(self.frame_Table.selection())
                         else:
-                            print("No Item Selected")
+                            a=Product.product()
+                            id=batch
+                            a.delete_del_batch(id)
+                            self.frame_Table.delete(*self.frame_Table.get_children())
+                            
 
                     def saveChanges(): 
                         selectedItem = self.frame_Table.selection()[0]
@@ -562,16 +570,6 @@ class InvortoryGUI:
             order_date_list = []
             status_list = []
             ref_id_list = []
-        else: 
-            ProductID_list.clear()
-            ProdName_list.clear()
-            quantity_list.clear()
-            price_list.clear()
-            date_list.clear()
-            expiry_date_list.clear()
-            order_date_list.clear()
-            status_list.clear()
-            ref_id_list.clear()
 
         prod = Product.product()
         ref_id = prod.get_ref_id(ProdName)

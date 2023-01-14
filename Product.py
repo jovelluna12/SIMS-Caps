@@ -103,6 +103,19 @@ class product:
         dbcursor.executemany(query, vals)
         dbConnector.db.commit()
 
+    def delete_del(self, id):
+        dbcursor=self.dbcursor
+        query1="DELETE FROM products WHERE ProductID=%s"
+        dbcursor.execute(query1, (id,))
+        dbConnector.db.commit()
+
+    def delete_del_batch(self,batch):
+        dbcursor=self.dbcursor
+        query1="DELETE FROM products WHERE batch_code=%s"
+        query2="DELETE FROM deliverylist WHERE BatchCode=%s"
+        dbcursor.execute(query1, (batch))
+        dbcursor.execute(query2, (batch))
+        dbConnector.db.commit()
 
     def viewCode(self,productID):
         dbcursor = self.dbcursor
