@@ -438,7 +438,7 @@ def Click_Enter(code,product,price,qty):
         except ValueError:
             call=1
             messagebox.showerror("Product Search", "Invalid Input")
-            Click_Enter(code,product,price,qty)
+            # Click_Enter(code,product,price,qty)
             window_Qty.destroy()
 
         if call==0:
@@ -469,7 +469,7 @@ def Click_Enter(code,product,price,qty):
 
                         frame_Table.insert(parent='', index='end', iid=ProdID, text=(ProdID, ProdName, ProdPrice, ProdQTY,float(ProdPrice*ProdQTY)),
                                            values=(ProdID, ProdName, ProdPrice, ProdQTY,float(ProdPrice*ProdQTY)))
-                        button_confirm.config(state="disabled")
+                        # button_confirm.config(state="disabled")
 
                     except:
                         messagebox.showerror("Product Search", "Item Already Existed")

@@ -121,7 +121,7 @@ class InvortoryGUI:
 
     def Add_Delivery1_close(self):
             global PageOpen
-            if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
+            if messagebox.askokcancel('Close', 'Are you sure you want to close this Page?\n Unsaved data will not be Saved'):
                 PageOpen=1
                 self.Add_Delivery1.destroy()
 
@@ -225,6 +225,15 @@ class InvortoryGUI:
                     
                     self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
                     self.button.place(x=600, y=150)
+
+                    self.delivery_delete = Button(self.Frame_Add, text="Delete", command=lambda: delete_delivery())
+                    self.delivery_delete.place(x=550, y=150)
+
+                    def delete_delivery():
+                        if len(self.frame_Table.selection())!=0:
+                            self.frame_Table.delete(self.frame_Table.selection())
+                        else:
+                            print("No Item Selected")
 
                     def saveChanges(): 
                         selectedItem = self.frame_Table.selection()[0]
@@ -553,6 +562,16 @@ class InvortoryGUI:
             order_date_list = []
             status_list = []
             ref_id_list = []
+        else: 
+            ProductID_list.clear()
+            ProdName_list.clear()
+            quantity_list.clear()
+            price_list.clear()
+            date_list.clear()
+            expiry_date_list.clear()
+            order_date_list.clear()
+            status_list.clear()
+            ref_id_list.clear()
 
         prod = Product.product()
         ref_id = prod.get_ref_id(ProdName)
