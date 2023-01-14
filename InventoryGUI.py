@@ -14,6 +14,7 @@ import datetime
 from datetime import datetime
 import calendar
 
+from tkinter import filedialog as fd
 from tkcalendar import DateEntry
 from PIL import Image, ImageTk
 import Owner
@@ -22,6 +23,8 @@ import randomNumGen
 import pandas as pd
 from openpyxl.workbook import Workbook
 import os
+
+import openpyxl
 
 
 class InvortoryGUI:
@@ -1020,6 +1023,7 @@ class InvortoryGUI:
         num_days = calendar.monthrange(now.year, now.month)[1]
 
         if PageOpen<2:
+            
             self.btn_Notification['bg']='gray'
             self.Add_Notify = Toplevel()
             global btn, frame
@@ -1039,37 +1043,35 @@ class InvortoryGUI:
 
             def update_scope(selection):
                 if selection == "Day":
-                    self.scope['values']=[day for day in range(1, num_days+1)]
-                    print(radio_scope.get())
+                    scope['values']=[day for day in range(1, num_days+1)]
 
                 elif selection == "Monthly":
-                    self.scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                    print(radio_scope.get())
+                    scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
 
             def toggle_radio(value):
-                if self.Radio_TO.config("value")[-1] == 1:
-                    self.Radio_TO.config(value=0)
-                    self.scope_to.configure(state="disabled")
+                if Radio_TO.config("value")[-1] == 1:
+                    Radio_TO.config(value=0)
+                    scope_to.configure(state="disabled")
                 else:
-                    self.Radio_TO.config(value=1)
-                    self.scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                    self.scope_to.configure(state="normal")
+                    Radio_TO.config(value=1)
+                    scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+                    scope_to.configure(state="normal")
             
             def year_radio(value):
-                if self.Radio_Yearly.config("value")[-1] == 1:
-                    self.Radio_Yearly.config(value=0)
-                    self.scope_year.configure(state="disabled")
+                if Radio_Yearly.config("value")[-1] == 1:
+                    Radio_Yearly.config(value=0)
+                    scope_year.configure(state="disabled")
                 else:
                     current_year = datetime.now().year
-                    self.Radio_Yearly.config(value=1)
-                    self.scope_year['values']=[year for year in range(1950, current_year+1)]
-                    self.scope_year.configure(state="normal")
+                    Radio_Yearly.config(value=1)
+                    scope_year['values']=[year for year in range(1950, current_year+1)]
+                    scope_year.configure(state="normal")
             
             selected = StringVar()
             Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
             reports = ttk.Combobox(self.Add_Notify, width=20)
             reports.place(x=20, y=100)
-            reports['values'] = ("Sales", "Inventory", "Delivery","Forecast")
+            reports['values'] = ("Sales", "Inventory", "Delivery")
         
             # Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
             export = Button(self.Add_Notify, text="Export", state='disabled')
@@ -1103,14 +1105,16 @@ class InvortoryGUI:
             self.export_Table.pack()
 
             def export_report():
-                to=selected.get()
-                from_month=selected_to.get()
-                year=selected_year.get()
-
                 report_type = reports.get()
                 man = Manager.Manager()
 
+                SIMS_TEMPLATE = 'SIMS_TEMPLATE.xlsx'
+
                 if report_type == 'Sales':
+                    to=selected.get()
+                    from_month=selected_to.get()
+                    year=selected_year.get()
+                    
                     if radio_scope.get()=="Monthly":
                         month_num=datetime.strptime(to, '%B').month
                         date_obj=datetime(int(year), month_num, 1)
@@ -1123,8 +1127,7 @@ class InvortoryGUI:
                         frm_mtnh_str=from_mnth_obj.strftime('%Y-%m-%d')
                         result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
 
-                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
-                                                    'Discount', 'Date Purchased'])
+                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
                     
                     if radio_scope.get()=="Day":
                         day=to
@@ -1135,28 +1138,60 @@ class InvortoryGUI:
                         date_str = date_obj.strftime('%Y-%m-%d')
 
                         result = man.get_export_data(report_type,date_str,date_str)
-                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity', 'Total Price',
-                                                    'Discount', 'Date Purchased'])
+                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
 
+                    wb=openpyxl.load_workbook(SIMS_TEMPLATE)
+                    ws=wb.worksheets[1]
+                    start_row=12
+                    for row in df.iterrows():
+                        for column in range(len(row[1])):
+                            ws.cell(row=start_row,column=column+2).value=row[1][column]
+                        start_row+=1
+                        ws.insert_rows(start_row,1)
+                    path=fd.asksaveasfilename(defaultextension=".xlsx")
+                    wb.save(path) 
 
                 if report_type == 'Inventory':
                     result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
+                    wb=openpyxl.load_workbook(SIMS_TEMPLATE)
+                    ws=wb.worksheets[0]
+                    start_row=5 
+                    for row in df.iterrows():
+                        for column in range(len(row[1])):
+                            ws.cell(row=start_row,column=column+2).value=row[1][column]
+                        start_row+=1
+                        ws.insert_rows(start_row,1)
+
+                    path=fd.asksaveasfilename(defaultextension=".xlsx")
+                    wb.save(path) 
 
                 if report_type == "Delivery":
                     result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
+                    wb=openpyxl.load_workbook(SIMS_TEMPLATE)    
+                    ws=wb.worksheets[2]
+                    start_row=28
+                    for row in df.iterrows():
+                        for column in range (len(row[1])):
+                            ws.cell(row=start_row,column=column+2).value=row[1][column]
+                        start_row+=1
+                        ws.insert_rows(start_row,1)
+
+                    print()
+
+                    path=fd.asksaveasfilename(defaultextension=".xlsx")
+                    wb.save(path)        
 
                 if report_type == 'Forecast':
                     result, value = man.get_export_data(report_type,None,None)
-                    print("here")
                     df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price'])
                     df.insert(4,"30 Day Forecast",value)
 
-                title = str.lower(report_type) + str(date.today()) + '.xlsx'
-                df.to_excel(title, str(report_type))
-                message = "Saved to ", title
-                messagebox.showinfo("Exported Successfully", "Saved to " + title)
+                # title = str.lower(report_type) + str(date.today()) + '.xlsx'
+                # df.to_excel(title, str(report_type))
+                # message = "Saved to ", title
+                messagebox.showinfo("Exported Successfully", "Saved to " + path)
             
             def reports_callback(event):
                 export.config(state='normal',command=lambda:export_report())
@@ -1168,49 +1203,46 @@ class InvortoryGUI:
                 result = man.get_export_data(report_type,None,None)
 
                 if report_type == 'Sales':
-                    # reports.remove(report_type)
-                    # reports['values']= report_type
-                    global sales_UI
-                    sales_UI=1
 
-                    self.FLabel=Label(self.Add_Notify, text="From")
-                    self.FLabel.place(x=170, y=80)
-                    self.scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
-                    self.scope.place(x=170, y=100)
+                    global FLabel, scope, TOLabel, scope_to, YLabel, scope_year
+                    FLabel=Label(self.Add_Notify, text="From")
+                    FLabel.place(x=170, y=80)
+                    scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
+                    scope.place(x=170, y=100)
 
                     global selected_to
                     selected_to = StringVar()
-                    self.TOLabel=Label(self.Add_Notify, text="")
-                    self.TOLabel.place(x=320, y=80)
-                    self.scope_to = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_to)
-                    self.scope_to.configure(state="disabled")
-                    self.scope_to['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                    self.scope_to.place(x=320, y=100)
+                    TOLabel=Label(self.Add_Notify, text="")
+                    TOLabel.place(x=320, y=80)
+                    scope_to = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_to)
+                    scope_to.configure(state="disabled")
+                    scope_to['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+                    scope_to.place(x=320, y=100)
 
                     global selected_year
                     selected_year = StringVar()
-                    self.YLabel=Label(self.Add_Notify, text="Year")
-                    self.YLabel.place(x=490, y=80)
-                    self.scope_year = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_year)
-                    self.scope_year.configure(state="disabled")
-                    self.scope_year.place(x=490, y=100)
+                    YLabel=Label(self.Add_Notify, text="Year")
+                    YLabel.place(x=490, y=80)
+                    scope_year = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_year)
+                    scope_year.configure(state="disabled")
+                    scope_year.place(x=490, y=100)
                     
-                    global radio_scope
+                    global radio_scope, Radio_Day, Radio_Monthly, Radio_TO, Radio_Yearly
                     radio_scope=StringVar()
 
-                    self.Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", variable=radio_scope,value='Day',command=lambda:update_scope('Day'))
-                    self.Radio_Day.place(x=630,y=80)
+                    Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", variable=radio_scope,value='Day',command=lambda:update_scope('Day'))
+                    Radio_Day.place(x=630,y=80)
 
-                    self.Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", variable=radio_scope,value='Monthly',command=lambda:update_scope('Monthly'))
-                    self.Radio_Monthly.place(x=630,y=100)
+                    Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", variable=radio_scope,value='Monthly',command=lambda:update_scope('Monthly'))
+                    Radio_Monthly.place(x=630,y=100)
 
-                    self.Radio_TO=tk.Radiobutton(self.Add_Notify,text="TO", value=1,command=lambda:toggle_radio(0))
-                    self.Radio_TO.place(x=280, y=100)
+                    Radio_TO=tk.Radiobutton(self.Add_Notify,text="TO", value=1,command=lambda:toggle_radio(0))
+                    Radio_TO.place(x=280, y=100)
 
-                    self.Radio_Yearly=tk.Radiobutton(self.Add_Notify,text="With", value=1 ,command=lambda:year_radio(0))
-                    self.Radio_Yearly.place(x=430,y=100)
+                    Radio_Yearly=tk.Radiobutton(self.Add_Notify,text="With", value=1 ,command=lambda:year_radio(0))
+                    Radio_Yearly.place(x=430,y=100)
 
-                    self.scope.bind('<<ComboboxSelected>>',update_scope)
+                    scope.bind('<<ComboboxSelected>>',update_scope)
 
                     self.export_Table['columns'] = (
                     "Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
@@ -1235,19 +1267,20 @@ class InvortoryGUI:
                     self.export_Table.pack()
 
                 if report_type == 'Inventory':
-                    if sales_UI==1:
-                        self.FLabel.destroy()
-                        self.TOLabel.destroy()
-                        self.YLabel.destroy()
-                        self.scope.destroy()
-                        self.scope_to.destroy()
-                        self.scope_year.destroy()
-                        self.Radio_Day.destroy()
-                        self.Radio_Monthly.destroy()
-                        self.Radio_TO.destroy()
-                        self.Radio_Yearly.destroy()
-                        sales_UI=0
-
+                    try:
+                        FLabel.place_forget()
+                        TOLabel.place_forget()
+                        YLabel.place_forget()
+                        scope.place_forget()
+                        scope_to.place_forget()
+                        scope_year.place_forget()
+                        Radio_Day.place_forget()
+                        Radio_Monthly.place_forget()
+                        Radio_TO.place_forget()
+                        Radio_Yearly.place_forget()
+                    except(NameError):
+                        pass
+    
                     self.export_Table['columns'] = (
                     'Reference ID', "Item", "Price", "Remaining Quantity")
                     self.export_Table.column("#0", width=0, stretch=NO)
@@ -1265,18 +1298,19 @@ class InvortoryGUI:
                     self.export_Table.pack()
 
                 if report_type == "Delivery":
-                    if sales_UI==1:
-                        self.FLabel.destroy()
-                        self.TOLabel.destroy()
-                        self.YLabel.destroy()
-                        self.scope.destroy()
-                        self.scope_to.destroy()
-                        self.scope_year.destroy()
-                        self.Radio_Day.destroy()
-                        self.Radio_Monthly.destroy()
-                        self.Radio_TO.destroy()
-                        self.Radio_Yearly.destroy()
-                        sales_UI=0
+                    try:
+                        FLabel.place_forget()
+                        TOLabel.place_forget()
+                        YLabel.place_forget()
+                        scope.place_forget()
+                        scope_to.place_forget()
+                        scope_year.place_forget()
+                        Radio_Day.place_forget()
+                        Radio_Monthly.place_forget()
+                        Radio_TO.place_forget()
+                        Radio_Yearly.place_forget()
+                    except(NameError):
+                        pass
 
                     self.export_Table['columns'] = (
                     'Batch Code', 'Item', 'Quantity', 'Price', 'Status')
@@ -1297,18 +1331,19 @@ class InvortoryGUI:
                     self.export_Table.pack()
 
                 if report_type == 'Forecast':
-                    if sales_UI==1:
-                        self.FLabel.destroy()
-                        self.TOLabel.destroy()
-                        self.YLabel.destroy()
-                        self.scope.destroy()
-                        self.scope_to.destroy() 
-                        self.scope_year.destroy()
-                        self.Radio_Day.destroy()
-                        self.Radio_Monthly.destroy()
-                        self.Radio_TO.destroy()
-                        self.Radio_Yearly.destroy()
-                        sales_UI=0
+                    try:
+                        FLabel.place_forget()
+                        TOLabel.place_forget()
+                        YLabel.place_forget()
+                        scope.place_forget()
+                        scope_to.place_forget()
+                        scope_year.place_forget()
+                        Radio_Day.place_forget()
+                        Radio_Monthly.place_forget()
+                        Radio_TO.place_forget()
+                        Radio_Yearly.place_forget()
+                    except(NameError):
+                        pass
 
                     # Label(self.Add_Notify,text="NOTE: Forecast will not be Accurate during the First Time Use, when Data is Limited.").place(x=0, y=150)
                     
@@ -1429,11 +1464,13 @@ class InvortoryGUI:
             if messagebox.askokcancel('Close', 'Are you sure you want to close the Add Product Page all the data will not be Save?'):
                 PageOpen_Sub=1
                 self.Edit_Stack.destroy()
+                
 
     def Click_Edit_Ref(self, var):
         global PageOpen_Sub
         if PageOpen_Sub<2:
-            global lst
+            a = Product.product()
+            lst = a.returnall()
             idd = lst[0][0]
             namee = lst[0][1]
             pricee = lst[0][2]
@@ -1446,7 +1483,7 @@ class InvortoryGUI:
             self.Edit_Frame_Product = Frame(self.Edit_Stack, width=700, height=350, )
             self.Edit_Frame_Product.grid(row=0, column=0)
 
-            self.Frma = Label(self.Edit_Frame_Product, text="Edit Product!!", width=20, font=("Arial", 35), anchor=W)
+            self.Frma = Label(self.Edit_Frame_Product, text="Edit Product", width=20, font=("Arial", 35), anchor=W)
             self.Frma.place(x=20, y=10)
 
             a = Product.product()

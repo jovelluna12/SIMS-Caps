@@ -46,7 +46,6 @@ class Employee:
 
 
     def addNewTransaction(self,TotalPrice,Discount,attendedBy,items):
-        print("addnew transaction")
         PurchaseID, InvoiceNumber = randomNumGen.generateNum()
 
         dbcursor=self.cursor
@@ -54,10 +53,11 @@ class Employee:
         values=(InvoiceNumber,TotalPrice,Discount,attendedBy)
         dbcursor.execute(query1,values)
 
-        query2="insert into purchasedproducts values (%s,%s,%s,%s)"
+        query2="insert into purchasedproducts values (%s,%s,%s,%s,%s)"
         n1=0
         n2=1
         n3=2
+        id=[]
         item=[x[n1] for x in items]
         quantity=[x[n2] for x in items]
         id=[x[n3] for x in items]
@@ -66,7 +66,7 @@ class Employee:
         for x in range(len(item)):
 
             PurchaseID=randomNumGen.generatePurchaseID()
-            items=(PurchaseID,item[x],quantity[x],InvoiceNumber)
+            items=(PurchaseID,item[x],quantity[x],InvoiceNumber,id[x])
             dbcursor.execute(query2,items)
             query3val=(quantity[x],item[x],id[x])
             dbcursor.execute(query3,query3val)

@@ -79,10 +79,8 @@ class GUI():
         self.tv.heading('Name', text='Name', anchor=CENTER)
         self.tv.heading('Date', text='Date', anchor=CENTER)
         self.tv.heading('Working Time', text='Working Time', anchor=CENTER)
-
         self.tv.place(x=230, y=90)
 
-        
         self.logoutButton = Button(self.dashboardGUI, text="Logout", command=self.logout, width=10, font=("Arial", 15), bg='#54FA9B').place(x=50, y=535) 
         
         self.startButton = Button(self.dashboardGUI, text="Start", width=10, font=("Arial", 15), bg='#54FA9B')
@@ -125,7 +123,7 @@ class GUI():
     PageOpen = 1
     def on_close(self):
             global PageOpen
-            if messagebox.askokcancel('Close', 'Are you sure you want to close the Page? all the data will not be Saved'):
+            if messagebox.askokcancel('Close', 'Close this Window?'):
                 PageOpen=1
                 self.NotifGUI.destroy()
 

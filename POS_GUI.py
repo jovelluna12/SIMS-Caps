@@ -170,8 +170,8 @@ def start(m,id,user,time):
                                 command=lambda m="enter": SearchItem(m))
             button_DEL = Button(frame_Detail, text="DELETE", padx=14, pady=12, bg="green", command=Click_Delete)
             button_List = Button(frame_Detail, text="List", padx=25, pady=12, bg="green", command=Click_List)
-            button_confirm = Button(frame_Detail, text="QTY", padx=12, pady=12, state="disabled")
-            button_final_payment = Button(frame_Detail, text="Finish", padx=9, pady=12, command=payment, state="disabled")
+            #button_confirm = Button(frame_Detail, text="QTY", padx=12, pady=12, state="disabled")
+            button_final_payment = Button(frame_Detail, text="PAYMENT", padx=20, pady=12, command=payment, state="disabled")
 
             ButtonClear=Button(frame_Detail, text="Clear",padx=20, pady=12, bg="green",command=Click_Remove)
             
@@ -180,8 +180,8 @@ def start(m,id,user,time):
             button_DEL.place(x=230,y=550)
             button_List.place(x=230,y=500)
             ButtonClear.place(x=230,y=450)
-            button_confirm.place(x=110,y=600)
-            button_final_payment.place(x=170,y=600)
+            #button_confirm.place(x=110,y=600)
+            button_final_payment.place(x=120,y=600)
 
             root.mainloop()
 
@@ -239,7 +239,7 @@ def Click_List():
         Search_Table.column("Name", width=290, stretch=NO, anchor=W)
         Search_Table.column("Batch Number", width=100, stretch=NO, anchor=W)
         Search_Table.column("Price", width=70, stretch=NO, anchor=E)
-        Search_Table.column("Stack", width=70, stretch=NO, anchor=E)
+        Search_Table.column("Stack", width=70, stretch=NO, anchor=CENTER)
 
         Search_Table.heading("#0")
         Search_Table.heading("ID", text="ID", anchor=W)
@@ -272,6 +272,8 @@ def Click_List():
             ProductCODE.config(state='disabled')
             Product_Name_EN.config(state='disabled')
             Product_Prices_EN.config(state='disabled')
+            on_close()
+
 
         Search_Table.bind('<Double-1>', selectItem)
 
@@ -388,13 +390,17 @@ def SearchItem(buttonpress):
                 Product_Prices_EN.config(state='disabled')
 
                 result1=(result[0],result[1],result[2],result[3])
+                Click_Enter(code,product,price,qty)
+                #button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
+                print("this")
 
-                button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
     elif ProdCode.index("end")==0 and ProductCODE.index('end')!=0 and Product_Name_EN.index('end')!=0 and Product_Prices_EN.index('end')!=0:
         ProdCodee.append(code)
         prod=Product.product()
 
-        button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
+        #button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
+        Click_Enter(code,product,price,qty)
+        print("this")
 
     else: messagebox.showerror("Product Search", "Product Code Empty")
 
@@ -424,7 +430,6 @@ def Click_Enter(code,product,price,qty):
     ProdPrice=price
     # ProdQTY=result[3]
     RemainingQTY=qty
-    print(ProdID, ProdName, ProdPrice, RemainingQTY)
     def setQTY(val):
         call=0
         global ProdQTY
@@ -438,7 +443,6 @@ def Click_Enter(code,product,price,qty):
 
         if call==0:
             if (ProdQTY>RemainingQTY):
-                print(ProdQTY, RemainingQTY)
                 messagebox.showerror("POS Transaction", "Not Enough QTY in Stock")
             else:
                 itemsLIST.append(ProdName)
@@ -484,34 +488,50 @@ def Click_Enter(code,product,price,qty):
 
 
 def payment():
-        global Entry_Amount
-        global Labell
-        global Discount_Entry
-        global windowASK
+    global PageOpen
+    def on_close():
+        global PageOpen
+        # if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
+        PageOpen=1
+        windowASK.destroy()
 
-        windowASK=Toplevel()
-        windowASK.title("Payment")
-        windowASK.geometry("230x220")
-        windowPay = Frame(windowASK,width=230,height=220)
-        windowPay.pack()
+    if PageOpen < 2:
+        if ProductCODE.get() == "" and Product_Name_EN.get() ==  "" and Product_Prices_EN.get() == "":
+            global Entry_Amount
+            global Labell
+            global Discount_Entry
+            global windowASK
+            
 
-        global totalpricelabel
-        totalpricelabel=Label(windowPay,font=("Arial", 20),text=totalprice)
-        Labell = Label(windowPay, text="Total Price",font=("Arial", 25))
-        Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
-        global button_Quantity
-        button_Quantity = Button(windowPay, text="Enter", padx=5, pady=5, command=discount)
+            windowASK=Toplevel()
+            windowASK.title("Payment")
+            windowASK.geometry("230x220")
+            windowPay = Frame(windowASK,width=230,height=220)
+            windowPay.pack()
+            windowASK.protocol("WM_DELETE_WINDOW",on_close)
 
-        Discount_LBL=Label(windowPay, text="Enter Discount, Leave Blank if None")
-        Discount_Entry=Entry(windowPay, width=30, borderwidth=3)
-        
-        Labell.place(x=20,y=5)
-        totalpricelabel.place(x=90,y=50)
-        Entry_Amount.place(x=25,y=90)
+            global totalpricelabel
+            totalpricelabel=Label(windowPay,font=("Arial", 20),text=totalprice)
+            Labell = Label(windowPay, text="Total Price",font=("Arial", 25))
+            Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
+            global button_Quantity
+            button_Quantity = Button(windowPay, text="Enter", padx=5, pady=5, command=discount)
 
-        Discount_LBL.place(x=25,y=120)
-        Discount_Entry.place(x=25,y=140)
-        button_Quantity.place(x=88,y=172)
+            Discount_LBL=Label(windowPay, text="Enter Discount, Leave Blank if None")
+            Discount_Entry=Entry(windowPay, width=30, borderwidth=3)
+                
+            Labell.place(x=20,y=5)
+            totalpricelabel.place(x=90,y=50)
+            Entry_Amount.place(x=25,y=90)
+
+            Discount_LBL.place(x=25,y=120)
+            Discount_Entry.place(x=25,y=140)
+            button_Quantity.place(x=88,y=172)
+        else:
+            messagebox.showerror("Payment", "No Item Selected")
+        PageOpen+=1
+    else:
+        messagebox.showinfo("Error","The Window already Open!")
 
 def discount():
     if not Discount_Entry.get():
@@ -536,7 +556,6 @@ def calculatechange(discount):
     finalprice=totalprice-discount
 
     #  finalpricee = "Final Price: " + str(finalprice)
-
     # fprice.set(str(finalprice))
     # Labell.config(text=finalpricee)
 
@@ -584,5 +603,15 @@ def newTransact():
 
 # Button Delete
 def Click_Delete():
-    selected_Product = frame_Table.get_children()
+    selected_Product = frame_Table.selection()
     frame_Table.delete(selected_Product)
+
+    subtotal=[]
+    for x in frame_Table.get_children():
+        subtotal.append(frame_Table.item(x)["values"][2]*frame_Table.item(x)["values"][3])
+
+    global totalprice
+    totalprice = sum(subtotal)
+                    
+    Totalprince_Entry.config(text=totalprice)
+    button_final_payment.config(state='active')
