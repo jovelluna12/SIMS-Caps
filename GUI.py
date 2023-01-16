@@ -118,23 +118,44 @@ class GUI():
 
 
         self.dashboardGUI.mainloop()
-
+    
+    global is_closing
+    is_closing = FALSE
     global PageOpen
     PageOpen = 1
+
+    def bring_to_front(event):
+        global is_closing
+        if not is_closing:
+            self.NotifGUI.bell()
+            self.NotifGUI.focus_force()
+
     def on_close(self):
             global PageOpen
+            global is_closing
+            is_closing = True
+            self.NotifGUI.wm_attributes("-topmost", 0)
             if messagebox.askokcancel('Close', 'Close this Window?'):
+                self.dashboardGUI.grab_release()
                 PageOpen=1
+                is_closing = FALSE
                 self.NotifGUI.destroy()
+            else:
+                is_closing = False
+                self.NotifGUI.wm_attributes("-topmost", 1)
+    
 
     def Notification(self):
         global PageOpen
         if PageOpen<2:
-            self.NotifGUI=Tk()
+            self.NotifGUI=Toplevel(self.dashboardGUI)
             self.NotifGUI.title("Notification")
             self.NotifGUI.geometry("500x520")
             self.NotifGUI.resizable(False,False)
             self.NotifGUI.protocol("WM_DELETE_WINDOW",self.on_close)
+            self.NotifGUI.wm_attributes("-topmost", 1)
+            self.NotifGUI.bind("<FocusOut>", self.bring_to_front)          
+            self.NotifGUI.grab_set()
 
             self.Noti_Frame=Frame(self.NotifGUI,width=405,height=35)
             self.Noti_Frame.grid(row=0,column=0)

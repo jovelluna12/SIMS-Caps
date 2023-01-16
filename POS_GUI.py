@@ -172,7 +172,6 @@ def start(m,id,user,time):
             button_List = Button(frame_Detail, text="List", padx=25, pady=12, bg="green", command=Click_List)
             #button_confirm = Button(frame_Detail, text="QTY", padx=12, pady=12, state="disabled")
             button_final_payment = Button(frame_Detail, text="PAYMENT", padx=20, pady=12, command=payment, state="disabled")
-
             ButtonClear=Button(frame_Detail, text="Clear",padx=20, pady=12, bg="green",command=Click_Remove)
             
             # Button Grid frame_CAL
@@ -207,24 +206,41 @@ def Button_LOGIC(Number):
 
 global PageOpen
 PageOpen = 1
+global is_closing
+is_closing = FALSE
 # Button List
 def Click_List():
+    global is_closing
+    def bring_to_front(event):
+        global is_closing
+        if not is_closing:
+            window_list.bell()
+            window_list.focus_force()
+
     global PageOpen
     def on_close():
         global PageOpen
-        # if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
+        global is_closing
+        is_closing = True
+        window_list.wm_attributes("-topmost", 0)
         PageOpen=1
+        root.grab_release()
         window_list.destroy()
 
     if PageOpen<2:
         global Entry_Search
         global Search_Table
-        window_list = Toplevel()
+        window_list = Toplevel(root)
         window_list.title("PRODUCT LISTS!")
         List_width=600
         List_height=670
         window_list.geometry(f'{List_width}x{List_height}+{400}+{30}')
         window_list.protocol("WM_DELETE_WINDOW",on_close)
+        window_list.resizable(False,False)
+        window_list.wm_attributes("-topmost", 1)
+        window_list.bind("<FocusOut>", bring_to_front) 
+        window_list.grab_set()
+        is_closing = FALSE
 
         window_FrameL = Frame(window_list, width=600, height=100)
         window_FrameL.grid(row=0, column=0)
@@ -403,14 +419,16 @@ def SearchItem(buttonpress):
         print("this")
 
     else: messagebox.showerror("Product Search", "Product Code Empty")
-
+            
 # Button Enter/search the item
 def Click_Enter(code,product,price,qty):
-
-    window_Qty = Toplevel()
+    
+    window_Qty = Toplevel(root)
     window_Qty.title("Quantity!")
     window_Qty.geometry("330x150")
     window_Qty.resizable(False, False)
+    window_Qty.wm_attributes("-topmost", 1)
+    window_Qty.grab_set()
 
     window_Frame = Frame(window_Qty, width=340, height=150)
     window_Frame.pack()
@@ -484,6 +502,7 @@ def Click_Enter(code,product,price,qty):
                     Totalprince_Entry.config(text=totalprice)
                     button_final_payment.config(state='active')
 
+                    root.grab_release()
                     window_Qty.destroy()
 
 
@@ -491,6 +510,7 @@ def payment():
     global PageOpen
     def on_close():
         global PageOpen
+        windowASK.wm_attributes("-topmost", 0)
         # if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
         PageOpen=1
         windowASK.destroy()
@@ -503,12 +523,14 @@ def payment():
             global windowASK
             
 
-            windowASK=Toplevel()
+            windowASK=Toplevel(root)
             windowASK.title("Payment")
             windowASK.geometry("230x220")
             windowPay = Frame(windowASK,width=230,height=220)
             windowPay.pack()
             windowASK.protocol("WM_DELETE_WINDOW",on_close)
+            windowASK.wm_attributes("-topmost", 1)
+            windowASK.grab_set()
 
             global totalpricelabel
             totalpricelabel=Label(windowPay,font=("Arial", 20),text=totalprice)
@@ -584,6 +606,7 @@ def record(discount):
         Entry_Amount.config(state="disabled")
         Discount_Entry.config(state="disabled")
 
+        root.grab_release()
         windowASK.destroy()
         NextTransact.config(command=newTransact)
         # button_Quantity.config(text="Done", command=windowASK.destroy)
