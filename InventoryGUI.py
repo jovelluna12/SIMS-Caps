@@ -121,9 +121,13 @@ class InvortoryGUI:
 
     def Add_Delivery1_close(self):
             global PageOpen
+            self.Add_Delivery1.wm_attributes("-topmost", 0)
             if messagebox.askokcancel('Close', 'Are you sure you want to close this Page?\n Unsaved data will not be Saved'):
+                self.InvorVal.grab_release()
                 PageOpen=1
                 self.Add_Delivery1.destroy()
+            else:
+                self.Add_Delivery1.wm_attributes("-topmost", 1)
 
     def ClickDelivery_onClick(self):
         global PageOpen
@@ -139,11 +143,13 @@ class InvortoryGUI:
                     batch = (batch,)
                     result = prod.retrieveBatch(batch)
 
-                    self.Add_Delivery1= Toplevel()
+                    self.Add_Delivery1= Toplevel(self.InvorVal)
                     self.Add_Delivery1.title("Confirm Delivery")
                     self.Add_Delivery1.geometry("800x550")
                     self.Add_Delivery1.resizable(False, False)
                     self.Add_Delivery1.protocol("WM_DELETE_WINDOW",self.Add_Delivery1_close)
+                    self.Add_Delivery1.wm_attributes("-topmost", 1)
+                    self.Add_Delivery1.grab_set()
 
                     self.Frame_Add = Frame(self.Add_Delivery1, width=800, height=200)
                     self.Frame_Add.place(x=0, y=0)
@@ -300,8 +306,8 @@ class InvortoryGUI:
         self.Frame_List.pack_forget()
         self.Frame_stack.pack_forget()
         self.Frame_Empl.pack_forget()
-
         self.Frame_Del.pack()
+
         self.Label_title = Label(self.Frame_Del, text="Delivery Page", font=("Arial", 15)).place(x=0, y=0)
         self.Button_Receive=Button(self.Frame_Del,text="Receive",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.ClickDelivery_onClick)
         self.Button_Receive.place(x=945,y=0)
@@ -358,9 +364,13 @@ class InvortoryGUI:
         
     def View_close(self):
                 global PageOpen
+                self.Add_Employ.wm_attributes("-topmost", 0)
                 if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
+                    self.InvorVal.grab_release()
                     PageOpen=1
                     self.Add_Employ.destroy()
+                else:
+                    self.Add_Employ.wm_attributes("-topmost", 1)
 
     def View_onClick(self):
             global PageOpen
@@ -369,11 +379,14 @@ class InvortoryGUI:
             else:
                 items=self.frame_Table.focus()
                 if PageOpen < 2:
-                    self.Add_Employ= Toplevel()
+                    self.Add_Employ= Toplevel(self.InvorVal)
                     self.Add_Employ.title("Employee Page")
                     self.Add_Employ.geometry("800x550")
                     self.Add_Employ.resizable(False, False)
                     self.Add_Employ.protocol("WM_DELETE_WINDOW",self.View_close)
+                    self.Add_Employ.wm_attributes("-topmost", 1)
+                    self.Add_Employ.grab_set()
+
                     self.Frame_Empl_VIEW = Frame(self.Add_Employ, width=790, height=195)
                     self.Frame_Empl_VIEW.place(x=0, y=0)
 
@@ -536,8 +549,6 @@ class InvortoryGUI:
         else:
             self.Button_Emplo.config(state='normal')
 
-    def Click_AddP(self):
-        self.add_to_products
 
     def add_to_products(self):
         global order_date, arrival_date
@@ -649,26 +660,31 @@ class InvortoryGUI:
   
     def Add_on_close(self):
             global PageOpen
+            self.Add_Delivery.wm_attributes("-topmost", 0)
             if messagebox.askokcancel('Close', 'Are you sure you want to close Window?'):
+                self.InvorVal.grab_release()
                 self.Add_Del['bg']='#54FA9B'
                 PageOpen=1
                 self.Add_Delivery.destroy()
+            else:
+                self.Add_Employ.wm_attributes("-topmost", 1)
 
     def Click_Add_Delivery(self):
         global PageOpen
         if PageOpen < 2:
             self.Add_Del['bg']='gray'
-
-            self.Add_Delivery = Toplevel()
+            self.Add_Delivery = Toplevel(self.InvorVal)
             self.Add_Delivery.title("Add Products on Delivery")
             self.Add_Delivery.geometry("800x550")
             self.Add_Delivery.resizable(False, False)
-
+            self.Add_Delivery.protocol("WM_DELETE_WINDOW", self.Add_on_close)
+            self.Add_Delivery.wm_attributes("-topmost", 1)
+            self.Add_Delivery.grab_set()
 
             global btn, frame
             btn = self.Add_Del
             frame = self.Add_Delivery
-            self.Add_Delivery.protocol("WM_DELETE_WINDOW", self.Add_on_close)
+
 
             global lst
             a = Product.product()
@@ -781,11 +797,14 @@ class InvortoryGUI:
     
     def Employee_on_close(self):
             global PageOpen
+            self.Add_Employee.wm_attributes("-topmost", 0)
             if messagebox.askokcancel('Close', 'Are you sure you want to close Window?'):
+                self.InvorVal.grab_release()
                 self.button_Add_Em['bg']='#54FA9B'
                 PageOpen=1
                 self.Add_Employee.destroy()
-
+            else:
+                self.Add_Employee.wm_attributes("-topmost", 1)
 
     def Click_Add_Em(self):
         global PageOpen
@@ -793,16 +812,17 @@ class InvortoryGUI:
             if user_role=='Manager': messagebox.showerror("Access not Granted","Only the Owner is allowed to Open this")
             else:
                 self.button_Add_Em['bg']='gray'
-                self.Add_Employee = Toplevel()
+                self.Add_Employee = Toplevel(self.InvorVal)
                 self.Add_Employee.title("Employeee!")
                 self.Add_Employee.geometry("500x400")
                 self.Add_Employee.resizable(False, False)
+                self.Add_Employee.protocol("WM_DELETE_WINDOW", self.Employee_on_close)
+                self.Add_Employee.wm_attributes("-topmost", 1)
+                self.Add_Employee.grab_set()
 
                 global btn, frame
                 btn = self.button_Add_Em
                 frame = self.Add_Employee
-
-                self.Add_Employee.protocol("WM_DELETE_WINDOW", self.Employee_on_close)
 
                 self.Frame_Add_Em = Frame(self.Add_Employee, width=800, height=500, )
                 self.Frame_Add_Em.place(x=0, y=0)
@@ -840,7 +860,6 @@ class InvortoryGUI:
                 self.button_Add = Button(self.Frame_Add_Em, text="Add", padx=20, pady=5, command=self.Click_AddS_Em)
                 self.button_Add.place(x=360, y=330)
                 PageOpen += 1
-                self.Add_Employee.mainloop()
         else:
             messagebox.showinfo("Error","The Window already Open!")
 
@@ -909,19 +928,25 @@ class InvortoryGUI:
 
     def Add_Stack_on_close(self):
         global PageOpen
+        self.Add_Stack.wm_attributes("-topmost", 0)
         if messagebox.askokcancel('Close', 'Are you sure you want to close Window?'):
+            self.InvorVal.grab_release()
             self.button_Add_Pm['bg']='#54FA9B'
             PageOpen=1
             self.Add_Stack.destroy()
+        else:
+            self.Add_Stack.wm_attributes("-topmost", 1)
 
     def Click_Add_Product(self):
         global PageOpen
         if PageOpen<2:
             self.button_Add_Pm['bg']='gray'
-            self.Add_Stack = Toplevel()
+            self.Add_Stack = Toplevel(self.InvorVal)
             self.Add_Stack.title("Add Product")
             self.Add_Stack.geometry("800x540")
             self.Add_Stack.resizable(False, False)
+            self.Add_Stack.wm_attributes("-topmost", 1)
+            self.Add_Stack.grab_set()
 
             global btn, frame
             btn = self.button_Add_Pm
@@ -1014,7 +1039,7 @@ class InvortoryGUI:
 
             self.Add_Stack.update()
             PageOpen += 1
-            self.Add_Stack.mainloop()
+
         else:
             messagebox.showinfo("Error","The Window already Open!")
 
@@ -1022,15 +1047,18 @@ class InvortoryGUI:
         select = self.frame_Table.selection()[0]
         self.frame_Table.delete(select)
 
-
     def Add_Notify_on_close(self):
         global PageOpen
+        self.Add_Notify.wm_attributes("-topmost", 0)
         if messagebox.askokcancel('Close', 'Are you sure you want to close Window?'):
+            self.InvorVal.grab_release()
             self.btn_Notification['bg']='#54FA9B'
             PageOpen=1
             self.Add_Notify.destroy()
+        else:
+            self.Add_Notify.wm_attributes("-topmost", 1)
 
-    # start UI for Notification ---------------
+    # start UI for Export---------------
     def notify_UI(self):
         global PageOpen, to,fromm, num_days
         to=None
@@ -1042,15 +1070,16 @@ class InvortoryGUI:
         if PageOpen<2:
             
             self.btn_Notification['bg']='gray'
-            self.Add_Notify = Toplevel()
+            self.Add_Notify = Toplevel(self.InvorVal)
             global btn, frame
             btn = self.btn_Notification
             frame = self.Add_Notify
-
             self.Add_Notify.protocol("WM_DELETE_WINDOW", self.Add_Notify_on_close)
             self.Add_Notify.title("Export to Spreadsheet")
             self.Add_Notify.geometry("800x583")
             self.Add_Notify.resizable(False,False)
+            self.Add_Notify.wm_attributes("-topmost", 1)
+            self.Add_Notify.grab_set()
 
             self.Frame_Add_nofi = Frame(self.Add_Notify, width=800, height=200)
             self.Frame_Add_nofi.place(x=0, y=0)
@@ -1478,13 +1507,18 @@ class InvortoryGUI:
    
     def Edit_Stack_close(self):
             global PageOpen_Sub
+            self.Edit_Stack.wm_attributes("-topmost", 0)
             if messagebox.askokcancel('Close', 'Are you sure you want to close the Add Product Page all the data will not be Save?'):
+                self.Add_Stack.wm_attributes("-topmost", 1)
+                self.Add_Stack.grab_release()
                 PageOpen_Sub=1
                 self.Edit_Stack.destroy()
+            else:
+                self.Edit_Stack.wm_attributes("-topmost", 1)
                 
-
     def Click_Edit_Ref(self, var):
         global PageOpen_Sub
+        self.Add_Stack.wm_attributes("-topmost", 0)
         if PageOpen_Sub<2:
             a = Product.product()
             lst = a.returnall()
@@ -1492,10 +1526,13 @@ class InvortoryGUI:
             namee = lst[0][1]
             pricee = lst[0][2]
 
-            self.Edit_Stack = Toplevel()
+            self.Edit_Stack = Toplevel(self.Add_Stack)
             self.Edit_Stack.title("Edit Product Reference")
             self.Edit_Stack.geometry("700x350")
             self.Edit_Stack.protocol("WM_DELETE_WINDOW",self.Edit_Stack_close)
+            self.Edit_Stack.wm_attributes("-topmost", 1)
+            self.Edit_Stack.grab_set()
+
 
             self.Edit_Frame_Product = Frame(self.Edit_Stack, width=700, height=350, )
             self.Edit_Frame_Product.grid(row=0, column=0)
@@ -1595,19 +1632,29 @@ class InvortoryGUI:
 
     def Add_Ref_close(self):
             global PageOpen_Sub
+            self.Add_Stack_ADD.wm_attributes("-topmost", 0)
             if messagebox.askokcancel('Close', 'Are you sure you want to close the Add Product Page all the data will not be Save?'):
+                self.Add_Stack.wm_attributes("-topmost", 1)
+                self.Add_Stack.grab_release()
                 PageOpen_Sub=1
-                self.Add_Stack.destroy()
+                self.Add_Stack_ADD.destroy()
+            else:
+                self.Add_Stack_ADD.wm_attributes("-topmost", 1)
+
     
     def Click_Add_Ref(self):
         global PageOpen_Sub
+        self.Add_Stack.wm_attributes("-topmost", 0)
         if PageOpen_Sub<2:
-            self.Add_Stack = Toplevel()
-            self.Add_Stack.title("Add Product Reference")
-            self.Add_Stack.geometry("700x543")
-            self.Add_Stack.protocol("WM_DELETE_WINDOW",self.Add_Ref_close)
+            self.Add_Stack_ADD = Toplevel(self.Add_Stack)
+            self.Add_Stack_ADD.title("Add Product Reference")
+            self.Add_Stack_ADD.geometry("700x543")
+            self.Add_Stack_ADD.resizable(False,False)
+            self.Add_Stack_ADD.protocol("WM_DELETE_WINDOW",self.Add_Ref_close)
+            self.Add_Stack_ADD.wm_attributes("-topmost", 1)
+            self.Add_Stack_ADD.grab_set()
 
-            self.Frame_Add_St = Frame(self.Add_Stack, width=700, height=350, )
+            self.Frame_Add_St = Frame(self.Add_Stack_ADD, width=700, height=350, )
             self.Frame_Add_St.grid(row=0, column=0)
 
             self.Frma = Label(self.Frame_Add_St, text="Add Product!!", width=20, font=("Arial", 40), anchor=W)
@@ -1623,7 +1670,7 @@ class InvortoryGUI:
             self.Stack_Product_Price_EN = Entry(self.Frame_Add_St, width=15, borderwidth=5, textvariable=price_entry).place(
                 x=470, y=110)
 
-            self.Frame_ListS = Frame(self.Add_Stack, width=800, height=320, highlightbackground="black",
+            self.Frame_ListS = Frame(self.Add_Stack_ADD, width=800, height=320, highlightbackground="black",
                                     highlightthickness=3, padx=5, pady=5)
             self.Frame_ListS.place(x=0, y=200)
             # Table
