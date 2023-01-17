@@ -1115,10 +1115,13 @@ class InvortoryGUI:
             self.Frma.place(x=10, y=10)
 
             def update_scope(selection):
+                global option
                 if selection == "Day":
+                    option=selection
                     scope['values']=[day for day in range(1, num_days+1)]
 
                 elif selection == "Monthly":
+                    option=selection
                     scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
 
             def toggle_radio(value):
@@ -1187,12 +1190,10 @@ class InvortoryGUI:
                 DELIVERY_TEMPLATE = 'PO_TEMPLATE.xlsx'
 
                 if report_type == 'Sales':
-                    to=selected.get()
-                    from_month=selected_to.get()
-                    year=selected_year.get()
-                    
-                    if radio_scope.get()=="Monthly":
-                        month_num=datetime.strptime(to, '%B').month
+                    from_month=scope_to.get()
+                    year=scope_year.get()
+                    if option=="Monthly":
+                        month_num=datetime.strptime(scope.get(), '%B').month
                         date_obj=datetime(int(year), month_num, 1)
 
                         date_str_to = date_obj.strftime('%Y-%m-%d')
@@ -1204,20 +1205,18 @@ class InvortoryGUI:
                         result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
 
                         df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
-                    
-                    if radio_scope.get()=="Day":
-                        day=to
+                    if option=="Day":
                         month=from_month
 
                         month_num=datetime.strptime(month, '%B').month
-                        date_obj=datetime(int(year), month_num, int(day))
+                        date_obj=datetime(int(year), month_num, int(scope.get()))
                         date_str = date_obj.strftime('%Y-%m-%d')
 
                         result = man.get_export_data(report_type,date_str,date_str)
                         df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
 
                     wb=openpyxl.load_workbook(SALES_TEMPLATE)
-                    ws=wb.worksheets[1]
+                    ws=wb.worksheets[0]
                     start_row=12
                     for row in df.iterrows():
                         for column in range(len(row[1])):
@@ -1246,7 +1245,7 @@ class InvortoryGUI:
                     result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
                     wb=openpyxl.load_workbook(DELIVERY_TEMPLATE)    
-                    ws=wb.worksheets[2]
+                    ws=wb.worksheets[0]
                     start_row=28
                     for row in df.iterrows():
                         for column in range (len(row[1])):
