@@ -254,7 +254,7 @@ class InvortoryGUI:
                         selectedItem = self.frame_Table.selection()[0]
                         x = self.frame_Table.item(selectedItem)['values'][4]
                         self.frame_Table.item(selectedItem,text="a", values=(
-                        idd.get(), namee.get(), price.get(), qty.get(), x, self.Product_date_EN.get_date()))
+                        self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), self.Product_Stack_EN.get(), x, self.Product_date_EN.get_date()))
 
                     self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
                     self.button.place(x=710, y=150)
@@ -268,6 +268,7 @@ class InvortoryGUI:
                         quantity = self.frame_Table.item(selected_item)['values'][3]
                         expire = self.frame_Table.item(selected_item)['values'][5]
 
+                        self.Product_ID_EN.config(state='normal')
                         self.Product_Price_EN.config(state='normal')
                         self.Product_Stack_EN.config(state='normal')
                         self.Product_date_EN.config(state='normal')
@@ -281,8 +282,14 @@ class InvortoryGUI:
                         qty.set(quantity)
                         price.set(pricee)
 
+                        self.Product_ID_EN.insert(0,idd.get())
+                        self.Product_Price_EN.insert(0,namee.get())
+                        self.Product_Stack_EN.insert(0,qty.get())
+                        self.Product_price_EN.insert(0,price.get())
+
                         self.Product_Price_EN.config(state='disabled')
                         self.Product_price_EN.config(state='disabled')
+                        self.Product_ID_EN.config(state='disabled')
 
                         self.button.config(state='normal', command=saveChanges)
 
@@ -939,7 +946,9 @@ class InvortoryGUI:
         res = [idx for idx, x in enumerate(lst) if x[1] == choice]
         item = lst[res[0]]
         price = item[2]
-        price_entry.set(price)
+        self.Product_Price_EN.config(state='normal')
+        self.Product_Price_EN.insert(0,price)
+        self.Product_Price_EN.config(state='disabled')
 
     def Add_Stack_on_close(self):
         global PageOpen
