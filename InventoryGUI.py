@@ -1060,8 +1060,10 @@ class InvortoryGUI:
 
     def Delete(self):
         select = self.frame_Table.selection()[0]
+        id=self.frame_Table.item(select)["values"][0]
+        prod=Product.product()
+        prod.delete_ProdRef(id)
         self.frame_Table.delete(select)
-        print(self.frame_Table.item(select)["values"])
 
     def Add_Notify_on_close(self):
         global PageOpen

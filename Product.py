@@ -117,6 +117,12 @@ class product:
         dbcursor.execute(query2, (batch))
         dbConnector.db.commit()
 
+    def delete_ProdRef(self,id):
+        dbcursor=self.dbcursor
+        query=("DELETE FROM products_directory WHERE ref_id=%s")
+        dbcursor.execute(query,(id,))
+        dbConnector.db.commit()
+
     def viewCode(self,productID):
         dbcursor = self.dbcursor
         query = "SELECT ProductID,ProductName,price,Quantity FROM products WHERE ProductID=%s"
