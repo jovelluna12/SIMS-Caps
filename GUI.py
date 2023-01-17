@@ -23,7 +23,6 @@ class GUI():
         global result
         usernameVal = self.username.get()
         passwordVal = self.password.get()
-        print(usernameVal, passwordVal)
 
         self.employee = Employee.Employee()
 

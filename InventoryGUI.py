@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+import tkinter
 from tracemalloc import start
 import Employee
 import Manager
@@ -367,8 +368,8 @@ class InvortoryGUI:
                 self.Add_Employ.wm_attributes("-topmost", 0)
                 if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
                     self.InvorVal.grab_release()
-                    PageOpen=1
                     self.Add_Employ.destroy()
+                    PageOpen=1
                 else:
                     self.Add_Employ.wm_attributes("-topmost", 1)
 
@@ -394,36 +395,34 @@ class InvortoryGUI:
                                         highlightthickness=1, padx=10, pady=10)
                     self.Frame_ListE.place(x=0, y=200)
 
-                    global idd, namee, username, passwd
-                    idd = StringVar()
+                    emp_id = StringVar()
                     namee = StringVar()
                     username = StringVar()
                     passwd = StringVar()
 
                     self.Employ_ID_LA = Label(self.Frame_Empl_VIEW, text="Employ ID")
-                    self.Employ_ID_EN = Entry(self.Frame_Empl_VIEW, width=10, textvariable=idd, borderwidth=4, state='disabled')
+                    self.Employ_ID_EN = Entry(self.Frame_Empl_VIEW, width=10, textvariable=emp_id, borderwidth=4)
                     self.Employ_ID_LA.place(x=40, y=70)
                     self.Employ_ID_EN.place(x=40, y=90)
 
                     self.Employ_Name_LA = Label(self.Frame_Empl_VIEW, text="Name")
-                    self.Employ_Name_EN = Entry(self.Frame_Empl_VIEW, width=45, textvariable=namee, borderwidth=4, state='disabled')
+                    self.Employ_Name_EN = Entry(self.Frame_Empl_VIEW, width=45, textvariable=namee, borderwidth=4)
                     self.Employ_Name_LA.place(x=115, y=70)
                     self.Employ_Name_EN.place(x=115, y=90)
 
                     self.Employ_Uname_LA = Label(self.Frame_Empl_VIEW, text="Username")
-                    self.Employ_Uname_EN = Entry(self.Frame_Empl_VIEW, width=40, textvariable=username, borderwidth=4, state='disabled')
+                    self.Employ_Uname_EN = Entry(self.Frame_Empl_VIEW, width=40, textvariable=username, borderwidth=4)
                     self.Employ_Uname_LA.place(x=40, y=120)
                     self.Employ_Uname_EN.place(x=40, y=140)
 
                     self.Empoly_Pass_LA=Label(self.Frame_Empl_VIEW,text="Password")
-                    self.Empoly_Pass_EN= Entry(self.Frame_Empl_VIEW,width=40,textvariable=passwd,borderwidth=4,state='disabled')
+                    self.Empoly_Pass_EN= Entry(self.Frame_Empl_VIEW,width=40,textvariable=passwd,borderwidth=4)
                     self.Empoly_Pass_LA.place(x=300,y=120)
                     self.Empoly_Pass_EN.place(x=300,y=140)
 
                     self.Employee_Role_LA = Label(self.Frame_Empl_VIEW, text="Role:")
                     self.chosen_val_Edit = tk.StringVar(self.Frame_Empl_VIEW)
-                    self.chosen_val_Edit.set("Select Role")
-                    self.Role_emplo = ttk.Combobox(self.Frame_Empl_VIEW, textvariable=self.chosen_val_Edit, state='disabled')
+                    self.Role_emplo = ttk.Combobox(self.Frame_Empl_VIEW, textvariable=self.chosen_val_Edit)
                     self.Role_emplo['values'] = ('Cashier', 'Manager')
                     self.Role_emplo.place(x=420,y=90)
                     self.Employee_Role_LA.place(x=420,y=70)
@@ -435,10 +434,17 @@ class InvortoryGUI:
                         self.Role_emplo.config(state='readonly')
 
                     def save():
+                        self.Add_Employ.wm_attributes("-topmost", 0)
+                        id=self.Employ_ID_EN.get()
+                        name=self.Employ_Name_EN.get()
+                        uname=self.Employ_Uname_EN.get()
+                        password=self.Empoly_Pass_EN.get()
+                        role=self.Role_emplo.get()
+                        self.editEmp(int(id),name, uname, password, role)
                         self.Employ_Name_EN.config(state='disabled')
                         self.Employ_Uname_EN.config(state='disabled')
                         self.Empoly_Pass_EN.config(state='disabled')
-                        self.editEmp(int(idd.get()),namee.get(),username.get(),passwd.get(),self.Role_emplo.get())
+                        self.Add_Employ.wm_attributes("-topmost", 1)
 
                     Button_Edit=Button(self.Frame_Empl_VIEW,text="Edit",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=lambda: edit())
                     Button_Edit.place(x=600,y=150)
@@ -463,12 +469,21 @@ class InvortoryGUI:
                     emp=Manager.Manager()
                     res=emp.selectEmp(id)
                     val1,val2,val3,val4,val5=[tuple for tuple in res]
-                    idd.set(val1)
+                    emp_id.set(val1)
+                    self.Employ_ID_EN.insert(0, emp_id.get())
+                    self.Employ_ID_EN.config(state='disabled')
                     namee.set(val2)
-                    self.Role_emplo.set(val5)
+                    self.Employ_Name_EN.insert(0, namee.get())
+                    self.Employ_Name_EN.config(state='disabled')
+                    self.chosen_val_Edit.set(val5)
+                    self.Role_emplo.config(state='disabled')
                     username.set(val3)
+                    self.Employ_Uname_EN.insert(0,username.get())
+                    self.Employ_Uname_EN.config(state='disabled')
                     passwd.set(val4)
-        
+                    self.Empoly_Pass_EN.insert(0,passwd.get())
+                    self.Empoly_Pass_EN.config(state='disabled')
+
                     self.emp_Table = ttk.Treeview(self.Frame_ListE, height=15)
                     self.emp_Table['columns'] = ("Time In","Time Out","Date")
                     self.emp_Table.column("#0", width=0, stretch=NO)
@@ -783,9 +798,9 @@ class InvortoryGUI:
 
     # employee
     def Click_AddS_Em(self):
-        username = self.username.get()
-        password = self.password.get()
-        Fname = self.Fname.get()
+        username = self.Employee_Username_EN.get()
+        password = self.Employee_Password_EN.get ()
+        Fname = self.Employee_Lname_EN.get()
         role = self.chosen_val.get()
 
         man = Manager.Manager()
@@ -1019,7 +1034,7 @@ class InvortoryGUI:
                     self.frame_Table.insert(parent='', index='end', iid=i[0], text=i, values=i)
 
             def edit():
-                var = self.chosen_val.get()
+                var = self.Stack_Product_Name_EN.get()
                 self.Click_Edit_Ref(var)
 
             self.Stack_Product_Name_EN.bind("<<ComboboxSelected>>", AddProduct_ChangeName)
@@ -1046,6 +1061,7 @@ class InvortoryGUI:
     def Delete(self):
         select = self.frame_Table.selection()[0]
         self.frame_Table.delete(select)
+        print(self.frame_Table.item(select)["values"])
 
     def Add_Notify_on_close(self):
         global PageOpen
@@ -1151,6 +1167,7 @@ class InvortoryGUI:
             self.export_Table.pack()
 
             def export_report():
+                self.Add_Notify.wm_attributes("-topmost", 0)
                 report_type = reports.get()
                 man = Manager.Manager()
 
@@ -1520,17 +1537,13 @@ class InvortoryGUI:
         global PageOpen_Sub
         self.Add_Stack.wm_attributes("-topmost", 0)
         if PageOpen_Sub<2:
-            a = Product.product()
-            lst = a.returnall()
-            idd = lst[0][0]
-            namee = lst[0][1]
-            pricee = lst[0][2]
 
             self.Edit_Stack = Toplevel(self.Add_Stack)
             self.Edit_Stack.title("Edit Product Reference")
             self.Edit_Stack.geometry("700x350")
             self.Edit_Stack.protocol("WM_DELETE_WINDOW",self.Edit_Stack_close)
             self.Edit_Stack.wm_attributes("-topmost", 1)
+            self.Edit_Stack.resizable(False, False)
             self.Edit_Stack.grab_set()
 
 
@@ -1542,6 +1555,9 @@ class InvortoryGUI:
 
             a = Product.product()
             lst = a.return_one(var)
+            idd = lst[0][0]
+            namee = lst[0][1]
+            pricee = lst[0][2]
 
             self.Old = Label(self.Edit_Frame_Product, text="Old Product Name", width=20, font=("Arial", 15), anchor=W)
             self.Old.place(x=50, y=70)
@@ -1567,15 +1583,18 @@ class InvortoryGUI:
             self.Stack_Product_PRICE_EN.place(x=570, y=130)
 
             self.Stack_Product_ID_EN.config(state='normal')
-            self.Stack_Product_ID_EN.config(state='normal')
+            self.Stack_Product_Item_ENN.config(state='normal')
             self.Stack_Product_PRICE_EN.config(state='normal')
 
             ref_id_entry.set(idd)
+            self.Stack_Product_ID_EN.insert(0,ref_id_entry.get())
             name.set(namee)
+            self.Stack_Product_Item_ENN.insert(0,name.get())
             price.set(pricee)
+            self.Stack_Product_PRICE_EN.insert(0,price.get())
 
             self.Stack_Product_ID_EN.config(state='disabled')
-            self.Stack_Product_ID_EN.config(state='disabled')
+            self.Stack_Product_Item_ENN.config(state='disabled')
             self.Stack_Product_PRICE_EN.config(state='disabled')
 
             self.New = Label(self.Edit_Frame_Product, text="New Product Name", width=20, font=("Arial", 15), anchor=W)
@@ -1585,13 +1604,15 @@ class InvortoryGUI:
             ref_name_entry = StringVar()
             self.Stack_Product_Name_Label = Label(self.Edit_Frame_Product, text="New Product Name:").place(x=50, y=210)
             self.Stack_Product_Name_ENN = Entry(self.Edit_Frame_Product, width=83, borderwidth=5,
-                                                textvariable=ref_name_entry).place(x=50, y=230)
+                                                textvariable=ref_name_entry)
+            self.Stack_Product_Name_ENN.place(x=50, y=230)
 
             global ref_price_entry
             ref_price_entry = StringVar()
             self.Stack_Product_Name_Label = Label(self.Edit_Frame_Product, text="New Product Price:").place(x=570, y=210)
             self.Stack_Product_Price_EN = Entry(self.Edit_Frame_Product, width=15, borderwidth=5,
-                                                textvariable=ref_price_entry).place(x=570, y=230)
+                                                textvariable=ref_price_entry)
+            self.Stack_Product_Price_EN.place(x=570, y=230)
 
             self.submit = Button(self.Edit_Frame_Product, text="Submit Changes", padx=20, pady=5,
                                 command=self.Click_ref_submit).place(x=450, y=280)
@@ -1604,9 +1625,10 @@ class InvortoryGUI:
             messagebox.showinfo("Error","The Window is already Open!")
 
     def Click_ref_submit(self):
+
         id = ref_id_entry.get()
-        name = ref_name_entry.get()
-        price = ref_price_entry.get()
+        name = self.Stack_Product_Name_ENN.get()
+        price = self.Stack_Product_Price_EN.get()
 
         idd = int(id)
         pricee = int(price)
@@ -1614,8 +1636,9 @@ class InvortoryGUI:
 
         Prod = Product.product()
         Prod.editReference(idd, name, priceee)
-        
+        self.Edit_Stack.wm_attributes("-topmost", 0)
         messagebox.showinfo("Edit Success","Edit Success!")
+        self.Edit_Stack.wm_attributes("-topmost", 1)
 
     def setRefVals(self, event):
         global choice
@@ -1667,8 +1690,8 @@ class InvortoryGUI:
             global price_entry
             price_entry = tk.StringVar()
             self.Stack_Product_Price_Label = Label(self.Frame_Add_St, text="Price:").place(x=470, y=90)
-            self.Stack_Product_Price_EN = Entry(self.Frame_Add_St, width=15, borderwidth=5, textvariable=price_entry).place(
-                x=470, y=110)
+            self.Stack_Product_Price_EN = Entry(self.Frame_Add_St, width=15, borderwidth=5, textvariable=price_entry)
+            self.Stack_Product_Price_EN.place(x=470, y=110)
 
             self.Frame_ListS = Frame(self.Add_Stack_ADD, width=800, height=320, highlightbackground="black",
                                     highlightthickness=3, padx=5, pady=5)
@@ -1707,7 +1730,7 @@ class InvortoryGUI:
 
     def reference_Done(self):
         ProductName = self.Stack_Product_Name_EN.get()
-        price = price_entry.get()
+        price = self.Stack_Product_Price_EN.get()
         id = randomNumGen.generateProductID()
 
         pricee = int(price)
