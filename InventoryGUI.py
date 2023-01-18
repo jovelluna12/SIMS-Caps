@@ -1150,7 +1150,7 @@ class InvortoryGUI:
                 Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
                 reports = ttk.Combobox(self.Add_Notify, width=20)
                 reports.place(x=20, y=100)
-                reports['values'] = ("Sales", "Inventory", "Delivery")
+                reports['values'] = ("Sales", "Inventory", "Delivery", "Forecast")
             
                 # Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
                 export = Button(self.Add_Notify, text="Export", state='disabled')
@@ -1264,6 +1264,8 @@ class InvortoryGUI:
                         df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price'])
                         df.insert(4,"30 Day Forecast",value)
 
+                        path=fd.asksaveasfilename(defaultextension=".xlsx")
+                        df.to_excel(path, str(report_type))
                     # title = str.lower(report_type) + str(date.today()) + '.xlsx'
                     # df.to_excel(title, str(report_type))
                     # message = "Saved to ", title
