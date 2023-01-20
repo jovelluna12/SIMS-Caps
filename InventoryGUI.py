@@ -639,35 +639,39 @@ class InvortoryGUI:
         self.button_Add.config(command=self.add_to_products)
 
     def Add_Deliveries(self):
-        if 'batch_code' not in locals():
-            batch_code = randomNumGen.generateBatchCode()
-        if 'batch_code_list' not in locals():
-            batch_code_list = []
-        for i in ProductID_list:
-            batch_code_list.append(batch_code)
+        self.Add_Delivery.wm_attributes("-topmost", 0)
+        if messagebox.askokcancel('Comfirm', 'Please make sure if the product to delivery and Quantity is correct'):
+            if 'batch_code' not in locals():
+                batch_code = randomNumGen.generateBatchCode()
+            if 'batch_code_list' not in locals():
+                batch_code_list = []
+            for i in ProductID_list:
+                batch_code_list.append(batch_code)
 
-        item_tuple = list(
-            zip(ProductID_list, ref_id_list, ProdName_list, quantity_list, price_list, status_list, batch_code_list,
-                expiry_date_list))
+            item_tuple = list(
+                zip(ProductID_list, ref_id_list, ProdName_list, quantity_list, price_list, status_list, batch_code_list,
+                    expiry_date_list))
 
-        values = (batch_code, order_date, arrival_date, 'Under Delivery')
+            values = (batch_code, order_date, arrival_date, 'Under Delivery')
 
-        b = Product.product()
-        b.add_deliveryBatch(values)
+            b = Product.product()
+            b.add_deliveryBatch(values)
 
-        b.addMany_Del(item_tuple)
+            b.addMany_Del(item_tuple)
 
-        self.frame_Table.delete(*self.frame_Table.get_children())
+            self.frame_Table.delete(*self.frame_Table.get_children())
 
-        ProductID_list.clear()
-        batch_code_list.clear()
-        ProdName_list.clear()
-        quantity_list.clear()
-        price_list.clear()
-        date_list.clear()
-        expiry_date_list.clear()
-        order_date_list.clear()
-        status_list.clear()
+            ProductID_list.clear()
+            batch_code_list.clear()
+            ProdName_list.clear()
+            quantity_list.clear()
+            price_list.clear()
+            date_list.clear()
+            expiry_date_list.clear()
+            order_date_list.clear()
+            status_list.clear()
+        else:
+            self.Add_Delivery.wm_attributes("-topmost", 1)
 
     def search_delivery(self,event):
         value=event.widget.get()
