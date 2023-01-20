@@ -1487,9 +1487,24 @@ class InvortoryGUI:
         # self.InvorVal.resizable(False, False)
 
         # For the Page 1 Detail
-        self.Frame_Detail = Frame(self.InvorVal, width=1063, height=200, highlightbackground="black",
+        self.Frame_Detail = Frame(self.InvorVal, width=1063,bg="yellow", height=200, highlightbackground="black",
                                   highlightthickness=1, padx=10, pady=10)
         self.Frame_Detail.place(x=0, y=0)
+
+        Title_label=Label(self.Frame_Detail,text="Cresdel Pharmacy!!",bg="yellow",font=("Arial", 50, "bold"))
+        Title_label.place(x=20,y=50)
+
+        # photo = PhotoImage(file="123.png")
+        # label=Label( self.Frame_Detail, image=photo)
+        # label.place(x=20,y=20)
+
+        # img_path1="123.png"
+        # self.load1 = Image.open(img_path1)
+        # self.load1 = self.load1.resize((150, 50), Image.ANTIALIAS)
+        # self.render1 = ImageTk.PhotoImage(self.load1)
+        # self.img1 = Label(self.Frame_Detail, image=self.render1)
+        # self.img1.PhotoImage= self.render1
+        # self.img1.place(x=35, y=10)
 
         # For the Page LIST
         self.Frame_main = Frame(self.InvorVal, width=1063, height=540, highlightbackground="black",
