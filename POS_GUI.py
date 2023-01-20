@@ -599,6 +599,8 @@ def record(discount):
         # get treeview data in list of tuple
         item_tuple = list(zip(itemsLIST, quantityLIST, ProdCodee))
         attendedBy = user_id
+
+        print(item_tuple)
         
         e = Employee.Employee()
         e.addNewTransaction(finalprice, discount, attendedBy, item_tuple)
@@ -636,7 +638,13 @@ def newTransact():
 # Button Delete
 def Click_Delete():
     selected_Product = frame_Table.selection()
-    frame_Table.delete(selected_Product)
+
+    itemsLIST.remove(frame_Table.item(selected_Product)['values'][1])
+    quantityLIST.remove(frame_Table.item(selected_Product)['values'][3])
+    ProdCodee.remove(frame_Table.item(selected_Product)['values'][0])
+
+    frame_Table.delete(selected_Product[0])
+
 
     subtotal=[]
     for x in frame_Table.get_children():
