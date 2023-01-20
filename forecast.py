@@ -67,7 +67,7 @@ def GUI():
     res=a.returnall()
 
     tk.Label(root, text="Product").pack()
-    e1 = Combobox(root)
+    e1 = Combobox(root,width=50)
     e1["values"]=([x[1] for x in res])
     e1.pack()
     e1.bind("<<ComboboxSelected>>",selected_code)
