@@ -1,4 +1,4 @@
 import GUI
 
 interface = GUI.GUI()
-interface.start() 
+interface.start()  

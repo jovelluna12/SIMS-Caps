@@ -99,8 +99,8 @@ class GUI():
 
 
         print("userID ",result['user'][0])
-
-        self.load = Image.open("user.png")
+        img_path="user.png"
+        self.load = Image.open(img_path)
         self.load = self.load.resize((150, 150), Image.ANTIALIAS)
         self.render = ImageTk.PhotoImage(self.load)
         self.img = Label(self.dashboardGUI, image=self.render)
@@ -123,7 +123,7 @@ class GUI():
     global PageOpen
     PageOpen = 1
 
-    def bring_to_front(event):
+    def bring_to_front(self,event):
         global is_closing
         if not is_closing:
             self.NotifGUI.bell()

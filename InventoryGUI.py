@@ -1549,95 +1549,100 @@ class InvortoryGUI:
                 self.Edit_Stack.wm_attributes("-topmost", 1)
                 
     def Click_Edit_Ref(self, var):
-        global PageOpen_Sub
-        self.Add_Stack.wm_attributes("-topmost", 0)
-        if PageOpen_Sub<2:
-
-            self.Edit_Stack = Toplevel(self.Add_Stack)
-            self.Edit_Stack.title("Edit Product Reference")
-            self.Edit_Stack.geometry("700x350")
-            self.Edit_Stack.protocol("WM_DELETE_WINDOW",self.Edit_Stack_close)
-            self.Edit_Stack.wm_attributes("-topmost", 1)
-            self.Edit_Stack.resizable(False, False)
-            self.Edit_Stack.grab_set()
-
-
-            self.Edit_Frame_Product = Frame(self.Edit_Stack, width=700, height=350, )
-            self.Edit_Frame_Product.grid(row=0, column=0)
-
-            self.Frma = Label(self.Edit_Frame_Product, text="Edit Product", width=20, font=("Arial", 35), anchor=W)
-            self.Frma.place(x=20, y=10)
-
-            a = Product.product()
-            lst = a.return_one(var)
-            idd = lst[0][0]
-            namee = lst[0][1]
-            pricee = lst[0][2]
-
-            self.Old = Label(self.Edit_Frame_Product, text="Old Product Name", width=20, font=("Arial", 15), anchor=W)
-            self.Old.place(x=50, y=70)
-
-            global ref_id_entry, name, price
-            ref_id_entry = StringVar()
-            name = StringVar()
-            price = StringVar()
-
-            self.Stack_Product_ID_Label = Label(self.Edit_Frame_Product, text="ID:").place(x=50, y=110)
-            self.Stack_Product_ID_EN = Entry(self.Edit_Frame_Product, width=10, borderwidth=5, textvariable=ref_id_entry,
-                                            state="disabled")
-            self.Stack_Product_ID_EN.place(x=50, y=130)
-
-            self.Stack_Product_Item_Label = Label(self.Edit_Frame_Product, text="Product Name:", ).place(x=130, y=110)
-            self.Stack_Product_Item_ENN = Entry(self.Edit_Frame_Product, width=70, textvariable=name, borderwidth=5,
-                                                state="disabled")
-            self.Stack_Product_Item_ENN.place(x=130, y=130)
-
-            self.Stack_Product_ID_Label = Label(self.Edit_Frame_Product, text="Price:").place(x=570, y=110)
-            self.Stack_Product_PRICE_EN = Entry(self.Edit_Frame_Product, textvariable=price, width=15, borderwidth=5,
-                                                state="disabled")
-            self.Stack_Product_PRICE_EN.place(x=570, y=130)
-
-            self.Stack_Product_ID_EN.config(state='normal')
-            self.Stack_Product_Item_ENN.config(state='normal')
-            self.Stack_Product_PRICE_EN.config(state='normal')
-
-            ref_id_entry.set(idd)
-            self.Stack_Product_ID_EN.insert(0,ref_id_entry.get())
-            name.set(namee)
-            self.Stack_Product_Item_ENN.insert(0,name.get())
-            price.set(pricee)
-            self.Stack_Product_PRICE_EN.insert(0,price.get())
-
-            self.Stack_Product_ID_EN.config(state='disabled')
-            self.Stack_Product_Item_ENN.config(state='disabled')
-            self.Stack_Product_PRICE_EN.config(state='disabled')
-
-            self.New = Label(self.Edit_Frame_Product, text="New Product Name", width=20, font=("Arial", 15), anchor=W)
-            self.New.place(x=50, y=180)
-
-            global ref_name_entry
-            ref_name_entry = StringVar()
-            self.Stack_Product_Name_Label = Label(self.Edit_Frame_Product, text="New Product Name:").place(x=50, y=210)
-            self.Stack_Product_Name_ENN = Entry(self.Edit_Frame_Product, width=83, borderwidth=5,
-                                                textvariable=ref_name_entry)
-            self.Stack_Product_Name_ENN.place(x=50, y=230)
-
-            global ref_price_entry
-            ref_price_entry = StringVar()
-            self.Stack_Product_Name_Label = Label(self.Edit_Frame_Product, text="New Product Price:").place(x=570, y=210)
-            self.Stack_Product_Price_EN = Entry(self.Edit_Frame_Product, width=15, borderwidth=5,
-                                                textvariable=ref_price_entry)
-            self.Stack_Product_Price_EN.place(x=570, y=230)
-
-            self.submit = Button(self.Edit_Frame_Product, text="Submit Changes", padx=20, pady=5,
-                                command=self.Click_ref_submit).place(x=450, y=280)
-
-            self.button_Out = Button(self.Edit_Frame_Product, text="Cancel", padx=9, pady=5, bg="green",
-                                    command=self.Edit_Stack_close)
-            self.button_Out.place(x=600, y=280)
-            PageOpen_Sub += 1
+        if var == "Select Product":
+            self.Add_Stack.wm_attributes("-topmost", 0)
+            messagebox.showerror("An Error Occured","Pick an Item by Searching it")
+            self.Add_Stack.wm_attributes("-topmost", 1)
         else:
-            messagebox.showinfo("Error","The Window is already Open!")
+            global PageOpen_Sub
+            self.Add_Stack.wm_attributes("-topmost", 0)
+            if PageOpen_Sub<2:
+
+                self.Edit_Stack = Toplevel(self.Add_Stack)
+                self.Edit_Stack.title("Edit Product Reference")
+                self.Edit_Stack.geometry("700x350")
+                self.Edit_Stack.protocol("WM_DELETE_WINDOW",self.Edit_Stack_close)
+                self.Edit_Stack.wm_attributes("-topmost", 1)
+                self.Edit_Stack.resizable(False, False)
+                self.Edit_Stack.grab_set()
+
+
+                self.Edit_Frame_Product = Frame(self.Edit_Stack, width=700, height=350, )
+                self.Edit_Frame_Product.grid(row=0, column=0)
+
+                self.Frma = Label(self.Edit_Frame_Product, text="Edit Product", width=20, font=("Arial", 35), anchor=W)
+                self.Frma.place(x=20, y=10)
+
+                a = Product.product()
+                lst = a.return_one(var)
+                idd = lst[0][0]
+                namee = lst[0][1]
+                pricee = lst[0][2]
+
+                self.Old = Label(self.Edit_Frame_Product, text="Old Product Name", width=20, font=("Arial", 15), anchor=W)
+                self.Old.place(x=50, y=70)
+
+                global ref_id_entry, name, price
+                ref_id_entry = StringVar()
+                name = StringVar()
+                price = StringVar()
+
+                self.Stack_Product_ID_Label = Label(self.Edit_Frame_Product, text="ID:").place(x=50, y=110)
+                self.Stack_Product_ID_EN = Entry(self.Edit_Frame_Product, width=10, borderwidth=5, textvariable=ref_id_entry,
+                                                state="disabled")
+                self.Stack_Product_ID_EN.place(x=50, y=130)
+
+                self.Stack_Product_Item_Label = Label(self.Edit_Frame_Product, text="Product Name:", ).place(x=130, y=110)
+                self.Stack_Product_Item_ENN = Entry(self.Edit_Frame_Product, width=70, textvariable=name, borderwidth=5,
+                                                    state="disabled")
+                self.Stack_Product_Item_ENN.place(x=130, y=130)
+
+                self.Stack_Product_ID_Label = Label(self.Edit_Frame_Product, text="Price:").place(x=570, y=110)
+                self.Stack_Product_PRICE_EN = Entry(self.Edit_Frame_Product, textvariable=price, width=15, borderwidth=5,
+                                                    state="disabled")
+                self.Stack_Product_PRICE_EN.place(x=570, y=130)
+
+                self.Stack_Product_ID_EN.config(state='normal')
+                self.Stack_Product_Item_ENN.config(state='normal')
+                self.Stack_Product_PRICE_EN.config(state='normal')
+
+                ref_id_entry.set(idd)
+                self.Stack_Product_ID_EN.insert(0,ref_id_entry.get())
+                name.set(namee)
+                self.Stack_Product_Item_ENN.insert(0,name.get())
+                price.set(pricee)
+                self.Stack_Product_PRICE_EN.insert(0,price.get())
+
+                self.Stack_Product_ID_EN.config(state='disabled')
+                self.Stack_Product_Item_ENN.config(state='disabled')
+                self.Stack_Product_PRICE_EN.config(state='disabled')
+
+                self.New = Label(self.Edit_Frame_Product, text="New Product Name", width=20, font=("Arial", 15), anchor=W)
+                self.New.place(x=50, y=180)
+
+                global ref_name_entry
+                ref_name_entry = StringVar()
+                self.Stack_Product_Name_Label = Label(self.Edit_Frame_Product, text="New Product Name:").place(x=50, y=210)
+                self.Stack_Product_Name_ENN = Entry(self.Edit_Frame_Product, width=83, borderwidth=5,
+                                                    textvariable=ref_name_entry)
+                self.Stack_Product_Name_ENN.place(x=50, y=230)
+
+                global ref_price_entry
+                ref_price_entry = StringVar()
+                self.Stack_Product_Name_Label = Label(self.Edit_Frame_Product, text="New Product Price:").place(x=570, y=210)
+                self.Stack_Product_Price_EN = Entry(self.Edit_Frame_Product, width=15, borderwidth=5,
+                                                    textvariable=ref_price_entry)
+                self.Stack_Product_Price_EN.place(x=570, y=230)
+
+                self.submit = Button(self.Edit_Frame_Product, text="Submit Changes", padx=20, pady=5,
+                                    command=self.Click_ref_submit).place(x=450, y=280)
+
+                self.button_Out = Button(self.Edit_Frame_Product, text="Cancel", padx=9, pady=5, bg="green",
+                                        command=self.Edit_Stack_close)
+                self.button_Out.place(x=600, y=280)
+                PageOpen_Sub += 1
+            else:
+                messagebox.showinfo("Error","The Window is already Open!")
 
     def Click_ref_submit(self):
 
