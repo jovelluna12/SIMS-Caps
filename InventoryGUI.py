@@ -584,6 +584,11 @@ class InvortoryGUI:
         order_date = self.Product_date_EN.get_date()
         arrival_date = self.Product_Arrive_EN.get_date()
 
+        self.Product_Price_EN.config(state='normal')
+        self.Product_Price_EN.delete(0,END)
+        self.Product_Price_EN.config(state='disabled')
+
+
         var1 = "ProductID_list"
         var2 = "ProdName_list"
         var3 = "quantity_list"
@@ -749,6 +754,7 @@ class InvortoryGUI:
             self.Product_Arrive_LA.place(x=380, y=120)
             self.Product_Arrive_EN.place(x=380, y=140)
 
+            
             self.Product_Price_LA = Label(self.Frame_Add, text="Price")
             self.Product_Price_EN = Entry(self.Frame_Add, width=20, borderwidth=4, textvariable=price_entry,
                                         state='disabled')
@@ -948,6 +954,7 @@ class InvortoryGUI:
         item = lst[res[0]]
         price = item[2]
         self.Product_Price_EN.config(state='normal')
+        self.Product_Price_EN.delete(0,END)
         self.Product_Price_EN.insert(0,price)
         self.Product_Price_EN.config(state='disabled')
 
@@ -1479,9 +1486,6 @@ class InvortoryGUI:
         self.Frame_Detail = Frame(self.InvorVal, width=1063, height=200, highlightbackground="black",
                                   highlightthickness=1, padx=10, pady=10)
         self.Frame_Detail.place(x=0, y=0)
-        # self.img = PhotoImage(Image.open(r"C:\Users\Administrator\Documents\GitHub\Logo\123.jpg"))
-        # self.label=Label(self.Frame_Detail,image=self.img,width=37,height=10)
-        # self.label.place(x=0,y=0)
 
         # For the Page LIST
         self.Frame_main = Frame(self.InvorVal, width=1063, height=540, highlightbackground="black",
