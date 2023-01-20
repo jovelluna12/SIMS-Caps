@@ -13,10 +13,13 @@ import tkinter as tk
 
 def sample_data():
     dataset=pd.read_csv('SAMPLE_DATASET.csv')
-    dataset.head()
+
     X=dataset.drop(['NumberofItemsSold'],axis=1).values
     Y=dataset[['NumberofItemsSold']].values
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=0)
+    scaler = preprocessing.StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
     sgd_reg = SGDRegressor(max_iter=1000, tol=1e-3, random_state=42)
     sgd_reg.fit(X_train, y_train)
     w = sgd_reg.coef_
@@ -32,17 +35,20 @@ def forecast():
 
     result=dbcursor.fetchall()
     df=pd.DataFrame(result,columns=["ProductID","item","Quantity","Price","NumberofItemsSold"])
-    df.head()
 
-    X=df[["ProductID","Quantity","Price"]]
-    y=df[["NumberofItemsSold"]]
+    X=df.drop(['NumberofItemsSold',"item"],axis=1).values
+    Y=df[['NumberofItemsSold']].values
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=0)
+    scaler = preprocessing.StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
 
-    if len(X)<300 and len(y)<300:
+    if len(df)<300 and len(df)<300:
         w,b=sample_data()
     
     else:
         reg=SGDRegressor(max_iter=1000, tol=1e-3)
-        reg.fit(X.values,y.values.ravel())
+        reg.fit(X_train,X_test)
         w = reg.coef_
         b = reg.intercept_
 
@@ -82,4 +88,3 @@ def GUI():
     e1.bind("<<ComboboxSelected>>",selected_code)
 
     root.mainloop()
-
