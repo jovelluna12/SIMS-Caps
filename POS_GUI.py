@@ -70,7 +70,7 @@ def start(m,id,user,time):
             user_FD=Label(frame_Total,text=time,width=50,height=0,anchor=W,font=("Arial",12,'bold')).place(x=90,y=50)
 
             global NextTransact
-            NextTransact=Button(frame_Total,text="Next Transaction")
+            NextTransact=Button(frame_Total,text="Next Transaction",state=DISABLED,bg="red")
             NextTransact.place(x=540,y=20)
 
             # def temp_text(e):
@@ -408,7 +408,7 @@ def SearchItem(buttonpress):
                 result1=(result[0],result[1],result[2],result[3])
                 Click_Enter(code,product,price,qty)
                 #button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
-                print("this")
+                # print("this")
 
     elif ProdCode.index("end")==0 and ProductCODE.index('end')!=0 and Product_Name_EN.index('end')!=0 and Product_Prices_EN.index('end')!=0:
         ProdCodee.append(code)
@@ -416,7 +416,7 @@ def SearchItem(buttonpress):
 
         #button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
         Click_Enter(code,product,price,qty)
-        print("this")
+        # print("this")
 
     else: messagebox.showerror("Product Search", "Product Code Empty")
             
@@ -548,6 +548,7 @@ def payment():
             Discount_LBL.place(x=25,y=120)
             Discount_Entry.place(x=25,y=140)
             button_Quantity.place(x=88,y=172)
+            
         else:
             messagebox.showerror("Payment", "No Item Selected")
         PageOpen+=1
@@ -575,6 +576,7 @@ def calculatechange(discount):
 
     fprice = StringVar()
     finalprice=totalprice-discount
+    
 
     #  finalpricee = "Final Price: " + str(finalprice)
     # fprice.set(str(finalprice))
@@ -600,8 +602,6 @@ def record(discount):
         item_tuple = list(zip(itemsLIST, quantityLIST, ProdCodee))
         attendedBy = user_id
 
-        print(item_tuple)
-        
         e = Employee.Employee()
         e.addNewTransaction(finalprice, discount, attendedBy, item_tuple)
         # close this window here
@@ -619,6 +619,7 @@ def record(discount):
 
         root.grab_release()
         windowASK.destroy()
+        NextTransact.config(state=ACTIVE)
         NextTransact.config(command=newTransact)
         # button_Quantity.config(text="Done", command=windowASK.destroy)
     
@@ -630,6 +631,9 @@ def newTransact():
     Totalprince_Entry.config(text="")
     Totalchange_Entry.config(text="")
 
+    NextTransact.config(bg="red")
+    NextTransact.config(state=DISABLED)
+
     itemsLIST.clear()
     quantityLIST.clear()
 
@@ -637,21 +641,20 @@ def newTransact():
 
 # Button Delete
 def Click_Delete():
-    selected_Product = frame_Table.selection()
+    if messagebox.askokcancel('DELETE', 'Are you sure you want to DELETE this Product?'):
+        selected_Product = frame_Table.selection()
 
-    itemsLIST.remove(frame_Table.item(selected_Product)['values'][1])
-    quantityLIST.remove(frame_Table.item(selected_Product)['values'][3])
-    ProdCodee.remove(frame_Table.item(selected_Product)['values'][0])
+        itemsLIST.remove(frame_Table.item(selected_Product)['values'][1])
+        quantityLIST.remove(frame_Table.item(selected_Product)['values'][3])
+        ProdCodee.remove(frame_Table.item(selected_Product)['values'][0])
+        frame_Table.delete(selected_Product[0])
 
-    frame_Table.delete(selected_Product[0])
+        subtotal=[]
+        for x in frame_Table.get_children():
+            subtotal.append(frame_Table.item(x)["values"][2]*frame_Table.item(x)["values"][3])
 
-
-    subtotal=[]
-    for x in frame_Table.get_children():
-        subtotal.append(frame_Table.item(x)["values"][2]*frame_Table.item(x)["values"][3])
-
-    global totalprice
-    totalprice = sum(subtotal)
-                    
-    Totalprince_Entry.config(text=totalprice)
-    button_final_payment.config(state='active')
+        global totalprice
+        totalprice = sum(subtotal)
+                        
+        Totalprince_Entry.config(text=totalprice)
+        button_final_payment.config(state='active')
