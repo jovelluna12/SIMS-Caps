@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-
+# from escpos.printer import Usb
 
 def start(m,id,user,time):
     if time=="Not Yet Timed In":
@@ -511,7 +511,6 @@ def payment():
     def on_close():
         global PageOpen
         windowASK.wm_attributes("-topmost", 0)
-        # if messagebox.askokcancel('Close', 'Are you sure you want to close the Notification Page all the data will not be Save?'):
         PageOpen=1
         windowASK.destroy()
 
@@ -522,13 +521,13 @@ def payment():
             global Discount_Entry
             global windowASK
             
-
             windowASK=Toplevel(root)
             windowASK.title("Payment")
             windowASK.geometry("230x220")
             windowPay = Frame(windowASK,width=230,height=220)
             windowPay.pack()
             windowASK.protocol("WM_DELETE_WINDOW",on_close)
+            windowASK.resizable(False,False)
             windowASK.wm_attributes("-topmost", 1)
             windowASK.grab_set()
 
@@ -583,7 +582,8 @@ def calculatechange(discount):
 
 
 def record(discount):
-
+    global PageOpen
+    PageOpen=1
     totalamounttendered = Entry_Amount.get()
     total = int(float(totalamounttendered.strip()))
     change = total - finalprice
@@ -605,6 +605,15 @@ def record(discount):
         # close this window here
         Entry_Amount.config(state="disabled")
         Discount_Entry.config(state="disabled")
+        
+        # p = Usb(0x0416, 0x5011)
+        # p.text("Record\n"
+        #         ,item_tuple,
+        #         "\n",
+        #         attendedBy)
+
+        print("Record")
+        print(item_tuple,attendedBy)
 
         root.grab_release()
         windowASK.destroy()

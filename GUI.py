@@ -123,7 +123,7 @@ class GUI():
     global PageOpen
     PageOpen = 1
 
-    def bring_to_front(event):
+    def bring_to_front(self,event):
         global is_closing
         if not is_closing:
             self.NotifGUI.bell()

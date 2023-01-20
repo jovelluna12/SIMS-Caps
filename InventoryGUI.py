@@ -90,7 +90,7 @@ class InvortoryGUI:
         self.Frame_Empl.pack_forget()
 
         self.Frame_stack.pack(fill='both')
-        self.Label_title = Label(self.Frame_stack, text="Stack Page", font=("Arial", 15)).place(x=0, y=0)
+        self.Label_title = Label(self.Frame_stack, text="SALES Page", font=("Arial", 15)).place(x=0, y=0)
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
@@ -1499,7 +1499,7 @@ class InvortoryGUI:
         Detail = Label(self.Frame_Side, text="Detail Button", width=37, anchor=W).place(x=40, y=270)
         self.button_List = Button(self.Frame_Side, text="List", padx=10, pady=10, width=10, height=1, bg='#54FA9B',
                                   command=self.Click_List1)
-        self.button_Stack = Button(self.Frame_Side, text="Stack", padx=10, pady=10, width=10, height=1, bg='#54FA9B',
+        self.button_Stack = Button(self.Frame_Side, text="Sales", padx=10, pady=10, width=10, height=1, bg='#54FA9B',
                                    command=self.Click_Stack)
         self.button_Delivery = Button(self.Frame_Side, text="Delivery", padx=10, pady=10, width=10, height=1,
                                       bg='#54FA9B', command=self.Click_Delivery)
