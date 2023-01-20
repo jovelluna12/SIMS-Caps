@@ -20,6 +20,7 @@ from tkcalendar import DateEntry
 from PIL import Image, ImageTk
 import Owner
 import Product
+import forecast
 import randomNumGen
 import pandas as pd
 from openpyxl.workbook import Workbook
@@ -1150,7 +1151,7 @@ class InvortoryGUI:
                 Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
                 reports = ttk.Combobox(self.Add_Notify, width=20)
                 reports.place(x=20, y=100)
-                reports['values'] = ("Sales", "Inventory", "Delivery", "Forecast")
+                reports['values'] = ("Sales", "Inventory", "Delivery")
             
                 # Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
                 export = Button(self.Add_Notify, text="Export", state='disabled')
@@ -1521,6 +1522,12 @@ class InvortoryGUI:
                                        bg='#54FA9B', command=self.notify_UI)
         button_Out= Button(self.Frame_Side,text="Back Home",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.InvorVal.destroy)
         button_Out.place(x=160,y=600)
+
+        def goto_forecast():
+            forecast.GUI()
+
+        button_Out= Button(self.Frame_Side,text="Forecast",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=goto_forecast)
+        button_Out.place(x=40,y=600)
 
         self.button_List.place(x=40, y=300)
         self.button_Stack.place(x=160, y=300)

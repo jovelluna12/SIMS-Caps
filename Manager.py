@@ -57,7 +57,7 @@ class Manager (Employee.Employee):
             X=df[["Quantity","Price"]]
             y=df["NumberOfItemsSold"]
             
-            res,value=forecast.forecast(X,y)
+            res,value=forecast.forecast()
             return res,value
 
     def addNote(self,val):
