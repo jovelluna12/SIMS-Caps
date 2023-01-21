@@ -57,18 +57,15 @@ class InvortoryGUI:
         self.Label_title = Label(self.Frame_List, text="List Page", font=("Arial", 15)).place(x=0, y=0)
         filter = ttk.Combobox(self.Frame_List,width=10,state='readonly')
         filter.place(x=100, y=0)
+        filter.set("Select Filter")
         filter["values"]=("In Transit","On Hand","Return to Sender")
 
         btn_filter_clear=Button(self.Frame_List,text="Clear Filter",state='disabled')
         btn_filter_clear.place(x=500, y=0)
 
-        def filter_from_callback(event):
-            print(event.widget.get_date())
-
         # Date From
         filter_from = DateEntry(self.Frame_List, selectmode='day', width=20) 
         filter_from.place(x=200, y=0)
-        filter_from.bind("<<DateEntrySelected>>",filter_from_callback)
 
         # Date To
         filter_to = DateEntry(self.Frame_List, selectmode='day', width=20,state='disabled')
@@ -93,6 +90,50 @@ class InvortoryGUI:
         self.frame_Table.heading("Price", text="Price", anchor=CENTER)
         self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
         self.frame_Table.place(x=0, y=30)
+        # Searching Another way of Filtering
+        # def filter_from_callback(event):
+        #     date=event.widget.get_date()
+        #     fil=filter.get()
+        #     prod=Manager.Manager()
+        #     if fil=="Select Filter":
+        #         res1=prod.get_list_from_date_now(date,fil)
+        #         res2=prod.get_returnlist_from_date_now(date)
+        #         self.frame_Table.delete(*self.frame_Table.get_children())
+
+        #         count = 0
+        #         for x in res1:
+        #             count += 1
+        #             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+                
+        #         for y in res2:
+        #             count += 1
+        #             self.frame_Table.insert(parent='', index='end', iid=count, text=y, values=y)
+                
+        #     if fil == "In Transit":
+        #         res=prod.get_inTransit(date)
+        #         self.frame_Table.delete(*self.frame_Table.get_children())
+
+        #         count = 0
+        #         for x in res:
+        #             count += 1
+        #             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+        #     if fil == "On Hand":
+        #         print(date)
+        #         print("on hand")
+        #         self.frame_Table.delete(*self.frame_Table.get_children())
+        #         res=prod.get_OnHand(date)
+                
+        #         count = 0
+        #         for x in res:
+        #             count += 1
+        #             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+        #     filter_to.config(state='normal')
+
+        # filter_from.bind("<<DateEntrySelected>>",filter_from_callback)
+
+
         m1 = Manager.Manager()
         result = m1.inventoryList()
         result2 = m1.return_to_sender_list()

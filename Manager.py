@@ -12,8 +12,35 @@ class Manager (Employee.Employee):
         result = dbcursor.fetchall()
         return result
 
-    def get_list_from(event,date):
-        pass
+    def get_inTransit(self,date):
+        query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status='On Hand';"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(date,))
+        result = dbcursor.fetchall()
+        return result
+    
+    def get_OnHand(self,date):
+        query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status='In Transit';"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(date,))
+        result = dbcursor.fetchall()
+        return result
+
+
+    def get_list_from_date_now(self,date,filter):
+        query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status=%s;"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(date,filter,))
+        result = dbcursor.fetchall()
+        return result
+
+    def get_returnlist_from_date_now(self,date):
+        query="SELECT return_to_sender.ProductID, products.ProductName,return_to_sender.remarks,products.price, return_to_sender.qty FROM return_to_sender, products,deliverylist WHERE return_to_sender.ProductID=products.ProductID AND return_to_sender.BatchCode=deliverylist.BatchCode and deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status=%s;"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(date,filter,))
+        result = dbcursor.fetchall()
+        return result
+
     def return_to_sender_list(self):
         query="SELECT return_to_sender.ProductID, products.ProductName,return_to_sender.remarks,products.price, return_to_sender.qty FROM return_to_sender, products WHERE return_to_sender.ProductID=products.ProductID;"
         dbcursor = self.dbcursor
