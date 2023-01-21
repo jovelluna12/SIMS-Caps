@@ -406,6 +406,7 @@ def SearchItem(buttonpress):
                 Product_Prices_EN.config(state='disabled')
 
                 result1=(result[0],result[1],result[2],result[3])
+                # POS_Transaction.get_item_details(product,price,code)
                 Click_Enter(code,product,price,qty)
                 #button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
                 # print("this")
@@ -413,7 +414,7 @@ def SearchItem(buttonpress):
     elif ProdCode.index("end")==0 and ProductCODE.index('end')!=0 and Product_Name_EN.index('end')!=0 and Product_Prices_EN.index('end')!=0:
         ProdCodee.append(code)
         prod=Product.product()
-
+        # POS_Transaction.get_item_details(product,price,code)
         #button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
         Click_Enter(code,product,price,qty)
         # print("this")
@@ -433,7 +434,7 @@ def Click_Enter(code,product,price,qty):
     window_Frame = Frame(window_Qty, width=340, height=150)
     window_Frame.pack()
 
-    Label_Quantity = Label(window_Frame, text="Enter Quantity Products!",font=("Arial", 20))
+    Label_Quantity = Label(window_Frame, text="Enter QTY",font=("Arial", 20))
 
     Entry_Quantity = Entry(window_Frame, width=35, borderwidth=3,font=("Arial", 10))
     button_Quantity = Button(window_Frame, text="ENTER", padx=5, pady=5, command=lambda m=Entry_Quantity.get():setQTY(Entry_Quantity.get()))
@@ -601,6 +602,7 @@ def record(discount):
         # get treeview data in list of tuple
         item_tuple = list(zip(itemsLIST, quantityLIST, ProdCodee))
         attendedBy = user_id
+        print(item_tuple)
 
         e = Employee.Employee()
         e.addNewTransaction(finalprice, discount, attendedBy, item_tuple)
@@ -613,9 +615,6 @@ def record(discount):
         #         ,item_tuple,
         #         "\n",
         #         attendedBy)
-
-        print("Record")
-        print(item_tuple,attendedBy)
 
         root.grab_release()
         windowASK.destroy()

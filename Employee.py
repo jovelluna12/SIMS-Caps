@@ -75,7 +75,7 @@ class Employee:
 
     def viewDeliveryList(self):
         dbcursor=self.cursor
-        query="SELECT deliverylist.BatchCode,products.ProductName,deliverylist.status,price,quantity,deliverylist.expectedarrivaldate FROM deliverylist, products WHERE deliverylist.status!='Arrived' AND products.status='Under Delivery' AND deliverylist.status!='Expired' AND products.batch_code=deliverylist.BatchCode;"
+        query="SELECT deliverylist.BatchCode,products.ProductName,deliverylist.status,price,quantity,deliverylist.expectedarrivaldate FROM deliverylist, products WHERE deliverylist.status!='On Hand' AND products.status='In Transit' AND deliverylist.status!='Expired' AND products.batch_code=deliverylist.BatchCode;"
         dbcursor.execute(query)
 
         result=dbcursor.fetchall()
@@ -105,7 +105,7 @@ class Employee:
 
     def ListAllBatches(self):
         dbcursor = self.cursor
-        query="SELECT BatchCode,datepurchased,expectedarrivaldate FROM deliverylist WHERE status='Under Delivery'"
+        query="SELECT BatchCode,datepurchased,expectedarrivaldate FROM deliverylist WHERE status='In Transit'"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result

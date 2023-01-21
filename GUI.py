@@ -60,7 +60,7 @@ class GUI():
        
         self.dashboardGUI = Tk()
         #set title
-        self.dashboardGUI.title('Cresdel Pharmacy!!')
+        self.dashboardGUI.title('Cresdel Pharmacy')
         #set size
         self.dashboardGUI.geometry("1000x600")
         self.dashboardGUI.resizable(False,False)

@@ -14,15 +14,15 @@ class Manager (Employee.Employee):
 
     def productSales(self):
         dbcursor = self.dbcursor
-        query = "SELECT purchasedproducts.PurchaseID,products.ProductName,purchasedproducts.Quantity,products.price, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM purchasedproducts,products,salestransaction WHERE purchasedproducts.InvoiceNumber=salestransaction.InvoiceNumber GROUP BY purchasedproducts.PurchaseID;"
+        query = "SELECT purchasedproducts.PurchaseID,purchasedproducts.Item,purchasedproducts.Quantity,products.price, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM purchasedproducts,products,salestransaction WHERE purchasedproducts.InvoiceNumber=salestransaction.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID GROUP BY purchasedproducts.PurchaseID;"
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         return result
         
     def viewInv(self):
         dbcursor = self.dbcursor
-        # SELECT ProductID as ProdID ,ProductName,price,batch_code, SUM(quantity) FROM products,deliverylist WHERE quantity!=0 AND products.status = 'Sellable' AND products.batch_code=deliverylist.BatchCode GROUP BY ProductName ORDER BY deliverylist.datepurchased ASC
-        query="SELECT ProductID ,ProductName,price,batch_code,quantity FROM products,deliverylist WHERE quantity!=0 AND products.status = 'Sellable' AND products.batch_code=deliverylist.BatchCode GROUP BY ProductName ORDER BY deliverylist.datepurchased ASC"
+        # SELECT ProductID as ProdID ,ProductName,price,batch_code, SUM(quantity) FROM products,deliverylist WHERE quantity!=0 AND products.status = 'On Hand' AND products.batch_code=deliverylist.BatchCode GROUP BY ProductName ORDER BY deliverylist.datepurchased ASC
+        query="SELECT ProductID ,ProductName,price,batch_code,quantity FROM products,deliverylist WHERE quantity!=0 AND products.status = 'On Hand' AND products.batch_code=deliverylist.BatchCode GROUP BY ProductName ORDER BY deliverylist.datepurchased ASC"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
         return result
@@ -42,7 +42,7 @@ class Manager (Employee.Employee):
 
             return dbcursor.fetchall()
         if report=="Delivery" and scope_from==None and scope_to==None:
-            query="SELECT batch_code,ProductName,quantity,price,deliverylist.status FROM products,deliverylist WHERE deliverylist.status='Under Delivery' AND products.batch_code=deliverylist.BatchCode;"
+            query="SELECT batch_code,ProductName,quantity,price,deliverylist.status FROM products,deliverylist WHERE deliverylist.status='In Transit' AND products.batch_code=deliverylist.BatchCode;"
             dbcursor.execute(query)
 
             return dbcursor.fetchall()
@@ -68,7 +68,7 @@ class Manager (Employee.Employee):
 
     def notify_expiry(self):
         dbcursor=self.dbcursor
-        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable' AND status!='Under Delivery' AND note!='Checked'"
+        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable' AND status!='In Transit' AND note!='Checked'"
         dbcursor.execute(query)
         result=dbcursor.fetchall()
     

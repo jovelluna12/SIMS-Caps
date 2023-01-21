@@ -1,6 +1,7 @@
 from logging import root
 import datetime
 from datetime import date, datetime 
+from tkinter import simpledialog
 
 import tkinter as tk
 from tkinter import *
@@ -249,16 +250,6 @@ class InvortoryGUI:
                             id=batch
                             a.delete_del_batch(id)
                             self.frame_Table.delete(*self.frame_Table.get_children())
-                            
-
-                    def saveChanges(): 
-                        selectedItem = self.frame_Table.selection()[0]
-                        x = self.frame_Table.item(selectedItem)['values'][4]
-                        self.frame_Table.item(selectedItem,text="a", values=(
-                        self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), self.Product_Stack_EN.get(), x, self.Product_date_EN.get_date()))
-
-                    self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
-                    self.button.place(x=710, y=150)
                     
 
                     def selectItem(event):
@@ -274,6 +265,12 @@ class InvortoryGUI:
                         self.Product_Stack_EN.config(state='normal')
                         self.Product_date_EN.config(state='normal')
                         self.Product_price_EN.config(state='normal')
+
+                        global New_QTY_lbl
+                        New_QTY=Label(self.Frame_Add,text="QTY to Receive")
+                        New_QTY_lbl= Entry(self.Frame_Add,width=10,textvariable=qty,borderwidth=4)
+                        New_QTY.place(x=450,y=110)
+                        New_QTY_lbl.place(x=450,y=130)
 
                         date = datetime.strptime(expire, '%Y-%m-%d')
 
@@ -291,8 +288,42 @@ class InvortoryGUI:
                         self.Product_Price_EN.config(state='disabled')
                         self.Product_price_EN.config(state='disabled')
                         self.Product_ID_EN.config(state='disabled')
+                        self.Product_Stack_EN.config(state='disabled')
 
                         self.button.config(state='normal', command=saveChanges)
+
+                    def saveChanges(): 
+                        if int(New_QTY_lbl.get()) < int(qty.get()):
+                            QTY_diff=int(qty.get())-int(New_QTY_lbl.get())
+                            remark_dialog=simpledialog.askstring("Remarks", "New QTY is less than Order QTY.\nQTY not Included will be marked Return to Sender\nEnter Remark", parent=self.Frame_Add)
+                            if remark_dialog:
+                                prod=Product.product()
+                                ref=prod.get_ref_id(namee.get())
+                                ref=ref[0]
+                                prod.return_to_sender(idd.get(),ref,QTY_diff,remark_dialog)
+
+                                id = idd.get()
+                                name = namee.get()
+                                newQTY=int(qty.get())-QTY_diff
+
+                                for item in self.frame_Table.get_children():
+                                    id = self.frame_Table.item(item)['values'][0]
+                                    name = self.frame_Table.item(item)['values'][1]
+                                    priceeee = self.frame_Table.item(item)['values'][2]
+                                    datee = self.frame_Table.item(item)['values'][5]
+                                    prod.editDelivery(id, name, priceeee, newQTY, datee)
+
+                                self.frame_Table.delete(*self.frame_Table.get_children())
+                            self.Frame_Add.destroy()
+                            
+                        else:
+                            selectedItem = self.frame_Table.selection()[0]
+                            x = self.frame_Table.item(selectedItem)['values'][4]
+                            self.frame_Table.item(selectedItem,text="a", values=(
+                            self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), self.Product_Stack_EN.get(), x, self.Product_date_EN.get_date()))
+
+                    self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
+                    self.button.place(x=710, y=150)
 
                     count = 0
                     for i in result:
@@ -620,8 +651,8 @@ class InvortoryGUI:
         date_list.append(date)
         expiry_date_list.append(expiry_date)
         order_date_list.append(order_date)
-        status_list.append("Under Delivery")
-        ref_id_list.append(ref_id[0][0])
+        status_list.append("In Transit")
+        ref_id_list.append(ref_id[0])
 
         self.frame_Table.insert(parent='', index='end', iid=ProductIDD,
                                 text=(ProductIDD, ProdName, price, quantity, date, expiry_date),
@@ -652,7 +683,7 @@ class InvortoryGUI:
                 zip(ProductID_list, ref_id_list, ProdName_list, quantity_list, price_list, status_list, batch_code_list,
                     expiry_date_list))
 
-            values = (batch_code, order_date, arrival_date, 'Under Delivery')
+            values = (batch_code, order_date, arrival_date, 'In Transit')
 
             b = Product.product()
             b.add_deliveryBatch(values)
@@ -1099,368 +1130,359 @@ class InvortoryGUI:
 
     # start UI for Export---------------
     def notify_UI(self):
-        if user_role != "Owner":
-            messagebox.showerror("Access Denied","Only the Owner can access this Feature!")
-        else:
-            global PageOpen, to,fromm, num_days
-            to=None
-            fromm=None
+        global PageOpen, to,fromm, num_days
+        to=None
+        fromm=None
 
-            now = datetime.now()
-            num_days = calendar.monthrange(now.year, now.month)[1]
+        now = datetime.now()
+        num_days = calendar.monthrange(now.year, now.month)[1]
 
-            if PageOpen<2:
+        if PageOpen<2:
+            self.btn_Notification['bg']='gray'
+            self.Add_Notify = Toplevel(self.InvorVal)
+            global btn, frame
+            btn = self.btn_Notification
+            frame = self.Add_Notify
+            self.Add_Notify.protocol("WM_DELETE_WINDOW", self.Add_Notify_on_close)
+            self.Add_Notify.title("Export to Spreadsheet")
+            self.Add_Notify.geometry("800x583")
+            self.Add_Notify.resizable(False,False)
+            self.Add_Notify.wm_attributes("-topmost", 1)
+            self.Add_Notify.grab_set()
+
+            self.Frame_Add_nofi = Frame(self.Add_Notify, width=800, height=200)
+            self.Frame_Add_nofi.place(x=0, y=0)
+
+            self.Frma = Label(self.Frame_Add_nofi, text="Export to Spreadsheet", width=20, font=("Arial", 35), anchor=W)
+            self.Frma.place(x=10, y=10)
+
+            def update_scope(selection):
+                global option
+                if selection == "Day":
+                    option=selection
+                    scope['values']=[day for day in range(1, num_days+1)]
+
+                elif selection == "Monthly":
+                    option=selection
+                    scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+
+            def toggle_radio(value):
+                if Radio_TO.config("value")[-1] == 1:
+                    Radio_TO.config(value=0)
+                    scope_to.configure(state="disabled")
+                else:
+                    Radio_TO.config(value=1)
+                    scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+                    scope_to.configure(state="normal")
                 
-                self.btn_Notification['bg']='gray'
-                self.Add_Notify = Toplevel(self.InvorVal)
-                global btn, frame
-                btn = self.btn_Notification
-                frame = self.Add_Notify
-                self.Add_Notify.protocol("WM_DELETE_WINDOW", self.Add_Notify_on_close)
-                self.Add_Notify.title("Export to Spreadsheet")
-                self.Add_Notify.geometry("800x583")
-                self.Add_Notify.resizable(False,False)
-                self.Add_Notify.wm_attributes("-topmost", 1)
-                self.Add_Notify.grab_set()
-
-                self.Frame_Add_nofi = Frame(self.Add_Notify, width=800, height=200)
-                self.Frame_Add_nofi.place(x=0, y=0)
-
-                self.Frma = Label(self.Frame_Add_nofi, text="Export to Spreadsheet", width=20, font=("Arial", 35), anchor=W)
-                self.Frma.place(x=10, y=10)
-
-                def update_scope(selection):
-                    global option
-                    if selection == "Day":
-                        option=selection
-                        scope['values']=[day for day in range(1, num_days+1)]
-
-                    elif selection == "Monthly":
-                        option=selection
-                        scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-
-                def toggle_radio(value):
-                    if Radio_TO.config("value")[-1] == 1:
-                        Radio_TO.config(value=0)
-                        scope_to.configure(state="disabled")
-                    else:
-                        Radio_TO.config(value=1)
-                        scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                        scope_to.configure(state="normal")
+            def year_radio(value):
+                if Radio_Yearly.config("value")[-1] == 1:
+                    Radio_Yearly.config(value=0)
+                    scope_year.configure(state="disabled")
+                else:
+                    current_year = datetime.now().year
+                    Radio_Yearly.config(value=1)
+                    scope_year['values']=[year for year in range(1950, current_year+1)]
+                    scope_year.configure(state="normal")
                 
-                def year_radio(value):
-                    if Radio_Yearly.config("value")[-1] == 1:
-                        Radio_Yearly.config(value=0)
-                        scope_year.configure(state="disabled")
-                    else:
-                        current_year = datetime.now().year
-                        Radio_Yearly.config(value=1)
-                        scope_year['values']=[year for year in range(1950, current_year+1)]
-                        scope_year.configure(state="normal")
-                
-                selected = StringVar()
-                Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
-                reports = ttk.Combobox(self.Add_Notify, width=20)
-                reports.place(x=20, y=100)
-                reports['values'] = ("Sales", "Inventory", "Delivery")
+            selected = StringVar()
+            Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
+            reports = ttk.Combobox(self.Add_Notify, width=20)
+            reports.place(x=20, y=100)
+            reports['values'] = ("Sales", "Inventory", "Delivery")
             
-                # Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
-                export = Button(self.Add_Notify, text="Export", state='disabled')
-                export.place(x=740, y=97)
+            # Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
+            export = Button(self.Add_Notify, text="Export", state='disabled')
+            export.place(x=740, y=97)
 
-                Table_BOX=Frame(self.Add_Notify,highlightbackground="black", highlightthickness=3)
-                Table_BOX.place(x=0,y=140,relwidth=1.0,relheight=0.76)
-                self.export_Table = ttk.Treeview(Table_BOX,height=25)
-                self.export_Table['columns'] = ("Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
-                self.export_Table.column("#0", width=0, stretch=NO)
-                self.export_Table.column("Invoice Number", anchor=W,)
-                self.export_Table.column("Purchase ID", anchor=W,)
-                self.export_Table.column("Item", anchor=W)
-                self.export_Table.column("Quantity", anchor=E,)
-                self.export_Table.column("Total Price", anchor=E,)
-                self.export_Table.column("Discount", anchor=E,)
-                self.export_Table.column("Date Purchased", anchor=E, )
+            Table_BOX=Frame(self.Add_Notify,highlightbackground="black", highlightthickness=3)
+            Table_BOX.place(x=0,y=140,relwidth=1.0,relheight=0.76)
+            self.export_Table = ttk.Treeview(Table_BOX,height=25)
+            self.export_Table['columns'] = ("Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
+            self.export_Table.column("#0", width=0, stretch=NO)
+            self.export_Table.column("Invoice Number", anchor=W,)
+            self.export_Table.column("Purchase ID", anchor=W,)
+            self.export_Table.column("Item", anchor=W)
+            self.export_Table.column("Quantity", anchor=E,)
+            self.export_Table.column("Total Price", anchor=E,)
+            self.export_Table.column("Discount", anchor=E,)
+            self.export_Table.column("Date Purchased", anchor=E, )
 
-                self.export_Table.heading("#0")
-                self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
-                self.export_Table.heading("Purchase ID", text="Purchase ID", anchor=W)
-                self.export_Table.heading("Item", text="Item", anchor=W)
-                self.export_Table.heading("Quantity", text="Quantity", anchor=W)
-                self.export_Table.heading("Total Price", text="Total Price", anchor=W)
-                self.export_Table.heading("Discount", text="Discount", anchor=W)
-                self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
-                scrollbar = ttk.Scrollbar(Table_BOX, orient="vertical", command=self.export_Table)
-                scrollbar.pack(side="right", fill="y")
+            self.export_Table.heading("#0")
+            self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
+            self.export_Table.heading("Purchase ID", text="Purchase ID", anchor=W)
+            self.export_Table.heading("Item", text="Item", anchor=W)
+            self.export_Table.heading("Quantity", text="Quantity", anchor=W)
+            self.export_Table.heading("Total Price", text="Total Price", anchor=W)
+            self.export_Table.heading("Discount", text="Discount", anchor=W)
+            self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
+            scrollbar = ttk.Scrollbar(Table_BOX, orient="vertical", command=self.export_Table)
+            scrollbar.pack(side="right", fill="y")
 
-                self.export_Table.configure(yscrollcommand=scrollbar.set)    
-                self.export_Table.pack()
+            self.export_Table.configure(yscrollcommand=scrollbar.set)    
+            self.export_Table.pack()
 
-                def export_report():
-                    self.Add_Notify.wm_attributes("-topmost", 0)
-                    report_type = reports.get()
-                    man = Manager.Manager()
+            def export_report():
+                self.Add_Notify.wm_attributes("-topmost", 0)
+                report_type = reports.get()
+                man = Manager.Manager()
 
-                    SALES_TEMPLATE = 'SALES_TEMPLATE.xlsx'
-                    INVENTORY_TEMPLATE = 'INVENTORY_TEMPLATE.xlsx'
-                    DELIVERY_TEMPLATE = 'PO_TEMPLATE.xlsx'
+                SALES_TEMPLATE = 'SALES_TEMPLATE.xlsx'
+                INVENTORY_TEMPLATE = 'INVENTORY_TEMPLATE.xlsx'
+                DELIVERY_TEMPLATE = 'PO_TEMPLATE.xlsx'
 
-                    if report_type == 'Sales':
-                        from_month=scope_to.get()
-                        year=scope_year.get()
-                        if option=="Monthly":
-                            month_num=datetime.strptime(scope.get(), '%B').month
-                            date_obj=datetime(int(year), month_num, 1)
+                if report_type == 'Sales':
+                    from_month=scope_to.get()
+                    year=scope_year.get()
+                    if option=="Monthly":
+                        month_num=datetime.strptime(scope.get(), '%B').month
+                        date_obj=datetime(int(year), month_num, 1)
 
-                            date_str_to = date_obj.strftime('%Y-%m-%d')
+                        date_str_to = date_obj.strftime('%Y-%m-%d')
 
-                            from_mnth=datetime.strptime(from_month, '%B').month
-                            from_mnth_obj=datetime(int(year), from_mnth, calendar.monthrange(int(year), from_mnth)[1])
+                        from_mnth=datetime.strptime(from_month, '%B').month
+                        from_mnth_obj=datetime(int(year), from_mnth, calendar.monthrange(int(year), from_mnth)[1])
 
-                            frm_mtnh_str=from_mnth_obj.strftime('%Y-%m-%d')
-                            result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
+                        frm_mtnh_str=from_mnth_obj.strftime('%Y-%m-%d')
+                        result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
 
-                            df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
-                        if option=="Day":
-                            month=from_month
+                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
+                    if option=="Day":
+                        month=from_month
 
-                            month_num=datetime.strptime(month, '%B').month
-                            date_obj=datetime(int(year), month_num, int(scope.get()))
-                            date_str = date_obj.strftime('%Y-%m-%d')
+                        month_num=datetime.strptime(month, '%B').month
+                        date_obj=datetime(int(year), month_num, int(scope.get()))
+                        date_str = date_obj.strftime('%Y-%m-%d')
 
-                            result = man.get_export_data(report_type,date_str,date_str)
-                            df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
+                        result = man.get_export_data(report_type,date_str,date_str)
+                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
 
-                        wb=openpyxl.load_workbook(SALES_TEMPLATE)
-                        ws=wb.worksheets[0]
-                        start_row=12
-                        for row in df.iterrows():
-                            for column in range(len(row[1])):
-                                ws.cell(row=start_row,column=column+2).value=row[1][column]
-                            start_row+=1
-                            ws.insert_rows(start_row,1)
-                        path=fd.asksaveasfilename(defaultextension=".xlsx")
-                        wb.save(path) 
+                    wb=openpyxl.load_workbook(SALES_TEMPLATE)
+                    ws=wb.worksheets[0]
+                    start_row=12
+                    for row in df.iterrows():
+                        for column in range(len(row[1])):
+                            ws.cell(row=start_row,column=column+2).value=row[1][column]
+                        start_row+=1
+                        ws.insert_rows(start_row,1)
+                    path=fd.asksaveasfilename(defaultextension=".xlsx")
+                    wb.save(path) 
 
-                    if report_type == 'Inventory':
-                        result = man.get_export_data(report_type,None,None)
-                        df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
-                        wb=openpyxl.load_workbook(INVENTORY_TEMPLATE)
-                        ws=wb.worksheets[0]
-                        start_row=5 
-                        for row in df.iterrows():
-                            for column in range(len(row[1])):
-                                ws.cell(row=start_row,column=column+2).value=row[1][column]
-                            start_row+=1
-                            ws.insert_rows(start_row,1)
+                if report_type == 'Inventory':
+                    result = man.get_export_data(report_type,None,None)
+                    df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
+                    wb=openpyxl.load_workbook(INVENTORY_TEMPLATE)
+                    ws=wb.worksheets[0]
+                    start_row=5 
+                    for row in df.iterrows():
+                        for column in range(len(row[1])):
+                            ws.cell(row=start_row,column=column+2).value=row[1][column]
+                        start_row+=1
+                        ws.insert_rows(start_row,1)
 
-                        path=fd.asksaveasfilename(defaultextension=".xlsx")
-                        wb.save(path) 
+                    path=fd.asksaveasfilename(defaultextension=".xlsx")
+                    wb.save(path) 
 
-                    if report_type == "Delivery":
-                        result = man.get_export_data(report_type,None,None)
-                        df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
-                        wb=openpyxl.load_workbook(DELIVERY_TEMPLATE)    
-                        ws=wb.worksheets[0]
-                        start_row=28
-                        for row in df.iterrows():
-                            for column in range (len(row[1])):
-                                ws.cell(row=start_row,column=column+2).value=row[1][column]
-                            start_row+=1
-                            ws.insert_rows(start_row,1)
+                if report_type == "Delivery":
+                    result = man.get_export_data(report_type,None,None)
+                    df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
+                    wb=openpyxl.load_workbook(DELIVERY_TEMPLATE)    
+                    ws=wb.worksheets[0]
+                    start_row=28
+                    for row in df.iterrows():
+                        for column in range (len(row[1])):
+                            ws.cell(row=start_row,column=column+2).value=row[1][column]
+                        start_row+=1
+                        ws.insert_rows(start_row,1)
 
-                        path=fd.asksaveasfilename(defaultextension=".xlsx")
-                        wb.save(path)        
+                    path=fd.asksaveasfilename(defaultextension=".xlsx")
+                    wb.save(path)        
 
-                    if report_type == 'Forecast':
-                        result, value = man.get_export_data(report_type,None,None)
-                        df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price'])
-                        df.insert(4,"30 Day Forecast",value)
+                # if report_type == 'Forecast':
+                #     result, value = man.get_export_data(report_type,None,None)
+                #     df=pd.DataFrame(result,columns=['Id','Item','Quantity','Price'])
+                #     df.insert(4,"30 Day Forecast",value)
 
-                        path=fd.asksaveasfilename(defaultextension=".xlsx")
-                        df.to_excel(path, str(report_type))
+                #     path=fd.asksaveasfilename(defaultextension=".xlsx")
+                #     df.to_excel(path, str(report_type))
                     # title = str.lower(report_type) + str(date.today()) + '.xlsx'
                     # df.to_excel(title, str(report_type))
                     # message = "Saved to ", title
-                    messagebox.showinfo("Exported Successfully", "Saved to " + path)
+                messagebox.showinfo("Exported Successfully", "Saved to " + path)
                 
-                def reports_callback(event):
-                    export.config(state='normal',command=lambda:export_report())
+            def reports_callback(event):
+                export.config(state='normal',command=lambda:export_report())
+                self.export_Table.delete(*self.export_Table.get_children())
+                report_type = reports.get()
 
-                    self.export_Table.delete(*self.export_Table.get_children())
-                    report_type = reports.get()
+                man = Manager.Manager()
+                result = man.get_export_data(report_type,None,None)
 
-                    man = Manager.Manager()
-                    result = man.get_export_data(report_type,None,None)
+                if report_type == 'Sales':
 
-                    if report_type == 'Sales':
+                    global FLabel, scope, TOLabel, scope_to, YLabel, scope_year
+                    FLabel=Label(self.Add_Notify, text="From")
+                    FLabel.place(x=170, y=80)
+                    scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
+                    scope.place(x=170, y=100)
 
-                        global FLabel, scope, TOLabel, scope_to, YLabel, scope_year
-                        FLabel=Label(self.Add_Notify, text="From")
-                        FLabel.place(x=170, y=80)
-                        scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
-                        scope.place(x=170, y=100)
+                    global selected_to
+                    selected_to = StringVar()
+                    TOLabel=Label(self.Add_Notify, text="")
+                    TOLabel.place(x=320, y=80)
+                    scope_to = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_to)
+                    scope_to.configure(state="disabled")
+                    scope_to['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+                    scope_to.place(x=320, y=100)
 
-                        global selected_to
-                        selected_to = StringVar()
-                        TOLabel=Label(self.Add_Notify, text="")
-                        TOLabel.place(x=320, y=80)
-                        scope_to = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_to)
-                        scope_to.configure(state="disabled")
-                        scope_to['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                        scope_to.place(x=320, y=100)
-
-                        global selected_year
-                        selected_year = StringVar()
-                        YLabel=Label(self.Add_Notify, text="Year")
-                        YLabel.place(x=490, y=80)
-                        scope_year = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_year)
-                        scope_year.configure(state="disabled")
-                        scope_year.place(x=490, y=100)
+                    global selected_year
+                    selected_year = StringVar()
+                    YLabel=Label(self.Add_Notify, text="Year")
+                    YLabel.place(x=490, y=80)
+                    scope_year = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_year)
+                    scope_year.configure(state="disabled")
+                    scope_year.place(x=490, y=100)
                         
-                        global radio_scope, Radio_Day, Radio_Monthly, Radio_TO, Radio_Yearly
-                        radio_scope=StringVar()
+                    global radio_scope, Radio_Day, Radio_Monthly, Radio_TO, Radio_Yearly
+                    radio_scope=StringVar()
 
-                        Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", variable=radio_scope,value='Day',command=lambda:update_scope('Day'))
-                        Radio_Day.place(x=630,y=80)
+                    Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", variable=radio_scope,value='Day',command=lambda:update_scope('Day'))
+                    Radio_Day.place(x=630,y=80)
 
-                        Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", variable=radio_scope,value='Monthly',command=lambda:update_scope('Monthly'))
-                        Radio_Monthly.place(x=630,y=100)
+                    Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", variable=radio_scope,value='Monthly',command=lambda:update_scope('Monthly'))
+                    Radio_Monthly.place(x=630,y=100)
 
-                        Radio_TO=tk.Radiobutton(self.Add_Notify,text="TO", value=1,command=lambda:toggle_radio(0))
-                        Radio_TO.place(x=280, y=100)
+                    Radio_TO=tk.Radiobutton(self.Add_Notify,text="TO", value=1,command=lambda:toggle_radio(0))
+                    Radio_TO.place(x=280, y=100)
 
-                        Radio_Yearly=tk.Radiobutton(self.Add_Notify,text="With", value=1 ,command=lambda:year_radio(0))
-                        Radio_Yearly.place(x=430,y=100)
+                    Radio_Yearly=tk.Radiobutton(self.Add_Notify,text="With", value=1 ,command=lambda:year_radio(0))
+                    Radio_Yearly.place(x=430,y=100)
 
-                        scope.bind('<<ComboboxSelected>>',update_scope)
+                    scope.bind('<<ComboboxSelected>>',update_scope)
 
-                        self.export_Table['columns'] = (
-                        "Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
-                        self.export_Table.column("#0", width=0, stretch=NO)
-                        self.export_Table.column("Invoice Number", anchor=W,width=60)
-                        self.export_Table.column("Purchase ID", anchor=W,width=50)
-                        self.export_Table.column("Item", anchor=W,width=330)
-                        self.export_Table.column("Quantity", anchor=E,width=30)
-                        self.export_Table.column("Total Price", anchor=E,width=30)
-                        self.export_Table.column("Discount", anchor=E,width=30)
-                        self.export_Table.column("Date Purchased", anchor=E,width=50)
+                    self.export_Table['columns'] = (
+                    "Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
+                    self.export_Table.column("#0", width=0, stretch=NO)
+                    self.export_Table.column("Invoice Number", anchor=W,width=60)
+                    self.export_Table.column("Purchase ID", anchor=W,width=50)
+                    self.export_Table.column("Item", anchor=W,width=330)
+                    self.export_Table.column("Quantity", anchor=E,width=30)
+                    self.export_Table.column("Total Price", anchor=E,width=30)
+                    self.export_Table.column("Discount", anchor=E,width=30)
+                    self.export_Table.column("Date Purchased", anchor=E,width=50)
 
-                        self.export_Table.heading("#0")
-                        self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
-                        self.export_Table.heading("Purchase ID", text="Purchase ID", anchor=W)
-                        self.export_Table.heading("Item", text="Item", anchor=W)
-                        self.export_Table.heading("Quantity", text="Quantity", anchor=W)
-                        self.export_Table.heading("Total Price", text="Total Price", anchor=W)
-                        self.export_Table.heading("Discount", text="Discount", anchor=W)
-                        self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
+                    self.export_Table.heading("#0")
+                    self.export_Table.heading("Invoice Number", text="Invoice Number", anchor=W)
+                    self.export_Table.heading("Purchase ID", text="Purchase ID", anchor=W)
+                    self.export_Table.heading("Item", text="Item", anchor=W)
+                    self.export_Table.heading("Quantity", text="Quantity", anchor=W)
+                    self.export_Table.heading("Total Price", text="Total Price", anchor=W)
+                    self.export_Table.heading("Discount", text="Discount", anchor=W)
+                    self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
 
-                        self.export_Table.pack()
+                    self.export_Table.pack()
 
-                    if report_type == 'Inventory':
-                        try:
-                            FLabel.place_forget()
-                            TOLabel.place_forget()
-                            YLabel.place_forget()
-                            scope.place_forget()
-                            scope_to.place_forget()
-                            scope_year.place_forget()
-                            Radio_Day.place_forget()
-                            Radio_Monthly.place_forget()
-                            Radio_TO.place_forget()
-                            Radio_Yearly.place_forget()
-                        except(NameError):
-                            pass
+                if report_type == 'Inventory':
+                    try:
+                        FLabel.place_forget()
+                        TOLabel.place_forget()
+                        YLabel.place_forget()
+                        scope.place_forget()
+                        scope_to.place_forget()
+                        scope_year.place_forget()
+                        Radio_Day.place_forget()
+                        Radio_Monthly.place_forget()
+                        Radio_TO.place_forget()
+                        Radio_Yearly.place_forget()
+                    except(NameError):
+                        pass
         
-                        self.export_Table['columns'] = (
-                        'Reference ID', "Item", "Price", "Remaining Quantity")
-                        self.export_Table.column("#0", width=0, stretch=NO)
-                        self.export_Table.column("Reference ID", anchor=W,width=50)
-                        self.export_Table.column("Item", anchor=W,width=300)
-                        self.export_Table.column("Price", anchor=E,width=50)
-                        self.export_Table.column("Remaining Quantity", anchor=E,width=70)
+                    self.export_Table['columns'] = (
+                    'Reference ID', "Item", "Price", "Remaining Quantity")
+                    self.export_Table.column("#0", width=0, stretch=NO)
+                    self.export_Table.column("Reference ID", anchor=W,width=50)
+                    self.export_Table.column("Item", anchor=W,width=300)
+                    self.export_Table.column("Price", anchor=E,width=50)
+                    self.export_Table.column("Remaining Quantity", anchor=E,width=70)
                         
-                        self.export_Table.heading("#0")
-                        self.export_Table.heading("Reference ID", text="Reference ID", anchor=W)
-                        self.export_Table.heading("Item", text="Item", anchor=W)
-                        self.export_Table.heading("Price", text="Price", anchor=W)
-                        self.export_Table.heading("Remaining Quantity", text="Remaining Quantity", anchor=W)
+                    self.export_Table.heading("#0")
+                    self.export_Table.heading("Reference ID", text="Reference ID", anchor=W)
+                    self.export_Table.heading("Item", text="Item", anchor=W)
+                    self.export_Table.heading("Price", text="Price", anchor=W)
+                    self.export_Table.heading("Remaining Quantity", text="Remaining Quantity", anchor=W)
 
-                        self.export_Table.pack()
+                    self.export_Table.pack()
 
-                    if report_type == "Delivery":
-                        try:
-                            FLabel.place_forget()
-                            TOLabel.place_forget()
-                            YLabel.place_forget()
-                            scope.place_forget()
-                            scope_to.place_forget()
-                            scope_year.place_forget()
-                            Radio_Day.place_forget()
-                            Radio_Monthly.place_forget()
-                            Radio_TO.place_forget()
-                            Radio_Yearly.place_forget()
-                        except(NameError):
-                            pass
+                if report_type == "Delivery":
+                    try:
+                        FLabel.place_forget()
+                        TOLabel.place_forget()
+                        YLabel.place_forget()
+                        scope.place_forget()
+                        scope_to.place_forget()
+                        scope_year.place_forget()
+                        Radio_Day.place_forget()
+                        Radio_Monthly.place_forget()
+                        Radio_TO.place_forget()
+                        Radio_Yearly.place_forget()
+                    except(NameError):
+                        pass
 
-                        self.export_Table['columns'] = (
-                        'Batch Code', 'Item', 'Quantity', 'Price', 'Status')
-                        self.export_Table.column("#0", width=0, stretch=NO)
-                        self.export_Table.column("Batch Code", anchor=W,width=50 )
-                        self.export_Table.column("Item", anchor=W,width=300 )
-                        self.export_Table.column("Quantity", anchor=E,width=30 )
-                        self.export_Table.column("Price", anchor=E,width=30 )
-                        self.export_Table.column("Status", anchor=E,width=50 )
+                    self.export_Table['columns'] = (
+                    'Batch Code', 'Item', 'Quantity', 'Price', 'Status')
+                    self.export_Table.column("#0", width=0, stretch=NO)
+                    self.export_Table.column("Batch Code", anchor=W,width=50 )
+                    self.export_Table.column("Item", anchor=W,width=300 )
+                    self.export_Table.column("Quantity", anchor=E,width=30 )
+                    self.export_Table.column("Price", anchor=E,width=30 )
+                    self.export_Table.column("Status", anchor=E,width=50 )
                         
-                        self.export_Table.heading("#0")
-                        self.export_Table.heading("Batch Code", text="Batch Code", anchor=W)
-                        self.export_Table.heading("Item", text="Item", anchor=W)
-                        self.export_Table.heading("Quantity", text="Quantity", anchor=W)
-                        self.export_Table.heading("Price", text="Price", anchor=W)
-                        self.export_Table.heading("Status", text="Status", anchor=W)
+                    self.export_Table.heading("#0")
+                    self.export_Table.heading("Batch Code", text="Batch Code", anchor=W)
+                    self.export_Table.heading("Item", text="Item", anchor=W)
+                    self.export_Table.heading("Quantity", text="Quantity", anchor=W)
+                    self.export_Table.heading("Price", text="Price", anchor=W)
+                    self.export_Table.heading("Status", text="Status", anchor=W)
 
-                        self.export_Table.pack()
+                    self.export_Table.pack()
 
-                    if report_type == 'Forecast':
-                        try:
-                            FLabel.place_forget()
-                            TOLabel.place_forget()
-                            YLabel.place_forget()
-                            scope.place_forget()
-                            scope_to.place_forget()
-                            scope_year.place_forget()
-                            Radio_Day.place_forget()
-                            Radio_Monthly.place_forget()
-                            Radio_TO.place_forget()
-                            Radio_Yearly.place_forget()
-                        except(NameError):
-                            pass
+                # if report_type == 'Forecast':
+                #     try:
+                #         FLabel.place_forget()
+                #         TOLabel.place_forget()
+                #         YLabel.place_forget()
+                #         scope.place_forget()
+                #         scope_to.place_forget()
+                #         scope_year.place_forget()
+                #         Radio_Day.place_forget()
+                #         Radio_Monthly.place_forget()
+                #         Radio_TO.place_forget()
+                #         Radio_Yearly.place_forget()
+                #     except(NameError):
+                #         pass
 
-                        # Label(self.Add_Notify,text="NOTE: Forecast will not be Accurate during the First Time Use, when Data is Limited.").place(x=0, y=150)
-                        
-                        # result,values = man.get_export_data(report_type)
+                #     self.export_Table['columns'] = (
+                #     'Id','Item','Quantity','Price','30 Day Forecast')
+                #     self.export_Table.column("#0", width=0, stretch=NO)
+                #     self.export_Table.column("Id", anchor=W, width=50)
+                #     self.export_Table.column("Item", anchor=W,width=340 )
+                #     self.export_Table.column("Quantity", anchor=E,width=30 )
+                #     self.export_Table.column("Price", anchor=E,width=30 )
+                #     self.export_Table.column("30 Day Forecast", anchor=E,width=50 )
 
-                        self.export_Table['columns'] = (
-                        'Id','Item','Quantity','Price','30 Day Forecast')
-                        self.export_Table.column("#0", width=0, stretch=NO)
-                        self.export_Table.column("Id", anchor=W, width=50)
-                        self.export_Table.column("Item", anchor=W,width=340 )
-                        self.export_Table.column("Quantity", anchor=E,width=30 )
-                        self.export_Table.column("Price", anchor=E,width=30 )
-                        self.export_Table.column("30 Day Forecast", anchor=E,width=50 )
-                        
-                        self.export_Table.heading("#0")
-                        self.export_Table.heading("Id", text="Id", anchor=W)
-                        self.export_Table.heading("Item", text="Item", anchor=W)
-                        self.export_Table.heading("Quantity", text="Quantity", anchor=W)
-                        self.export_Table.heading("Price", text="Price", anchor=W)
-                        self.export_Table.heading("30 Day Forecast", text="30 Day Forecast", anchor=W)
+                #     self.export_Table.heading("#0")
+                #     self.export_Table.heading("Id", text="Id", anchor=W)
+                #     self.export_Table.heading("Item", text="Item", anchor=W)
+                #     self.export_Table.heading("Quantity", text="Quantity", anchor=W)
+                #     self.export_Table.heading("Price", text="Price", anchor=W)
+                #     self.export_Table.heading("30 Day Forecast", text="30 Day Forecast", anchor=W)
 
-                        self.export_Table.pack()
+                #     self.export_Table.pack()
 
-                    count = 0
-                    for item in result:
-                            self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
-                            count += 1
+                count = 0
+                for item in result:
+                        self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
+                        count += 1
                 
                     # if report_type == 'Forecast':
                     #     for item in range(len(result)):
@@ -1471,11 +1493,11 @@ class InvortoryGUI:
                     #         self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
                     #         count += 1
 
-                reports.bind('<<ComboboxSelected>>',reports_callback)
-                PageOpen += 1
-                self.Add_Notify.mainloop()
-            else:
-                messagebox.showinfo("Error","The Window already Open!")
+            reports.bind('<<ComboboxSelected>>',reports_callback)
+            PageOpen += 1
+            self.Add_Notify.mainloop()
+        else:
+            messagebox.showinfo("Error","The Window already Open!")
 
     # Chick ADD END!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def InvorGUI(self):
@@ -1681,7 +1703,7 @@ class InvortoryGUI:
         price = self.Stack_Product_Price_EN.get()
 
         idd = int(id)
-        pricee = int(price)
+        pricee = float(price)
         priceee = float(pricee)
 
         Prod = Product.product()
@@ -1848,7 +1870,7 @@ class InvortoryGUI:
 
         Label_Search = Label(window_Frame, text="Search Batch:")
         Entry_Search = Entry(window_Frame, width=50, borderwidth=3)
-        button_Search = Button(window_Frame, text="Mark Arrived", padx=5, pady=0, command=self.search)
+        button_Search = Button(window_Frame, text="Mark On Hand", padx=5, pady=0, command=self.search)
 
         Label_Search.grid(row=0, column=0, sticky=W)
         Entry_Search.grid(row=0, column=1)

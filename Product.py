@@ -37,19 +37,19 @@ class product:
 
     def editDelivery(self,id, name, price,qty,expiry_date):
         dbcursor = self.dbcursor
-        query = "UPDATE products SET ProductName=%s, price=%s, quantity=%s,expiry_date=%s ,status='Sellable' WHERE ProductID=%s"
+        query = "UPDATE products SET ProductName=%s, price=%s, quantity=%s,expiry_date=%s ,status='On Hand' WHERE ProductID=%s"
 
         vals=(name, price,qty,expiry_date,id)
 
         dbcursor.execute(query, vals)
 
-        query2="UPDATE deliverylist,products SET deliverylist.status='Arrived' WHERE deliverylist.BatchCode=products.batch_code"
+        query2="UPDATE deliverylist,products SET deliverylist.status='On Hand' WHERE deliverylist.BatchCode=products.batch_code"
         dbcursor.execute(query2)
         dbConnector.db.commit()
 
     def confirm_all(self,val):
         dbcursor = self.dbcursor
-        query = "UPDATE products SET ProductName=%s, price=%s, quantity=%s,expiry_date=%s ,status='Sellable' WHERE ProductID=%s"
+        query = "UPDATE products SET ProductName=%s, price=%s, quantity=%s,expiry_date=%s ,status='On Hand' WHERE ProductID=%s"
 
         dbcursor.execute(query, val)
         dbConnector.db.commit()
@@ -76,6 +76,12 @@ class product:
         dbcursor.executemany(query, vals)
         dbConnector.db.commit()
 
+    def return_to_sender(self,prod_id,ref,qty,remark):
+        dbcursor = self.dbcursor
+        query="INSERT INTO return_to_sender(ProductID,ref_id,qty,remarks) VALUES(%s,%s,%s,%s)"
+        dbcursor.execute(query,(prod_id,ref,qty,remark,))
+        dbConnector.db.commit()
+
     def add_deliveryBatch(self,val):
         dbcursor = self.dbcursor
         query="INSERT INTO deliverylist VALUES(%s,%s,%s,%s)"
@@ -86,7 +92,7 @@ class product:
         dbcursor = self.dbcursor
         query="SELECT ref_id from products_directory WHERE product_name=%s LIMIT 1"
         dbcursor.execute(query,(name,))
-        result=dbcursor.fetchall()
+        result=dbcursor.fetchone()
         return result
 
     def get_batch_code(self,code):
@@ -192,7 +198,7 @@ class product:
 
     def viewALL(self,val):
         dbcursor = self.dbcursor
-        query = "SELECT ProductID,ProductName,price,batch_code,Quantity FROM products WHERE ProductName LIKE {}".format("\'%"+val+"%\' AND status='Sellable'")
+        query = "SELECT ProductID,ProductName,price,batch_code,Quantity FROM products WHERE ProductName LIKE {}".format("\'%"+val+"%\' AND status='On Hand'")
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         dbConnector.db.commit()
