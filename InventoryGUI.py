@@ -55,6 +55,25 @@ class InvortoryGUI:
 
         self.Frame_List.pack()
         self.Label_title = Label(self.Frame_List, text="List Page", font=("Arial", 15)).place(x=0, y=0)
+        filter = ttk.Combobox(self.Frame_List,width=10,state='readonly')
+        filter.place(x=100, y=0)
+        filter["values"]=("In Transit","On Hand","Return to Sender")
+
+        btn_filter_clear=Button(self.Frame_List,text="Clear Filter",state='disabled')
+        btn_filter_clear.place(x=500, y=0)
+
+        def filter_from_callback(event):
+            print(event.widget.get_date())
+
+        # Date From
+        filter_from = DateEntry(self.Frame_List, selectmode='day', width=20) 
+        filter_from.place(x=200, y=0)
+        filter_from.bind("<<DateEntrySelected>>",filter_from_callback)
+
+        # Date To
+        filter_to = DateEntry(self.Frame_List, selectmode='day', width=20,state='disabled')
+        filter_to.place(x=350, y=0)
+
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
@@ -76,10 +95,54 @@ class InvortoryGUI:
         self.frame_Table.place(x=0, y=30)
         m1 = Manager.Manager()
         result = m1.inventoryList()
+        result2 = m1.return_to_sender_list()
         count = 0
         for x in result:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+        
+        for y in result2:
+            count += 1
+            self.frame_Table.insert(parent='', index='end', iid=count, text=y, values=y)
+
+        detached_items=[]
+
+        def filter_callback(event):
+            choice=event.widget.get()
+                
+            for item in self.frame_Table.get_children():
+                if choice == "Return to Sender":
+                    if "In Transit" in self.frame_Table.item(item)['text']:
+                        detached_items.append(self.frame_Table.item(item))
+                        self.frame_Table.detach(item)
+
+                    if "On Hand" in self.frame_Table.item(item)['text']:
+                        detached_items.append(self.frame_Table.item(item))
+                        self.frame_Table.detach(item)
+
+                if choice == "In Transit":
+                    if "In Transit" not in self.frame_Table.item(item)['text']:
+                        detached_items.append(self.frame_Table.item(item))
+                        self.frame_Table.detach(item)
+
+                if choice == "On Hand":
+                    if "On Hand" not in self.frame_Table.item(item)['text']:
+                        detached_items.append(self.frame_Table.item(item))
+                        self.frame_Table.detach(item)
+
+                
+            event.widget.config(state='disabled')
+            def clear_filter():
+                for item in detached_items:
+                    self.frame_Table.insert("", 'end', text=item['text'], values=item['values'])
+                detached_items.clear()
+                event.widget.config(state='normal')
+
+            btn_filter_clear.config(state='normal',command=lambda: clear_filter())
+        
+
+                    
+        filter.bind("<<ComboboxSelected>>",filter_callback)
 
     def Click_Stack(self):
         self.button_List.config(state="normal")
@@ -300,7 +363,8 @@ class InvortoryGUI:
                                 prod=Product.product()
                                 ref=prod.get_ref_id(namee.get())
                                 ref=ref[0]
-                                prod.return_to_sender(idd.get(),ref,QTY_diff,remark_dialog)
+                                            
+                                prod.return_to_sender(idd.get(),batch,ref,QTY_diff,remark_dialog)
 
                                 id = idd.get()
                                 name = namee.get()

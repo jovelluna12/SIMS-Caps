@@ -12,6 +12,15 @@ class Manager (Employee.Employee):
         result = dbcursor.fetchall()
         return result
 
+    def get_list_from(event,date):
+        pass
+    def return_to_sender_list(self):
+        query="SELECT return_to_sender.ProductID, products.ProductName,return_to_sender.remarks,products.price, return_to_sender.qty FROM return_to_sender, products WHERE return_to_sender.ProductID=products.ProductID;"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query)
+        result = dbcursor.fetchall()
+        return result
+
     def productSales(self):
         dbcursor = self.dbcursor
         query = "SELECT purchasedproducts.PurchaseID,purchasedproducts.Item,purchasedproducts.Quantity,products.price, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM purchasedproducts,products,salestransaction WHERE purchasedproducts.InvoiceNumber=salestransaction.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID GROUP BY purchasedproducts.PurchaseID;"

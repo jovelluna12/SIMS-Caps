@@ -76,10 +76,11 @@ class product:
         dbcursor.executemany(query, vals)
         dbConnector.db.commit()
 
-    def return_to_sender(self,prod_id,ref,qty,remark):
+    def return_to_sender(self,prod_id,batch_code,ref,qty,remark):
         dbcursor = self.dbcursor
-        query="INSERT INTO return_to_sender(ProductID,ref_id,qty,remarks) VALUES(%s,%s,%s,%s)"
-        dbcursor.execute(query,(prod_id,ref,qty,remark,))
+        batch=batch_code[0]
+        query="INSERT INTO return_to_sender(ProductID,BatchCode,ref_id,qty,remarks) VALUES(%s,%s,%s,%s,%s)"
+        dbcursor.execute(query,(prod_id,batch,ref,qty,remark,))
         dbConnector.db.commit()
 
     def add_deliveryBatch(self,val):
