@@ -1,4 +1,4 @@
-from logging import root
+# from logging import root
 import datetime
 from datetime import date, datetime 
 from tkinter import simpledialog
@@ -38,11 +38,114 @@ class InvortoryGUI:
         PageOpen = 1
         global PageOpen_Sub
         PageOpen_Sub=1
+        global filter_from, filter_to,filter,batch,FilterList
 
     def search(self):
         result = self.Entry_Search.get()
 
     # Chick List and stack Start~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def Filter_close(self):
+        self.InvorVal.grab_release()
+        FilterList.destroy()
+
+    def filter_results(self):
+        global filter_from, filter_to,filter,batch,FilterList
+        if str(filter_from.cget("state"))=="normal":
+            from_filter=filter_from.get_date()
+        else: 
+            from_filter=None
+
+        if str(filter_to.cget("state"))=="normal":
+                to_filter=filter_to.get_date()
+        else: 
+            to_filter=None
+
+            fill=filter.get()
+            batch_code=batch.get()
+            man=Manager.Manager()
+
+        if fill=="In Transit":
+            res=man.get_inTransit(from_filter,to_filter,batch_code)
+            count = 0
+            self.frame_Table.delete(*self.frame_Table.get_children())
+            for x in res:
+                count += 1
+                self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+           
+
+        if fill=="On Hand":
+                res=man.get_OnHand(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+                
+
+        if fill=="None":
+                res=man.listNone(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+                
+
+        self.Filter_close()
+
+    def filter_GUI(self):
+        global filter_from, filter_to,filter,batch,FilterList
+        FilterList=Toplevel(self.InvorVal)
+        FilterList.title("Filter out Results")
+        FilterList.geometry("480x340")
+        FilterList.resizable(False,False)
+        FilterList.protocol("WM_DELETE_WINDOW",self.Filter_close)
+
+        FilterList.grab_set()
+        Label(FilterList,text="LIST FILTER",font=("Arial", 35, "bold")).place(x=10,y=10)
+        Label(FilterList,text="Use the following settings to Filter out the Results.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=33,y=80)
+        Label(FilterList,text="Select Filter:").place(x=33,y=150)
+        filter = ttk.Combobox(FilterList,width=10,state='readonly')
+        filter.place(x=100, y=150)
+        filter.set("None")
+        filter["values"]=("None","In Transit","On Hand")
+
+        Label(FilterList,text="Select Batch:").place(x=277,y=150)
+        batch = ttk.Combobox(FilterList,width=10,state='readonly')
+        batch.place(x=350, y=150)
+
+        prod=Product.product()
+        res=prod.get_batch_Codes()
+        batch_list=[x[0] for x in res]
+        batch_list.insert(0,"None")
+        batch.set("None")
+        batch["values"]=(batch_list)
+
+        def no_sel():
+            filter_from.config(state='disabled')
+            filter_to.config(state='disabled')
+
+        def sel():
+            filter_from.config(state='normal')
+            filter_to.config(state='normal')
+
+        var=IntVar()
+        var.set(0)
+        Label(FilterList,text="Configure Date Parameters").place(x=33,y=180)
+        Radiobutton(FilterList,text="No Parameters",variable=var,value=0,command=no_sel).place(x=100,y=200)
+        Radiobutton(FilterList,text="Allow Date",variable=var,value=1,command=sel).place(x=230,y=200)
+
+        Label(FilterList,text="Recorded From :").place(x=33,y=230)
+        filter_from = DateEntry(FilterList,state='disabled') 
+        filter_from.place(x=140, y=230)
+
+        Label(FilterList,text="Recorded To :").place(x=33,y=260)
+        filter_to = DateEntry(FilterList,state='disabled') 
+        filter_to.place(x=140, y=260)
+            
+        Button(FilterList,text="Filter",bg="green",command=self.filter_results).place(x=340,y=300)
+        Button(FilterList,text="Cancel",command=self.Filter_close).place(x=390,y=300)
+
     def Click_List1(self):
         self.button_List.config(state="disabled")
         self.button_Stack.config(state="normal")
@@ -56,98 +159,8 @@ class InvortoryGUI:
         self.Frame_List.pack()
         self.Label_title = Label(self.Frame_List, text="List Page", font=("Arial", 15)).place(x=0, y=0)
 
-        
-        def filter_results():
-            if str(filter_from.cget("state"))=="normal":
-                from_filter=filter_from.get_date()
-            else: 
-                from_filter=None
-
-            if str(filter_to.cget("state"))=="normal":
-                to_filter=filter_to.get_date()
-            else: 
-                to_filter=None
-
-            fill=filter.get()
-            batch_code=batch.get()
-            man=Manager.Manager()
-            if fill=="In Transit":
-                res=man.get_inTransit(from_filter,to_filter,batch_code)
-                count = 0
-                self.frame_Table.delete(*self.frame_Table.get_children())
-                for x in res:
-                    count += 1
-                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-
-            if fill=="On Hand":
-                res=man.get_OnHand(from_filter,to_filter,batch_code)
-                count = 0
-                self.frame_Table.delete(*self.frame_Table.get_children())
-                for x in res:
-                    count += 1
-                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-
-            if fill=="None":
-                res=man.listNone(from_filter,to_filter,batch_code)
-                count = 0
-                self.frame_Table.delete(*self.frame_Table.get_children())
-                for x in res:
-                    count += 1
-                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-            root.destroy()
-
-
-        def filter_GUI():
-            global filter_from, filter_to,filter,batch,root
-            root=Tk()
-            root.title("Filter out Results")
-            root.geometry("500x500")
-            root.resizable(False,False)
-
-            Label(root,text="Use the following settings to Filter out the Results.\nYou can clear this settings Later on.",font=("Arial", 13, "bold")).place(x=50,y=0)
-            Label(root,text="Select Filter").place(x=0,y=50)
-            filter = ttk.Combobox(root,width=10,state='readonly')
-            filter.place(x=100, y=50)
-            filter.set("None")
-            filter["values"]=("None","In Transit","On Hand")
-
-            Label(root,text="Select Batch").place(x=250,y=50)
-            batch = ttk.Combobox(root,width=10,state='readonly')
-            batch.place(x=350, y=50)
-            prod=Product.product()
-            res=prod.get_batch_Codes()
-            batch_list=[x[0] for x in res]
-            batch_list.insert(0,"None")
-            batch.set("None")
-            batch["values"]=(batch_list)
-
-            def no_sel():
-                filter_from.config(state='disabled')
-                filter_to.config(state='disabled')
-
-            def sel():
-                filter_from.config(state='normal')
-                filter_to.config(state='normal')
-
-            var=IntVar()
-            var.set(0)
-            Label(root,text="Configure Date Parameters").place(x=0,y=80)
-            Radiobutton(root,text="No Parameters",variable=var,value=0,command=no_sel).place(x=0,y=100)
-            Radiobutton(root,text="Allow Date",variable=var,value=1,command=sel).place(x=100,y=100)
-
-            Label(root,text="Recorded From").place(x=0,y=130)
-            filter_from = DateEntry(root,state='disabled') 
-            filter_from.place(x=100, y=130)
-
-            Label(root,text="Recorded To").place(x=0,y=160)
-            filter_to = DateEntry(root,state='disabled') 
-            filter_to.place(x=100, y=160)
-            
-            Button(root,text="Done",command=lambda: filter_results()).place(x=0,y=300)
-            root.mainloop()
-
-        btn_filter_clear=Button(self.Frame_List,text="Filters",command=lambda: filter_GUI())
-        btn_filter_clear.place(x=100, y=0)
+        btn_filter_clear=Button(self.Frame_List,text="Filters",bg="green",command=self.filter_GUI)
+        btn_filter_clear.place(x=890, y=0)
 
         def clear_filter():
             m1 = Manager.Manager()
@@ -159,7 +172,7 @@ class InvortoryGUI:
                 self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
         btn_filter_clear=Button(self.Frame_List,text="Clear Filters",command=lambda: clear_filter())
-        btn_filter_clear.place(x=150, y=0)
+        btn_filter_clear.place(x=940, y=0)
 
         style = ttk.Style()
         style.theme_use("default")
@@ -228,6 +241,10 @@ class InvortoryGUI:
         for x in result:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+    
+    def refresh(self):
+        self.InvorGUI.update()
+        self.InvorGUI.after(100, self.refresh)
 
 
     def Add_Delivery1_close(self):
@@ -237,6 +254,7 @@ class InvortoryGUI:
                 self.InvorVal.grab_release()
                 PageOpen=1
                 self.Add_Delivery1.destroy()
+                self.refresh
             else:
                 self.Add_Delivery1.wm_attributes("-topmost", 1)
 
@@ -862,7 +880,7 @@ class InvortoryGUI:
             expiry_date_list.clear()
             order_date_list.clear()
             status_list.clear()
-
+            PagaOpen = 1 
             self.Add_Delivery.destroy()
         else:
             self.Add_Delivery.wm_attributes("-topmost", 1)
@@ -1272,6 +1290,325 @@ class InvortoryGUI:
 
         else:
             messagebox.showinfo("Error","The Window already Open!")
+    
+    #Sale>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    def Sale_Filter_close(self):
+        self.Add_Notify.grab_release()
+        self.Sale_FilterList.wm_attributes("-topmost", 1)
+        self.Sale_FilterList.destroy()
+        
+
+    def Sale_Filter_results(self):
+        # global filter_from, filter_to,filter,batch,self.Sale_FilterList
+        if str(filter_from.cget("state"))=="normal":
+            from_filter=filter_from.get_date()
+        else: 
+            from_filter=None
+
+        if str(filter_to.cget("state"))=="normal":
+                to_filter=filter_to.get_date()
+        else: 
+            to_filter=None
+
+            fill=filter.get()
+            batch_code=batch.get()
+            man=Manager.Manager()
+
+        if fill=="In Transit":
+            res=man.get_inTransit(from_filter,to_filter,batch_code)
+            count = 0
+            self.frame_Table.delete(*self.frame_Table.get_children())
+            for x in res:
+                count += 1
+                self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+           
+
+        if fill=="On Hand":
+                res=man.get_OnHand(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+                
+
+        if fill=="None":
+                res=man.listNone(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+                
+        self.Sale_Filter_close()
+
+    def Sale_Filter_GUI(self):
+        self.InvorVal.grab_release()
+        self.Add_Notify.wm_attributes("-topmost", 0)
+
+        self.Sale_FilterList=Toplevel(self.Add_Notify)
+        self.Sale_FilterList.title("Filter out Results")
+        self.Sale_FilterList.geometry("480x340")
+        self.Sale_FilterList.resizable(False,False)
+        self.Sale_FilterList.protocol("WM_DELETE_WINDOW",self.Sale_Filter_close)
+        self.Sale_FilterList.grab_set()
+        self.Sale_FilterList.wm_attributes("-topmost", 1)
+        
+        Label(self.Sale_FilterList,text="SALE REPORTS FILTER",font=("Arial", 25, "bold")).place(x=10,y=10)
+        Label(self.Sale_FilterList,text="Use the following settings to Filter out the Results.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=33,y=80)
+        Label(self.Sale_FilterList,text="Select Filter:").place(x=33,y=150)
+        filter = ttk.Combobox(self.Sale_FilterList,width=10,state='readonly')
+        filter.place(x=100, y=150)
+        filter.set("None")
+        filter["values"]=("None","In Transit","On Hand")
+
+        Label(self.Sale_FilterList,text="Select Batch:").place(x=277,y=150)
+        batch = ttk.Combobox(self.Sale_FilterList,width=10,state='readonly')
+        batch.place(x=350, y=150)
+
+        prod=Product.product()
+        res=prod.get_batch_Codes()
+        batch_list=[x[0] for x in res]
+        batch_list.insert(0,"None")
+        batch.set("None")
+        batch["values"]=(batch_list)
+
+        def no_sel():
+            filter_from.config(state='disabled')
+            filter_to.config(state='disabled')
+
+        def sel():
+            filter_from.config(state='normal')
+            filter_to.config(state='normal')
+
+        var=IntVar()
+        var.set(0)
+        Label(self.Sale_FilterList,text="Configure Date Parameters").place(x=33,y=180)
+        Radiobutton(self.Sale_FilterList,text="No Parameters",variable=var,value=0,command=no_sel).place(x=100,y=200)
+        Radiobutton(self.Sale_FilterList,text="Allow Date",variable=var,value=1,command=sel).place(x=230,y=200)
+
+        Label(self.Sale_FilterList,text="Recorded From :").place(x=33,y=230)
+        filter_from = DateEntry(self.Sale_FilterList,state='disabled') 
+        filter_from.place(x=140, y=230)
+
+        Label(self.Sale_FilterList,text="Recorded To :").place(x=33,y=260)
+        filter_to = DateEntry(self.Sale_FilterList,state='disabled') 
+        filter_to.place(x=140, y=260)
+            
+        Button(self.Sale_FilterList,text="Filter",bg="green",command=self.Sale_Filter_results).place(x=340,y=300)
+        Button(self.Sale_FilterList,text="Cancel",command=self.Sale_Filter_close).place(x=390,y=300)
+    
+    #Inventory>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    def Inven_Filter_close(self):
+        self.Add_Notify.grab_release()
+        self.Inven_FilterList.wm_attributes("-topmost", 1)
+        self.Inven_FilterList.destroy()
+        
+    def Inven_Filter_results(self):
+        # global filter_from, filter_to,filter,batch,self.Sale_FilterList
+        if str(filter_from.cget("state"))=="normal":
+            from_filter=filter_from.get_date()
+        else: 
+            from_filter=None
+
+        if str(filter_to.cget("state"))=="normal":
+                to_filter=filter_to.get_date()
+        else: 
+            to_filter=None
+
+            fill=filter.get()
+            batch_code=batch.get()
+            man=Manager.Manager()
+
+        if fill=="In Transit":
+            res=man.get_inTransit(from_filter,to_filter,batch_code)
+            count = 0
+            self.frame_Table.delete(*self.frame_Table.get_children())
+            for x in res:
+                count += 1
+                self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+           
+
+        if fill=="On Hand":
+                res=man.get_OnHand(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+                
+
+        if fill=="None":
+                res=man.listNone(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+                
+        self.Inven_Filter_close()
+
+    def Inven_Filter_GUI(self):
+        self.InvorVal.grab_release()
+        self.Add_Notify.wm_attributes("-topmost", 0)
+
+        self.Inven_FilterList=Toplevel(self.Add_Notify)
+        self.Inven_FilterList.title("Filter out Results")
+        self.Inven_FilterList.geometry("480x340")
+        self.Inven_FilterList.resizable(False,False)
+        self.Inven_FilterList.protocol("WM_DELETE_WINDOW",self.Inven_Filter_close)
+        self.Inven_FilterList.grab_set()
+        self.Inven_FilterList.wm_attributes("-topmost", 1)
+        
+        Label(self.Inven_FilterList,text="Inventory FILTER",font=("Arial", 25, "bold")).place(x=10,y=10)
+        Label(self.Inven_FilterList,text="Use the following settings to Filter out the Results.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=33,y=80)
+        Label(self.Inven_FilterList,text="Select Filter:").place(x=33,y=150)
+        filter = ttk.Combobox(self.Inven_FilterList,width=10,state='readonly')
+        filter.place(x=100, y=150)
+        filter.set("None")
+        filter["values"]=("None","In Transit","On Hand")
+
+        Label(self.Inven_FilterList,text="Select Batch:").place(x=277,y=150)
+        batch = ttk.Combobox(self.Inven_FilterList,width=10,state='readonly')
+        batch.place(x=350, y=150)
+
+        prod=Product.product()
+        res=prod.get_batch_Codes()
+        batch_list=[x[0] for x in res]
+        batch_list.insert(0,"None")
+        batch.set("None")
+        batch["values"]=(batch_list)
+
+        def no_sel():
+            filter_from.config(state='disabled')
+            filter_to.config(state='disabled')
+
+        def sel():
+            filter_from.config(state='normal')
+            filter_to.config(state='normal')
+
+        var=IntVar()
+        var.set(0)
+        Label(self.Inven_FilterList,text="Configure Date Parameters").place(x=33,y=180)
+        Radiobutton(self.Inven_FilterList,text="No Parameters",variable=var,value=0,command=no_sel).place(x=100,y=200)
+        Radiobutton(self.Inven_FilterList,text="Allow Date",variable=var,value=1,command=sel).place(x=230,y=200)
+
+        Label(self.Inven_FilterList,text="Recorded From :").place(x=33,y=230)
+        filter_from = DateEntry(self.Inven_FilterList,state='disabled') 
+        filter_from.place(x=140, y=230)
+
+        Label(self.Inven_FilterList,text="Recorded To :").place(x=33,y=260)
+        filter_to = DateEntry(self.Inven_FilterList,state='disabled') 
+        filter_to.place(x=140, y=260)
+            
+        Button(self.Inven_FilterList,text="Filter",bg="green",command=self.filter_results).place(x=340,y=300)
+        Button(self.Inven_FilterList,text="Cancel",command=self.Inven_Filter_close).place(x=390,y=300)
+
+    #Delivery>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    def Del_Filter_close(self):
+        self.Add_Notify.grab_release()
+        self.Del_FilterList.wm_attributes("-topmost", 1)
+        self.Del_FilterList.destroy()
+        
+    def Del_Filter_results(self):
+        # global filter_from, filter_to,filter,batch,self.Sale_FilterList
+        if str(filter_from.cget("state"))=="normal":
+            from_filter=filter_from.get_date()
+        else: 
+            from_filter=None
+
+        if str(filter_to.cget("state"))=="normal":
+                to_filter=filter_to.get_date()
+        else: 
+            to_filter=None
+
+            fill=filter.get()
+            batch_code=batch.get()
+            man=Manager.Manager()
+
+        if fill=="In Transit":
+            res=man.get_inTransit(from_filter,to_filter,batch_code)
+            count = 0
+            self.frame_Table.delete(*self.frame_Table.get_children())
+            for x in res:
+                count += 1
+                self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+           
+
+        if fill=="On Hand":
+                res=man.get_OnHand(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+                
+
+        if fill=="None":
+                res=man.listNone(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+                
+        self.Del_Filter_close()
+
+    def Del_Filter_GUI(self):
+        self.InvorVal.grab_release()
+        self.Add_Notify.wm_attributes("-topmost", 0)
+
+        self.Del_FilterList=Toplevel(self.Add_Notify)
+        self.Del_FilterList.title("Filter out Results")
+        self.Del_FilterList.geometry("480x340")
+        self.Del_FilterList.resizable(False,False)
+        self.Del_FilterList.protocol("WM_DELETE_WINDOW",self.Del_Filter_close)
+        self.Del_FilterList.grab_set()
+        self.Del_FilterList.wm_attributes("-topmost", 1)
+        
+        Label(self.Del_FilterList,text="Delivery FILTER",font=("Arial", 25, "bold")).place(x=10,y=10)
+        Label(self.Del_FilterList,text="Use the following settings to Filter out the Results.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=33,y=80)
+        Label(self.Del_FilterList,text="Select Filter:").place(x=33,y=150)
+        filter = ttk.Combobox(self.Del_FilterList,width=10,state='readonly')
+        filter.place(x=100, y=150)
+        filter.set("None")
+        filter["values"]=("None","In Transit","On Hand")
+
+        Label(self.Del_FilterList,text="Select Batch:").place(x=277,y=150)
+        batch = ttk.Combobox(self.Del_FilterList,width=10,state='readonly')
+        batch.place(x=350, y=150)
+
+        prod=Product.product()
+        res=prod.get_batch_Codes()
+        batch_list=[x[0] for x in res]
+        batch_list.insert(0,"None")
+        batch.set("None")
+        batch["values"]=(batch_list)
+
+        def no_sel():
+            filter_from.config(state='disabled')
+            filter_to.config(state='disabled')
+
+        def sel():
+            filter_from.config(state='normal')
+            filter_to.config(state='normal')
+
+        var=IntVar()
+        var.set(0)
+        Label(self.Del_FilterList,text="Configure Date Parameters").place(x=33,y=180)
+        Radiobutton(self.Del_FilterList,text="No Parameters",variable=var,value=0,command=no_sel).place(x=100,y=200)
+        Radiobutton(self.Del_FilterList,text="Allow Date",variable=var,value=1,command=sel).place(x=230,y=200)
+
+        Label(self.Del_FilterList,text="Recorded From :").place(x=33,y=230)
+        filter_from = DateEntry(self.Del_FilterList,state='disabled') 
+        filter_from.place(x=140, y=230)
+
+        Label(self.Del_FilterList,text="Recorded To :").place(x=33,y=260)
+        filter_to = DateEntry(self.Del_FilterList,state='disabled') 
+        filter_to.place(x=140, y=260)
+            
+        Button(self.Del_FilterList,text="Filter",bg="green",command=self.Del_Filter_results).place(x=340,y=300)
+        Button(self.Del_FilterList,text="Cancel",command=self.Del_Filter_close).place(x=390,y=300)
 
     def Delete(self):
         select = self.frame_Table.selection()[0]
@@ -1318,35 +1655,6 @@ class InvortoryGUI:
 
             self.Frma = Label(self.Frame_Add_nofi, text="Export to Spreadsheet", width=20, font=("Arial", 35), anchor=W)
             self.Frma.place(x=10, y=10)
-
-            def update_scope(selection):
-                global option
-                if selection == "Day":
-                    option=selection
-                    scope['values']=[day for day in range(1, num_days+1)]
-
-                elif selection == "Monthly":
-                    option=selection
-                    scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-
-            def toggle_radio(value):
-                if Radio_TO.config("value")[-1] == 1:
-                    Radio_TO.config(value=0)
-                    scope_to.configure(state="disabled")
-                else:
-                    Radio_TO.config(value=1)
-                    scope['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                    scope_to.configure(state="normal")
-                
-            def year_radio(value):
-                if Radio_Yearly.config("value")[-1] == 1:
-                    Radio_Yearly.config(value=0)
-                    scope_year.configure(state="disabled")
-                else:
-                    current_year = datetime.now().year
-                    Radio_Yearly.config(value=1)
-                    scope_year['values']=[year for year in range(1950, current_year+1)]
-                    scope_year.configure(state="normal")
                 
             selected = StringVar()
             Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
@@ -1395,43 +1703,44 @@ class InvortoryGUI:
                 DELIVERY_TEMPLATE = 'PO_TEMPLATE.xlsx'
 
                 if report_type == 'Sales':
-                    from_month=scope_to.get()
-                    year=scope_year.get()
-                    if option=="Monthly":
-                        month_num=datetime.strptime(scope.get(), '%B').month
-                        date_obj=datetime(int(year), month_num, 1)
+                    print("this")
+                    # from_month=scope_to.get()
+                    # year=scope_year.get()
+                    # if option=="Monthly":
+                    #     month_num=datetime.strptime(scope.get(), '%B').month
+                    #     date_obj=datetime(int(year), month_num, 1)
 
-                        date_str_to = date_obj.strftime('%Y-%m-%d')
+                    #     date_str_to = date_obj.strftime('%Y-%m-%d')
 
-                        from_mnth=datetime.strptime(from_month, '%B').month
-                        from_mnth_obj=datetime(int(year), from_mnth, calendar.monthrange(int(year), from_mnth)[1])
+                    #     from_mnth=datetime.strptime(from_month, '%B').month
+                    #     from_mnth_obj=datetime(int(year), from_mnth, calendar.monthrange(int(year), from_mnth)[1])
 
-                        frm_mtnh_str=from_mnth_obj.strftime('%Y-%m-%d')
-                        result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
+                    #     frm_mtnh_str=from_mnth_obj.strftime('%Y-%m-%d')
+                    #     result = man.get_export_data(report_type,date_str_to,frm_mtnh_str)
 
-                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
-                    if option=="Day":
-                        month=from_month
+                    #     df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
+                    # if option=="Day":
+                    #     month=from_month
 
-                        month_num=datetime.strptime(month, '%B').month
-                        date_obj=datetime(int(year), month_num, int(scope.get()))
-                        date_str = date_obj.strftime('%Y-%m-%d')
+                    #     month_num=datetime.strptime(month, '%B').month
+                    #     date_obj=datetime(int(year), month_num, int(scope.get()))
+                    #     date_str = date_obj.strftime('%Y-%m-%d')
 
-                        result = man.get_export_data(report_type,date_str,date_str)
-                        df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
+                    #     result = man.get_export_data(report_type,date_str,date_str)
+                    #     df = pd.DataFrame(result, columns=['Invoice Number', 'ID', 'Item', 'Quantity','Unit Price','Discount', 'Date Purchased','Total Price'])
 
-                    wb=openpyxl.load_workbook(SALES_TEMPLATE)
-                    ws=wb.worksheets[0]
-                    start_row=12
-                    for row in df.iterrows():
-                        for column in range(len(row[1])):
-                            ws.cell(row=start_row,column=column+2).value=row[1][column]
-                        start_row+=1
-                        ws.insert_rows(start_row,1)
-                    path=fd.asksaveasfilename(defaultextension=".xlsx")
-                    wb.save(path) 
+                    # wb=openpyxl.load_workbook(SALES_TEMPLATE)
+                    # ws=wb.worksheets[0]
+                    # start_row=12
+                    # for row in df.iterrows():
+                    #     for column in range(len(row[1])):
+                    #         ws.cell(row=start_row,column=column+2).value=row[1][column]
+                    #     start_row+=1
+                    #     ws.insert_rows(start_row,1)
+                    # path=fd.asksaveasfilename(defaultextension=".xlsx")
+                    # wb.save(path)
 
-                if report_type == 'Inventory':
+                elif report_type == 'Inventory':
                     result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Reference ID', "Item", "Price", "Remaining Quantity"])
                     wb=openpyxl.load_workbook(INVENTORY_TEMPLATE)
@@ -1446,7 +1755,7 @@ class InvortoryGUI:
                     path=fd.asksaveasfilename(defaultextension=".xlsx")
                     wb.save(path) 
 
-                if report_type == "Delivery":
+                elif report_type == "Delivery":
                     result = man.get_export_data(report_type,None,None)
                     df = pd.DataFrame(result, columns=['Batch Code', 'Item', 'Quantity', 'Price', 'Status'])
                     wb=openpyxl.load_workbook(DELIVERY_TEMPLATE)    
@@ -1472,7 +1781,8 @@ class InvortoryGUI:
                     # df.to_excel(title, str(report_type))
                     # message = "Saved to ", title
                 messagebox.showinfo("Exported Successfully", "Saved to " + path)
-                
+
+            
             def reports_callback(event):
                 export.config(state='normal',command=lambda:export_report())
                 self.export_Table.delete(*self.export_Table.get_children())
@@ -1480,48 +1790,22 @@ class InvortoryGUI:
 
                 man = Manager.Manager()
                 result = man.get_export_data(report_type,None,None)
-
+                global Filterbutton, Clear_Filterbutton,Inven_Filterbutton, Inven_Clear_Filterbutton,Deli_Filterbutton, Deli_Clear_Filterbutton 
                 if report_type == 'Sales':
+                    try:
+                        Inven_Filterbutton.place_forget()
+                        Inven_Clear_Filterbutton.place_forget()
+                        Deli_Filterbutton.place_forget()
+                        Deli_Clear_Filterbutton.place_forget()
+                    except(NameError):
+                        pass
 
-                    global FLabel, scope, TOLabel, scope_to, YLabel, scope_year
-                    FLabel=Label(self.Add_Notify, text="From")
-                    FLabel.place(x=170, y=80)
-                    scope = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected)
-                    scope.place(x=170, y=100)
-
-                    global selected_to
-                    selected_to = StringVar()
-                    TOLabel=Label(self.Add_Notify, text="")
-                    TOLabel.place(x=320, y=80)
-                    scope_to = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_to)
-                    scope_to.configure(state="disabled")
-                    scope_to['values']=('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
-                    scope_to.place(x=320, y=100)
-
-                    global selected_year
-                    selected_year = StringVar()
-                    YLabel=Label(self.Add_Notify, text="Year")
-                    YLabel.place(x=490, y=80)
-                    scope_year = ttk.Combobox(self.Add_Notify, width=15,textvariable=selected_year)
-                    scope_year.configure(state="disabled")
-                    scope_year.place(x=490, y=100)
-                        
-                    global radio_scope, Radio_Day, Radio_Monthly, Radio_TO, Radio_Yearly
-                    radio_scope=StringVar()
-
-                    Radio_Day=tk.Radiobutton(self.Add_Notify,text="Day", variable=radio_scope,value='Day',command=lambda:update_scope('Day'))
-                    Radio_Day.place(x=630,y=80)
-
-                    Radio_Monthly=tk.Radiobutton(self.Add_Notify,text="Monthly", variable=radio_scope,value='Monthly',command=lambda:update_scope('Monthly'))
-                    Radio_Monthly.place(x=630,y=100)
-
-                    Radio_TO=tk.Radiobutton(self.Add_Notify,text="TO", value=1,command=lambda:toggle_radio(0))
-                    Radio_TO.place(x=280, y=100)
-
-                    Radio_Yearly=tk.Radiobutton(self.Add_Notify,text="With", value=1 ,command=lambda:year_radio(0))
-                    Radio_Yearly.place(x=430,y=100)
-
-                    scope.bind('<<ComboboxSelected>>',update_scope)
+                    
+                    Filterbutton=Button(self.Add_Notify,text="Sales Filter",command=self.Sale_Filter_GUI)
+                    Filterbutton.place(x=200, y=95)
+                    Clear_Filterbutton=Button(self.Add_Notify,text="Clear Filters")
+                    Clear_Filterbutton.place(x=360, y=95)
+                   
 
                     self.export_Table['columns'] = (
                     "Invoice Number","Purchase ID", "Item", "Quantity", "Total Price", "Discount", "Date Purchased")
@@ -1545,20 +1829,19 @@ class InvortoryGUI:
 
                     self.export_Table.pack()
 
-                if report_type == 'Inventory':
+                elif report_type == 'Inventory':
                     try:
-                        FLabel.place_forget()
-                        TOLabel.place_forget()
-                        YLabel.place_forget()
-                        scope.place_forget()
-                        scope_to.place_forget()
-                        scope_year.place_forget()
-                        Radio_Day.place_forget()
-                        Radio_Monthly.place_forget()
-                        Radio_TO.place_forget()
-                        Radio_Yearly.place_forget()
+                        Filterbutton.place_forget()
+                        Clear_Filterbutton.place_forget()
+                        Deli_Filterbutton.place_forget()
+                        Deli_Clear_Filterbutton.place_forget()
                     except(NameError):
                         pass
+
+                    Inven_Filterbutton=Button(self.Add_Notify,text="Inventory Filter",command=self.Inven_Filter_GUI)
+                    Inven_Filterbutton.place(x=200, y=95)
+                    Inven_Clear_Filterbutton=Button(self.Add_Notify,text="Clear Filters")
+                    Inven_Clear_Filterbutton.place(x=360, y=95)
         
                     self.export_Table['columns'] = (
                     'Reference ID', "Item", "Price", "Remaining Quantity")
@@ -1576,20 +1859,19 @@ class InvortoryGUI:
 
                     self.export_Table.pack()
 
-                if report_type == "Delivery":
+                elif report_type == "Delivery":
                     try:
-                        FLabel.place_forget()
-                        TOLabel.place_forget()
-                        YLabel.place_forget()
-                        scope.place_forget()
-                        scope_to.place_forget()
-                        scope_year.place_forget()
-                        Radio_Day.place_forget()
-                        Radio_Monthly.place_forget()
-                        Radio_TO.place_forget()
-                        Radio_Yearly.place_forget()
+                        Filterbutton.place_forget()
+                        Clear_Filterbutton.place_forget()
+                        Inven_Filterbutton.place_forget()
+                        Inven_Clear_Filterbutton.place_forget()
                     except(NameError):
                         pass
+
+                    Deli_Filterbutton=Button(self.Add_Notify,text="Delivery Filter",command=self.Del_Filter_GUI)
+                    Deli_Filterbutton.place(x=200, y=95)
+                    Deli_Clear_Filterbutton=Button(self.Add_Notify,text="Clear Filters")
+                    Deli_Clear_Filterbutton.place(x=360, y=95)
 
                     self.export_Table['columns'] = (
                     'Batch Code', 'Item', 'Quantity', 'Price', 'Status')
