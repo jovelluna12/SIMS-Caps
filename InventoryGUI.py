@@ -2,6 +2,8 @@ from logging import root
 import datetime
 from datetime import date, datetime 
 from tkinter import simpledialog
+from email_validator import validate_email, EmailNotValidError
+
 
 import tkinter as tk
 from tkinter import *
@@ -244,7 +246,7 @@ class InvortoryGUI:
         global PageOpen
         if PageOpen < 2:
             if len(self.frame_Table.get_children()) == 0:
-                messagebox.showinfo("Error","Sorry there's no Item to Receive!")
+                messagebox.showinfo("Error","Select a Vendor")
             else:
                 if self.frame_Table.focus()!='':
                     item = self.frame_Table.selection()[0]
@@ -264,7 +266,7 @@ class InvortoryGUI:
                     result = prod.retrieveBatch(batch)
 
                     self.Add_Delivery1= Toplevel(self.InvorVal)
-                    self.Add_Delivery1.title("Confirm Delivery")
+                    self.Add_Delivery1.title("Delivery Receiving")
                     self.Add_Delivery1.geometry("800x550")
                     self.Add_Delivery1.resizable(False, False)
                     self.Add_Delivery1.protocol("WM_DELETE_WINDOW",self.Add_Delivery1_close)
@@ -300,7 +302,7 @@ class InvortoryGUI:
                     self.Product_price_EN.place(x=400,y=90)
 
                     self.Product_Stack_LA=Label(self.Frame_Add,text="Quantity")
-                    self.Product_Stack_EN= Entry(self.Frame_Add,width=10,textvariable=qty,borderwidth=4,state='disabled')
+                    self.Product_Stack_EN= Entry(self.Frame_Add,width=10,borderwidth=4,state='disabled')
                     self.Product_Stack_LA.place(x=475,y=70)
                     self.Product_Stack_EN.place(x=475,y=90)
 
@@ -309,7 +311,7 @@ class InvortoryGUI:
                     self.Product_date_LA.place(x=550, y=70)
                     self.Product_date_EN.place(x=550, y=90)
 
-                    Label(self.Frame_Add, text="Confirming Delivery Received Product",font=("Arial", 30)).place(x=10, y=10)
+                    Label(self.Frame_Add, text="CRESDEL PHARMACY",font=("Arial", 30)).place(x=10, y=10)
 
                     self.frame_Table = ttk.Treeview(self.Frame_ListD, height=15)
                     self.frame_Table['columns'] = ("ID", "Name", "Price", "Quantity", "Order Date", "Expiration Date")
@@ -359,13 +361,15 @@ class InvortoryGUI:
                         item_id_list.clear()
 
                         self.Add_Delivery1.destroy()
+                        global PageOpen    
+                        PageOpen=1
 
-                    
-                    self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
-                    self.button.place(x=600, y=150)
+                    if result[-1]=="In Transit":
+                        self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
+                        self.button.place(x=600, y=150)
 
-                    self.delivery_delete = Button(self.Frame_Add, text="Delete", command=lambda: delete_delivery())
-                    self.delivery_delete.place(x=550, y=150)
+                        self.delivery_delete = Button(self.Frame_Add, text="Delete", command=lambda: delete_delivery())
+                        self.delivery_delete.place(x=550, y=150)
 
                     def delete_delivery():
                         if len(self.frame_Table.selection())!=0:
@@ -383,9 +387,9 @@ class InvortoryGUI:
 
                     def selectItem(event):
                         selected_item = self.frame_Table.selection()[0]
-                        if selected_item in item_id_list:
+                        if selected_item in item_id_list or result[-1]!="In Transit":
                             self.Add_Delivery1.wm_attributes("-topmost", 0)
-                            messagebox.showerror("Already Saved","Item Already Saved")
+                            messagebox.showerror("Error","Item is either On Hand or Already Saved")
                             self.Add_Delivery1.wm_attributes("-topmost", 1)
                         
                         else:
@@ -431,7 +435,8 @@ class InvortoryGUI:
                             self.Product_ID_EN.config(state='disabled')
                             self.Product_Stack_EN.config(state='disabled')
 
-                            self.button.config(state='normal', command=saveChanges)
+                            if result[-1]=="In Transit":
+                                self.button.config(state='normal', command=saveChanges)
 
                     def saveChanges(): 
                         try:
@@ -456,6 +461,10 @@ class InvortoryGUI:
                                     x = self.frame_Table.item(selectedItem)['values'][4]
                                     self.frame_Table.item(selectedItem,text="a", values=(
                                     self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
+
+
+                                    # self.frame_Table.insert(parent='', index='end', values=(
+                                    # self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
                                     
                                     self.Product_ID_EN.config(state='normal')
                                     self.Product_Price_EN.config(state='normal')
@@ -483,7 +492,7 @@ class InvortoryGUI:
                             messagebox.showerror("Invalid Input","Please Enter a Valid Input")
                             self.Add_Delivery1.wm_attributes("-topmost", 1)
                             
-                    self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
+                    self.button = Button(self.Frame_Add, text="Save")
                     self.button.place(x=710, y=150)
 
                     count = 0
@@ -510,29 +519,39 @@ class InvortoryGUI:
         self.Frame_Del.pack()
 
         self.Label_title = Label(self.Frame_Del, text="Delivery Page", font=("Arial", 15)).place(x=0, y=0)
-        self.Button_Receive=Button(self.Frame_Del,text="Receive",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.ClickDelivery_onClick)
+        self.Button_Receive=Button(self.Frame_Del,text="Receive",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command= self.ClickDelivery_onClick)
         self.Button_Receive.place(x=945,y=0)
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
         self.frame_Table = ttk.Treeview(self.Frame_Del, height=23)
-        self.frame_Table['columns'] = ("ID", "Name", "Detail", "Price", "Quantity", "Arrival")
+        self.frame_Table['columns'] = ("ID", "Name", "Detail", "Price", "Arrival")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=100, stretch=NO)
         self.frame_Table.column("Name", anchor=W, width=450, stretch=NO)
         self.frame_Table.column("Detail", anchor=W, width=150, stretch=NO)
         self.frame_Table.column("Price", anchor=CENTER, width=91, stretch=NO)
-        self.frame_Table.column("Quantity", anchor=E, width=100, stretch=OFF)
         self.frame_Table.column("Arrival", anchor=E, width=140, stretch=OFF)
         # Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID", text="Batch Code", anchor=W)
-        self.frame_Table.heading("Name", text="Product Name", anchor=W)
+        self.frame_Table.heading("Name", text="Vendor Name", anchor=W)
         self.frame_Table.heading("Detail", text="Detail", anchor=W)
-        self.frame_Table.heading("Price", text="Price", anchor=CENTER)
-        self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
+        self.frame_Table.heading("Price", text="Total Cost", anchor=CENTER)
         self.frame_Table.heading("Arrival", text="Arrival Day", anchor=W)
         self.frame_Table.place(x=0, y=30)
+
+        def PO():
+            item=self.frame_Table.selection()[0]
+            batch=self.frame_Table.item(item)['values'][0]
+            batch=(batch,)
+            prod=Product.product()
+            res=prod.retrieveBatch(batch)
+            print(res)
+            # POForm.App()
+
+        self.Button_Receive=Button(self.Frame_Del,text="View PO Form",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=lambda: PO())
+        self.Button_Receive.place(x=840,y=0)
 
         m1 = Employee.Employee()
         result = m1.viewDeliveryList()
@@ -764,8 +783,8 @@ class InvortoryGUI:
         else:
             self.Button_Emplo.config(state='normal')
 
-
     def add_to_products(self):
+
         global order_date, arrival_date
         ProdName = self.Product_CODE_EN.get()
         date = self.Product_date_EN.get_date()
@@ -825,14 +844,14 @@ class InvortoryGUI:
         self.Product_Price_EN.delete(0, 'end')
 
         self.AddDeliveries = Button(self.Frame_Add, text="Add to Delivery List", padx=15, pady=5,
-                                    command=self.Add_Deliveries)
+                                    command=self.chooseVendor)
         self.AddDeliveries.place(x=544, y=150)
 
         self.button_Add.config(command=self.add_to_products)
 
     def Add_Deliveries(self):
         self.Add_Delivery.wm_attributes("-topmost", 0)
-        if messagebox.askokcancel('Comfirm', 'Please make sure if the product to delivery and Quantity is correct'):
+        if messagebox.askokcancel('Confirm', 'Save?'):
             if 'batch_code' not in locals():
                 batch_code = randomNumGen.generateBatchCode()
             if 'batch_code_list' not in locals():
@@ -844,11 +863,10 @@ class InvortoryGUI:
                 zip(ProductID_list, ref_id_list, ProdName_list, quantity_list, price_list, status_list, batch_code_list,
                     expiry_date_list))
 
-            values = (batch_code, order_date, arrival_date, 'In Transit')
+            values = (batch_code, VendID,ShipMean,order_date, arrival_date, 'In Transit')
 
             b = Product.product()
             b.add_deliveryBatch(values)
-
             b.addMany_Del(item_tuple)
 
             self.frame_Table.delete(*self.frame_Table.get_children())
@@ -863,9 +881,61 @@ class InvortoryGUI:
             order_date_list.clear()
             status_list.clear()
 
-            self.Add_Delivery.destroy()
+            global PageOpen
+            PageOpen=1
+            self.Add_on_close()
         else:
             self.Add_Delivery.wm_attributes("-topmost", 1)
+
+    def chooseVendor(self):
+        root=Tk()
+        root.title("Generate PO Form")
+        root.geometry("500x400")
+        root.resizable(False, False)
+        root.wm_attributes("-topmost", 1)
+
+        Frame_Add_Em = Frame(root, width=800, height=400, )
+        Frame_Add_Em.place(x=0, y=0)
+
+        Frma = Label(Frame_Add_Em, text="Choose Vendor", width=20, font=("Arial", 35), anchor=W)
+        Frma.place(x=20, y=20)
+
+        Name_LA = Label(Frame_Add_Em, text="Company Name of Vendor:")
+        Vendor_EN = ttk.Combobox(Frame_Add_Em, width=60)
+        Name_LA.place(x=60, y=110)
+        Vendor_EN.place(x=60, y=130)
+        Vendor_EN.set("Select Vendor")
+        man=Manager.Manager()
+        res=man.get_Vendors()
+        Vendor_EN['values']=[x[1] for x in res]
+
+        MethodLA = Label(Frame_Add_Em, text="Choose Shipping Method:")
+        ShipMethod = ttk.Combobox(Frame_Add_Em, width=60)
+        MethodLA.place(x=60, y=150)
+        ShipMethod.place(x=60, y=170)
+        ShipMethod.set("Select Shipping Method")
+        ShipMethod['values']=("Ground","Air","Sea")
+
+        button_Add = Button(Frame_Add_Em, text="Add", padx=20, pady=5,command= lambda: self.Add_Deliveries(),state='disabled')
+        button_Add.place(x=360, y=230)
+        def set_VendID(event):
+            man=Manager.Manager()
+            VendIDs=man.get_Vendor_ID(Vendor_EN.get())
+            global VendID
+            VendID=VendIDs[0]
+            if ShipMethod.get()!="Select Shipping Method":
+                button_Add.config(state='normal')
+
+        def set_ShipMethod(event):
+            global ShipMean
+            ShipMean=ShipMethod.get()
+            if Vendor_EN.get()!="Select Vendor":
+                button_Add.config(state='normal')
+
+        Vendor_EN.bind("<<ComboboxSelected>>",set_VendID)
+        ShipMethod.bind("<<ComboboxSelected>>",set_ShipMethod)
+
+        root.mainloop()
 
     def search_delivery(self,event):
         value=event.widget.get()
@@ -910,7 +980,6 @@ class InvortoryGUI:
             global btn, frame
             btn = self.Add_Del
             frame = self.Add_Delivery
-
 
             global lst
             a = Product.product()
@@ -1676,7 +1745,7 @@ class InvortoryGUI:
                                   highlightthickness=1, padx=10, pady=10)
         self.Frame_Detail.place(x=0, y=0)
 
-        Title_label=Label(self.Frame_Detail,text="Cresdel Pharmacy!!",bg="yellow",font=("Arial", 50, "bold"))
+        Title_label=Label(self.Frame_Detail,text="Cresdel Pharmacy",bg="yellow",font=("Arial", 50, "bold"))
         Title_label.place(x=20,y=50)
 
         # For the Page LIST
@@ -1718,6 +1787,73 @@ class InvortoryGUI:
                                        bg='#54FA9B', command=self.notify_UI)
         button_Out= Button(self.Frame_Side,text="Back Home",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.InvorVal.destroy)
         button_Out.place(x=160,y=600)
+
+        def add_vendor_logic():
+            contact=int(contact_EN.get())
+            ship_fee=int(Vendor_Ship_EN.get())
+            vend_id=randomNumGen.generateVendorID()
+            email=em_EN.get()
+            try :
+                validate=validate_email(email,check_deliverability=True)
+                validated=validate.email
+            except EmailNotValidError as e:
+                messagebox.showerror("Input Error",str(e))
+            
+            details=(vend_id,Vendor_EN.get(),Vendor_add_EN.get(),contact,validated,ship_fee)
+            man=Manager.Manager()
+            man.addVendor_logic(details)
+            root.destroy()
+
+        def add_vendor_func():
+            global Vendor_EN,Vendor_add_EN,contact_EN,em_EN,Vendor_Ship_EN
+            root=Tk()
+            root.title("Add Vendor")
+            root.geometry("500x400")
+            root.resizable(False, False)
+            root.wm_attributes("-topmost", 1)
+            root.grab_set()
+
+            Frame_Add_Em = Frame(root, width=800, height=500, )
+            Frame_Add_Em.place(x=0, y=0)
+
+            Frma = Label(Frame_Add_Em, text="Add Vendor", width=20, font=("Arial", 35), anchor=W)
+            Frma.place(x=20, y=20)
+
+            Name_LA = Label(Frame_Add_Em, text="Company Name of Vendor:")
+            Vendor_EN = Entry(Frame_Add_Em, width=60, borderwidth=4)
+            Name_LA.place(x=60, y=110)
+            Vendor_EN.place(x=60, y=130)
+
+            Vendor_Add = Label(Frame_Add_Em, text="Address of Vendor:")
+            Vendor_add_EN = Entry(Frame_Add_Em, width=60, borderwidth=4)
+            Vendor_Add.place(x=60, y=160)
+            Vendor_add_EN.place(x=60, y=180)
+
+            contact_LA = Label(Frame_Add_Em, text="Contact/Phone Number:")
+            contact_EN = Entry(Frame_Add_Em, width=60,borderwidth=4)
+            contact_LA.place(x=60, y=210)
+            contact_EN.place(x=60, y=230)
+
+            em_LA = Label(Frame_Add_Em, text="Email Address")
+            em_EN = Entry(Frame_Add_Em, width=60,  borderwidth=4)
+            em_LA.place(x=60, y=260)
+            em_EN.place(x=60, y=280)
+
+            Vendor_Ship_LA = Label(Frame_Add_Em, text="Vendor Shipping Fee")
+            Vendor_Ship_EN = Entry(Frame_Add_Em, width=60, borderwidth=4)
+            Vendor_Ship_LA.place(x=60, y=310)
+            Vendor_Ship_EN.place(x=60, y=330)
+
+            button_Add = Button(Frame_Add_Em, text="Add", padx=20, pady=5,command= lambda: add_vendor_logic())
+            button_Add.place(x=360, y=360)
+
+            root.mainloop()
+
+        self.btn_Notification = Button(self.Frame_Side, text="Export", padx=10, pady=10, width=10, height=1,
+                                       bg='#54FA9B', command=self.notify_UI)
+
+        button_Out= Button(self.Frame_Side,text="Add Vendor",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=lambda: add_vendor_func())
+        button_Out.place(x=160,y=550)
 
         def goto_forecast():
             forecast.GUI()
@@ -2047,4 +2183,3 @@ class InvortoryGUI:
         user_role=role
         user_id=id
         self.InvorGUI()
-

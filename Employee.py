@@ -75,7 +75,8 @@ class Employee:
 
     def viewDeliveryList(self):
         dbcursor=self.cursor
-        query="SELECT deliverylist.BatchCode,products.ProductName,deliverylist.status,price,quantity,deliverylist.expectedarrivaldate FROM deliverylist, products WHERE deliverylist.status!='On Hand' AND products.status='In Transit' AND deliverylist.status!='Expired' AND products.batch_code=deliverylist.BatchCode;"
+        # query="SELECT deliverylist.BatchCode,vendor.vendor_name,deliverylist.status,(SELECT SUM(products.price*products.quantity) from products) as TotalCost,deliverylist.expectedarrivaldate FROM deliverylist, products,vendor WHERE deliverylist.status!='On Hand' AND products.status='In Transit' AND deliverylist.status!='Expired' AND products.batch_code=deliverylist.BatchCode AND deliverylist.vendor_id=vendor.id GROUP BY products.batch_code;"
+        query="SELECT deliverylist.BatchCode,vendor.vendor_name,deliverylist.status,(SELECT SUM(products.price*products.quantity) from products) as TotalCost,deliverylist.expectedarrivaldate FROM deliverylist, products,vendor WHERE  products.batch_code=deliverylist.BatchCode AND deliverylist.vendor_id=vendor.id GROUP BY products.batch_code;"
         dbcursor.execute(query)
 
         result=dbcursor.fetchall()

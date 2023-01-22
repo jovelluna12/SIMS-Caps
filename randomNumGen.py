@@ -91,3 +91,18 @@ def generateEmpID():
         else:
             continue
     return ID
+
+def generateVendorID():
+    ID = random.randint(1, 9999)
+    query = "SELECT id from vendor"
+    dbcursor = dbConnector.db.cursor()
+    dbcursor.execute(query)
+    result = dbcursor.fetchall()
+
+    for x in result:
+        if ID == x :
+            ID = random.randint(1, 9999)
+            break
+        else:
+            continue
+    return ID
