@@ -2087,7 +2087,7 @@ class InvortoryGUI:
             root.destroy()
 
         def add_vendor_func():
-            global Vendor_EN,Vendor_add_EN,contact_EN,em_EN,Vendor_Ship_EN
+            global Vendor_EN,Vendor_add_EN,contact_EN,em_EN,Vendor_Ship_EN,root
             root=Tk()
             root.title("Add Vendor")
             root.geometry("500x400")
