@@ -55,21 +55,111 @@ class InvortoryGUI:
 
         self.Frame_List.pack()
         self.Label_title = Label(self.Frame_List, text="List Page", font=("Arial", 15)).place(x=0, y=0)
-        filter = ttk.Combobox(self.Frame_List,width=10,state='readonly')
-        filter.place(x=100, y=0)
-        filter.set("Select Filter")
-        filter["values"]=("In Transit","On Hand","Return to Sender")
 
-        btn_filter_clear=Button(self.Frame_List,text="Clear Filter",state='disabled')
-        btn_filter_clear.place(x=500, y=0)
+        
+        def filter_results():
+            if str(filter_from.cget("state"))=="normal":
+                from_filter=filter_from.get_date()
+            else: 
+                from_filter=None
 
-        # Date From
-        filter_from = DateEntry(self.Frame_List, selectmode='day', width=20) 
-        filter_from.place(x=200, y=0)
+            if str(filter_to.cget("state"))=="normal":
+                to_filter=filter_to.get_date()
+            else: 
+                to_filter=None
 
-        # Date To
-        filter_to = DateEntry(self.Frame_List, selectmode='day', width=20,state='disabled')
-        filter_to.place(x=350, y=0)
+            fill=filter.get()
+            batch_code=batch.get()
+            man=Manager.Manager()
+            if fill=="In Transit":
+                res=man.get_inTransit(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+            if fill=="On Hand":
+                res=man.get_OnHand(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+            if fill=="None":
+                res=man.listNone(from_filter,to_filter,batch_code)
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+            root.destroy()
+
+
+        def filter_GUI():
+            global filter_from, filter_to,filter,batch,root
+            root=Tk()
+            root.title("Filter out Results")
+            root.geometry("500x500")
+            root.resizable(False,False)
+
+            Label(root,text="Use the following settings to Filter out the Results.\nYou can clear this settings Later on.",font=("Arial", 13, "bold")).place(x=50,y=0)
+            Label(root,text="Select Filter").place(x=0,y=50)
+            filter = ttk.Combobox(root,width=10,state='readonly')
+            filter.place(x=100, y=50)
+            filter.set("None")
+            filter["values"]=("None","In Transit","On Hand")
+
+            Label(root,text="Select Batch").place(x=250,y=50)
+            batch = ttk.Combobox(root,width=10,state='readonly')
+            batch.place(x=350, y=50)
+            prod=Product.product()
+            res=prod.get_batch_Codes()
+            batch_list=[x[0] for x in res]
+            batch_list.insert(0,"None")
+            batch.set("None")
+            batch["values"]=(batch_list)
+
+            def no_sel():
+                filter_from.config(state='disabled')
+                filter_to.config(state='disabled')
+
+            def sel():
+                filter_from.config(state='normal')
+                filter_to.config(state='normal')
+
+            var=IntVar()
+            var.set(0)
+            Label(root,text="Configure Date Parameters").place(x=0,y=80)
+            Radiobutton(root,text="No Parameters",variable=var,value=0,command=no_sel).place(x=0,y=100)
+            Radiobutton(root,text="Allow Date",variable=var,value=1,command=sel).place(x=100,y=100)
+
+            Label(root,text="Recorded From").place(x=0,y=130)
+            filter_from = DateEntry(root,state='disabled') 
+            filter_from.place(x=100, y=130)
+
+            Label(root,text="Recorded To").place(x=0,y=160)
+            filter_to = DateEntry(root,state='disabled') 
+            filter_to.place(x=100, y=160)
+            
+            Button(root,text="Done",command=lambda: filter_results()).place(x=0,y=300)
+            root.mainloop()
+
+        btn_filter_clear=Button(self.Frame_List,text="Filters",command=lambda: filter_GUI())
+        btn_filter_clear.place(x=100, y=0)
+
+        def clear_filter():
+            m1 = Manager.Manager()
+            result = m1.inventoryList()
+            self.frame_Table.delete(*self.frame_Table.get_children())
+            count = 0
+            for x in result:
+                count += 1
+                self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+        btn_filter_clear=Button(self.Frame_List,text="Clear Filters",command=lambda: clear_filter())
+        btn_filter_clear.place(x=150, y=0)
 
         style = ttk.Style()
         style.theme_use("default")
@@ -90,100 +180,14 @@ class InvortoryGUI:
         self.frame_Table.heading("Price", text="Price", anchor=CENTER)
         self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
         self.frame_Table.place(x=0, y=30)
-        # Searching Another way of Filtering
-        # def filter_from_callback(event):
-        #     date=event.widget.get_date()
-        #     fil=filter.get()
-        #     prod=Manager.Manager()
-        #     if fil=="Select Filter":
-        #         res1=prod.get_list_from_date_now(date,fil)
-        #         res2=prod.get_returnlist_from_date_now(date)
-        #         self.frame_Table.delete(*self.frame_Table.get_children())
-
-        #         count = 0
-        #         for x in res1:
-        #             count += 1
-        #             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-                
-        #         for y in res2:
-        #             count += 1
-        #             self.frame_Table.insert(parent='', index='end', iid=count, text=y, values=y)
-                
-        #     if fil == "In Transit":
-        #         res=prod.get_inTransit(date)
-        #         self.frame_Table.delete(*self.frame_Table.get_children())
-
-        #         count = 0
-        #         for x in res:
-        #             count += 1
-        #             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-
-        #     if fil == "On Hand":
-        #         print(date)
-        #         print("on hand")
-        #         self.frame_Table.delete(*self.frame_Table.get_children())
-        #         res=prod.get_OnHand(date)
-                
-        #         count = 0
-        #         for x in res:
-        #             count += 1
-        #             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-
-        #     filter_to.config(state='normal')
-
-        # filter_from.bind("<<DateEntrySelected>>",filter_from_callback)
-
 
         m1 = Manager.Manager()
         result = m1.inventoryList()
-        result2 = m1.return_to_sender_list()
         count = 0
         for x in result:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
         
-        for y in result2:
-            count += 1
-            self.frame_Table.insert(parent='', index='end', iid=count, text=y, values=y)
-
-        detached_items=[]
-
-        def filter_callback(event):
-            choice=event.widget.get()
-                
-            for item in self.frame_Table.get_children():
-                if choice == "Return to Sender":
-                    if "In Transit" in self.frame_Table.item(item)['text']:
-                        detached_items.append(self.frame_Table.item(item))
-                        self.frame_Table.detach(item)
-
-                    if "On Hand" in self.frame_Table.item(item)['text']:
-                        detached_items.append(self.frame_Table.item(item))
-                        self.frame_Table.detach(item)
-
-                if choice == "In Transit":
-                    if "In Transit" not in self.frame_Table.item(item)['text']:
-                        detached_items.append(self.frame_Table.item(item))
-                        self.frame_Table.detach(item)
-
-                if choice == "On Hand":
-                    if "On Hand" not in self.frame_Table.item(item)['text']:
-                        detached_items.append(self.frame_Table.item(item))
-                        self.frame_Table.detach(item)
-
-                
-            event.widget.config(state='disabled')
-            def clear_filter():
-                for item in detached_items:
-                    self.frame_Table.insert("", 'end', text=item['text'], values=item['values'])
-                detached_items.clear()
-                event.widget.config(state='normal')
-
-            btn_filter_clear.config(state='normal',command=lambda: clear_filter())
-        
-
-                    
-        filter.bind("<<ComboboxSelected>>",filter_callback)
 
     def Click_Stack(self):
         self.button_List.config(state="normal")

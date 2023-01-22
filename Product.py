@@ -83,6 +83,12 @@ class product:
         dbcursor.execute(query,(prod_id,batch,ref,qty,remark,))
         dbConnector.db.commit()
 
+    def get_batch_Codes(self):
+        query="SELECT batch_code from products LEFT JOIN return_to_sender ON products.batch_code=return_to_sender.BatchCode;"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query)
+        return dbcursor.fetchall()
+
     def add_deliveryBatch(self,val):
         dbcursor = self.dbcursor
         query="INSERT INTO deliverylist VALUES(%s,%s,%s,%s)"

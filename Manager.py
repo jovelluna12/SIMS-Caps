@@ -12,20 +12,92 @@ class Manager (Employee.Employee):
         result = dbcursor.fetchall()
         return result
 
-    def get_inTransit(self,date):
-        query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status='On Hand';"
+    def get_inTransit(self,dateFrom,dateTo,batch):
         dbcursor = self.dbcursor
-        dbcursor.execute(query,(date,))
-        result = dbcursor.fetchall()
+        if dateFrom is not None and dateTo is None and batch == "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status='In Transit';"
+            dbcursor.execute(query,(dateFrom,))
+            result = dbcursor.fetchall()
+        elif dateFrom is not None and dateTo is None and batch != "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status='In Transit' AND products.batch_code=%s;"
+            dbcursor.execute(query,(dateFrom,batch,))
+            result = dbcursor.fetchall()
+        elif dateFrom is not None and dateTo is not None and batch != "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and %s AND products.status='In Transit' AND products.batch_code=%s;"
+            dbcursor.execute(query,(dateFrom,dateTo,batch,))
+            result = dbcursor.fetchall()
+        elif dateFrom is not None and dateTo is not None and batch == "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and %s AND products.status='In Transit';"
+            dbcursor.execute(query,(dateFrom,dateTo,))
+            result = dbcursor.fetchall()
+        elif dateTo is None and dateFrom is None and batch=="None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND products.status='In Transit';"
+            dbcursor.execute(query)
+            result = dbcursor.fetchall()
+        elif dateTo is None and dateFrom is None and batch != "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND products.status='In Transit' AND products.batch_code=%s;"
+            dbcursor.execute(query,(batch,))
+            result = dbcursor.fetchall()
+            
         return result
     
-    def get_OnHand(self,date):
-        query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status='In Transit';"
+    def get_OnHand(self,dateFrom,dateTo,batch):
         dbcursor = self.dbcursor
-        dbcursor.execute(query,(date,))
-        result = dbcursor.fetchall()
+        if dateFrom is not None and dateTo is None and batch == "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status='On Hand';"
+            dbcursor.execute(query,(dateFrom,))
+            result = dbcursor.fetchall()
+        elif dateFrom is not None and dateTo is None and batch != "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status='On Hand' AND products.batch_code=%s;"
+            dbcursor.execute(query,(dateFrom,batch,))
+            result = dbcursor.fetchall()
+        elif dateFrom is not None and dateTo is not None and batch != "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and %s AND products.status='On Hand' AND products.batch_code=%s;"
+            dbcursor.execute(query,(dateFrom,dateTo,batch,))
+            result = dbcursor.fetchall()
+        elif dateFrom is not None and dateTo is not None and batch == "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and %s AND products.status='On Hand';"
+            dbcursor.execute(query,(dateFrom,dateTo,))
+            result = dbcursor.fetchall()
+        elif dateTo is None and dateFrom is None and batch=="None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND products.status='On Hand';"
+            dbcursor.execute(query)
+            result = dbcursor.fetchall()
+        elif dateTo is None and dateFrom is None and batch != "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND products.status='On Hand' AND products.batch_code=%s;"
+            dbcursor.execute(query,(batch,))
+            result = dbcursor.fetchall()
+            
         return result
 
+    def listNone(self,dateFrom,dateTo,batch):
+        dbcursor = self.dbcursor
+        if dateFrom is not None and dateTo is None and batch == "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE();"
+            dbcursor.execute(query,(dateFrom,))
+            result = dbcursor.fetchall()
+        elif dateFrom is not None and dateTo is None and batch != "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.batch_code=%s;"
+            dbcursor.execute(query,(dateFrom,batch,))
+            result = dbcursor.fetchall()
+        elif dateFrom is not None and dateTo is not None and batch != "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and %s AND products.batch_code=%s;"
+            dbcursor.execute(query,(dateFrom,dateTo,batch,))
+            result = dbcursor.fetchall()
+        elif dateFrom is not None and dateTo is not None and batch == "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and %s;"
+            dbcursor.execute(query,(dateFrom,dateTo,))
+            result = dbcursor.fetchall()
+        elif dateTo is None and dateFrom is None and batch=="None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode;"
+            dbcursor.execute(query)
+            result = dbcursor.fetchall()
+        elif dateTo is None and dateFrom is None and batch != "None":
+            query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND products.batch_code=%s;"
+            dbcursor.execute(query,(batch,))
+            result = dbcursor.fetchall()
+            
+        return result
 
     def get_list_from_date_now(self,date,filter):
         query="SELECT products.ProductID,products.ProductName,products.status,products.price,products.Quantity FROM products,deliverylist WHERE products.batch_code=deliverylist.BatchCode AND deliverylist.datepurchased BETWEEN %s and CURDATE() AND products.status=%s;"
