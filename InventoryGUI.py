@@ -251,6 +251,15 @@ class InvortoryGUI:
                     batch = self.frame_Table.item(item)['values'][0]
                     prod = Product.product()
 
+                    if "idd_list" not in locals() and "batch_list" not in locals() and "ref_list" not in locals() and "QtyDif_list" not in locals() and "remark_list" not in locals() and "item_id_list" not in locals():
+                        idd_list=[]
+                        batch_list=[]
+                        ref_list=[]
+                        QtyDif_list=[]
+                        remark_list=[]
+
+                        item_id_list=[]
+
                     batch = (batch,)
                     result = prod.retrieveBatch(batch)
 
@@ -322,13 +331,16 @@ class InvortoryGUI:
 
                     self.frame_Table.pack(fill='both')
                     self.frame_Table.grid(row=1, column=0)
-
+                    self.frame_Table.configure(selectmode="browse")
 
                     def confirm_delivery():
                         prod = Product.product()
                         id = idd.get()
                         name = namee.get()
                         qtyy = qty.get()
+
+                        return_goods=list(zip(idd_list,batch_list,ref_list,QtyDif_list,remark_list))
+                        prod.return_to_sender(return_goods)
 
                         for item in self.frame_Table.get_children():
                             id = self.frame_Table.item(item)['values'][0]
@@ -339,6 +351,15 @@ class InvortoryGUI:
                             prod.editDelivery(id, name, priceeee, qtyyy, datee)
 
                         self.frame_Table.delete(*self.frame_Table.get_children())
+                        idd_list.clear()
+                        batch_list.clear()
+                        ref_list.clear()
+                        QtyDif_list.clear()
+                        remark_list.clear()
+                        item_id_list.clear()
+
+                        self.Add_Delivery1.destroy()
+
                     
                     self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
                     self.button.place(x=600, y=150)
@@ -362,75 +383,106 @@ class InvortoryGUI:
 
                     def selectItem(event):
                         selected_item = self.frame_Table.selection()[0]
-                        id = self.frame_Table.item(selected_item)['values'][0]
-                        name = self.frame_Table.item(selected_item)['values'][1]
-                        pricee = self.frame_Table.item(selected_item)['values'][2]
-                        quantity = self.frame_Table.item(selected_item)['values'][3]
-                        expire = self.frame_Table.item(selected_item)['values'][5]
+                        if selected_item in item_id_list:
+                            self.Add_Delivery1.wm_attributes("-topmost", 0)
+                            messagebox.showerror("Already Saved","Item Already Saved")
+                            self.Add_Delivery1.wm_attributes("-topmost", 1)
+                        
+                        else:
+                            selected_item = self.frame_Table.selection()[0]
+                            id = self.frame_Table.item(selected_item)['values'][0]
+                            name = self.frame_Table.item(selected_item)['values'][1]
+                            pricee = self.frame_Table.item(selected_item)['values'][2]
+                            quantity = self.frame_Table.item(selected_item)['values'][3]
+                            expire = self.frame_Table.item(selected_item)['values'][5]
 
-                        self.Product_ID_EN.config(state='normal')
-                        self.Product_Price_EN.config(state='normal')
-                        self.Product_Stack_EN.config(state='normal')
-                        self.Product_date_EN.config(state='normal')
-                        self.Product_price_EN.config(state='normal')
+                            self.Product_ID_EN.config(state='normal')
+                            self.Product_Price_EN.config(state='normal')
+                            self.Product_Stack_EN.config(state='normal')
+                            self.Product_date_EN.config(state='normal')
+                            self.Product_price_EN.config(state='normal')
 
-                        global New_QTY_lbl
-                        New_QTY=Label(self.Frame_Add,text="QTY to Receive")
-                        New_QTY_lbl= Entry(self.Frame_Add,width=10,textvariable=qty,borderwidth=4)
-                        New_QTY.place(x=450,y=110)
-                        New_QTY_lbl.place(x=450,y=130)
+                            self.Product_ID_EN.delete(0,END)
+                            self.Product_Price_EN.delete(0,END)
+                            self.Product_Stack_EN.delete(0,END)
+                            self.Product_price_EN.delete(0,END)
 
-                        date = datetime.strptime(expire, '%Y-%m-%d')
+                            global New_QTY_lbl
+                            New_QTY=Label(self.Frame_Add,text="QTY to Receive")
+                            New_QTY_lbl= Entry(self.Frame_Add,width=10,textvariable=qty,borderwidth=4)
+                            New_QTY.place(x=450,y=110)
+                            New_QTY_lbl.place(x=450,y=130)
 
-                        self.Product_date_EN.set_date(date)
-                        idd.set(id)
-                        namee.set(name)
-                        qty.set(quantity)
-                        price.set(pricee)
+                            date = datetime.strptime(expire, '%Y-%m-%d')
 
-                        self.Product_ID_EN.insert(0,idd.get())
-                        self.Product_Price_EN.insert(0,namee.get())
-                        self.Product_Stack_EN.insert(0,qty.get())
-                        self.Product_price_EN.insert(0,price.get())
+                            self.Product_date_EN.set_date(date)
+                            idd.set(id)
+                            namee.set(name)
+                            qty.set(quantity)
+                            price.set(pricee)
 
-                        self.Product_Price_EN.config(state='disabled')
-                        self.Product_price_EN.config(state='disabled')
-                        self.Product_ID_EN.config(state='disabled')
-                        self.Product_Stack_EN.config(state='disabled')
+                            self.Product_ID_EN.insert(0,idd.get())
+                            self.Product_Price_EN.insert(0,namee.get())
+                            self.Product_Stack_EN.insert(0,qty.get())
+                            self.Product_price_EN.insert(0,price.get())
 
-                        self.button.config(state='normal', command=saveChanges)
+                            self.Product_Price_EN.config(state='disabled')
+                            self.Product_price_EN.config(state='disabled')
+                            self.Product_ID_EN.config(state='disabled')
+                            self.Product_Stack_EN.config(state='disabled')
+
+                            self.button.config(state='normal', command=saveChanges)
 
                     def saveChanges(): 
-                        if int(New_QTY_lbl.get()) < int(qty.get()):
-                            QTY_diff=int(qty.get())-int(New_QTY_lbl.get())
-                            remark_dialog=simpledialog.askstring("Remarks", "New QTY is less than Order QTY.\nQTY not Included will be marked Return to Sender\nEnter Remark", parent=self.Frame_Add)
-                            if remark_dialog:
-                                prod=Product.product()
-                                ref=prod.get_ref_id(namee.get())
-                                ref=ref[0]
+                        try:
+                            if int(New_QTY_lbl.get()) < int(qty.get()):
+                                QTY_diff=int(qty.get())-int(New_QTY_lbl.get())
+                                remark_dialog=simpledialog.askstring("Remarks", "New QTY is less than Order QTY.\nQTY not Included will be marked Return to Sender\nEnter Remark", parent=self.Frame_Add)
+                                if remark_dialog:
+                                    prod=Product.product()
+                                    ref=prod.get_ref_id(namee.get())
+                                    ref=ref[0]
                                             
-                                prod.return_to_sender(idd.get(),batch,ref,QTY_diff,remark_dialog)
+                                    idd_list.append(idd.get())
+                                    batch_list.append(batch[0])
+                                    ref_list.append(ref)
+                                    QtyDif_list.append(QTY_diff)
+                                    remark_list.append(remark_dialog)
 
-                                id = idd.get()
-                                name = namee.get()
-                                newQTY=int(qty.get())-QTY_diff
+                                    newQTY=int(qty.get())-QTY_diff
 
-                                for item in self.frame_Table.get_children():
-                                    id = self.frame_Table.item(item)['values'][0]
-                                    name = self.frame_Table.item(item)['values'][1]
-                                    priceeee = self.frame_Table.item(item)['values'][2]
-                                    datee = self.frame_Table.item(item)['values'][5]
-                                    prod.editDelivery(id, name, priceeee, newQTY, datee)
+                                    selectedItem = self.frame_Table.selection()[0]
+                                    item_id_list.append(selectedItem)
+                                    x = self.frame_Table.item(selectedItem)['values'][4]
+                                    self.frame_Table.item(selectedItem,text="a", values=(
+                                    self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
+                                    
+                                    self.Product_ID_EN.config(state='normal')
+                                    self.Product_Price_EN.config(state='normal')
+                                    self.Product_Stack_EN.config(state='normal')
+                                    self.Product_date_EN.config(state='normal')
+                                    self.Product_price_EN.config(state='normal')
 
-                                self.frame_Table.delete(*self.frame_Table.get_children())
-                            self.Frame_Add.destroy()
+                                    self.Product_ID_EN.delete(0,END)
+                                    self.Product_Price_EN.delete(0,END)
+                                    self.Product_Stack_EN.delete(0,END)
+                                    self.Product_price_EN.delete(0,END)
+
+                                    self.Product_Price_EN.config(state='disabled')
+                                    self.Product_price_EN.config(state='disabled')
+                                    self.Product_ID_EN.config(state='disabled')
+                                    self.Product_Stack_EN.config(state='disabled')
+
+                            else:
+                                selectedItem = self.frame_Table.selection()[0]
+                                x = self.frame_Table.item(selectedItem)['values'][4]
+                                self.frame_Table.item(selectedItem,text="a", values=(
+                                self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), self.Product_Stack_EN.get(), x, self.Product_date_EN.get_date()))
+                        except(ValueError):
+                            self.Add_Delivery1.wm_attributes("-topmost", 0)
+                            messagebox.showerror("Invalid Input","Please Enter a Valid Input")
+                            self.Add_Delivery1.wm_attributes("-topmost", 1)
                             
-                        else:
-                            selectedItem = self.frame_Table.selection()[0]
-                            x = self.frame_Table.item(selectedItem)['values'][4]
-                            self.frame_Table.item(selectedItem,text="a", values=(
-                            self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), self.Product_Stack_EN.get(), x, self.Product_date_EN.get_date()))
-
                     self.button = Button(self.Frame_Add, text="Save", command=saveChanges)
                     self.button.place(x=710, y=150)
 
@@ -810,6 +862,8 @@ class InvortoryGUI:
             expiry_date_list.clear()
             order_date_list.clear()
             status_list.clear()
+
+            self.Add_Delivery.destroy()
         else:
             self.Add_Delivery.wm_attributes("-topmost", 1)
 
@@ -1624,18 +1678,6 @@ class InvortoryGUI:
 
         Title_label=Label(self.Frame_Detail,text="Cresdel Pharmacy!!",bg="yellow",font=("Arial", 50, "bold"))
         Title_label.place(x=20,y=50)
-
-        # photo = PhotoImage(file="123.png")
-        # label=Label( self.Frame_Detail, image=photo)
-        # label.place(x=20,y=20)
-
-        # img_path1="123.png"
-        # self.load1 = Image.open(img_path1)
-        # self.load1 = self.load1.resize((150, 50), Image.ANTIALIAS)
-        # self.render1 = ImageTk.PhotoImage(self.load1)
-        # self.img1 = Label(self.Frame_Detail, image=self.render1)
-        # self.img1.PhotoImage= self.render1
-        # self.img1.place(x=35, y=10)
 
         # For the Page LIST
         self.Frame_main = Frame(self.InvorVal, width=1063, height=540, highlightbackground="black",
