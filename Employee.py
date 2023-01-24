@@ -17,6 +17,13 @@ class Employee:
         else:
             return {'result': 0, 'user': None}
 
+    def getEmployee_Name(self, id):
+        dbcursor =  self.cursor
+        query="SELECT Name FROM employees where EmpID=%s LIMIT 1"
+        dbcursor.execute(query,(id,))
+        result=dbcursor.fetchone()
+        return result
+
     def getAttendance(self, employeeID):
         query=f"""
             SELECT 
@@ -45,12 +52,16 @@ class Employee:
         return dbcursor.lastrowid
 
 
-    def addNewTransaction(self,TotalPrice,Discount,attendedBy,items):
+    def addNewTransaction(self,TotalPrice,discount_SC_PWD,Discount,attendedBy,items):
         PurchaseID, InvoiceNumber = randomNumGen.generateNum()
 
         dbcursor=self.cursor
-        query1="insert into salestransaction (InvoiceNumber,TotalPrice,Discount,attendedBy) values (%s,%s,%s,%s)"
-        values=(InvoiceNumber,TotalPrice,Discount,attendedBy)
+        query1="insert into salestransaction (InvoiceNumber,TotalPrice,PWD_SC_Disc,Custom_Discount,attendedBy) values (%s,%s,%s,%s,%s)"
+        if discount_SC_PWD=="Senior Citizen 20%" or discount_SC_PWD=="PWD 20%":
+            disc=20/100*TotalPrice
+        elif discount_SC_PWD=="None":
+            disc=0
+        values=(InvoiceNumber,TotalPrice,disc,Discount,attendedBy)
         dbcursor.execute(query1,values)
 
         query2="insert into purchasedproducts values (%s,%s,%s,%s,%s)"

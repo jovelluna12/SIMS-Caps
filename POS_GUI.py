@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-# from escpos.printer import Usb
+import sales_receipt
 
 def start(m,id,user,time):
     if time=="Not Yet Timed In":
@@ -27,7 +27,7 @@ def start(m,id,user,time):
             global frame_Receipt
             frame_Receipt = Frame(root, width=1000,height=605,highlightbackground="black", highlightthickness=3)
             frame_Receipt.grid(row=0, column=0)
-            myLabel1 = Label(frame_Receipt, text="Cresdel Pharmacy!!",font=("Arial",30,'bold'))
+            myLabel1 = Label(frame_Receipt, text="Cresdel Pharmacy",font=("Arial",30,'bold'))
             myLabel1.place(x=0,y=0)
 
             # Table
@@ -358,16 +358,20 @@ def SearchItem(buttonpress):
     var="itemsLIST"
     var2="quantityLIST"
     var3="ProdCodee"
+    var4="priceList"
     if var not in globals():
         if var2 not in globals():
             if var3 not in globals():
-                global ProdCodee
-                global itemsLIST
-                global quantityLIST
+                if var4 not in globals():
+                    global ProdCodee
+                    global itemsLIST
+                    global quantityLIST
+                    global priceList
 
-                ProdCodee=[]
-                itemsLIST=[]
-                quantityLIST=[]
+                    ProdCodee=[]
+                    itemsLIST=[]
+                    quantityLIST=[]
+                    priceList=[]
 
     if ProdCode.index("end")!=0:
         ProdCode=Product_CODE_EN.get()
@@ -466,6 +470,7 @@ def Click_Enter(code,product,price,qty):
             else:
                 itemsLIST.append(ProdName)
                 quantityLIST.append(ProdQTY)
+                priceList.append(ProdPrice)
 
 
                 Product_ID = str(ProductCODE.get())
@@ -521,6 +526,7 @@ def payment():
             global Labell
             global Discount_Entry
             global windowASK
+            global disc_combobox, disc_val
             
             windowASK=Toplevel(root)
             windowASK.title("Payment")
@@ -533,21 +539,33 @@ def payment():
             windowASK.grab_set()
 
             global totalpricelabel
-            totalpricelabel=Label(windowPay,font=("Arial", 20),text=totalprice)
+            totalpricelabel=Label(windowPay,font=("Arial", 20))
             Labell = Label(windowPay, text="Total Price",font=("Arial", 25))
+
             Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
             global button_Quantity
             button_Quantity = Button(windowPay, text="Enter", padx=5, pady=5, command=discount)
 
-            Discount_LBL=Label(windowPay, text="Enter Discount, Leave Blank if None")
-            Discount_Entry=Entry(windowPay, width=30, borderwidth=3)
+            disc_combobox=ttk.Combobox(windowPay,state='readonly')
+            disc_combobox.set("None")
+            disc_combobox.place(x=25,y=140)
+            disc_combobox['values']=("None","Senior Citizen 20%","PWD 20%")
+            
+            def callback(event):
+                global disc_val
+                disc_val=disc_combobox.get()
+
+            disc_combobox.bind("<<ComboboxSelected>>",callback)
+
+            Discount_LBL=Label(windowPay, text="Set Custom Discount, Leave Unchanged if None")
+            Discount_Entry=Entry(windowPay, borderwidth=3)
                 
             Labell.place(x=20,y=5)
             totalpricelabel.place(x=90,y=50)
             Entry_Amount.place(x=25,y=90)
 
             Discount_LBL.place(x=25,y=120)
-            Discount_Entry.place(x=25,y=140)
+            Discount_Entry.place(x=100,y=140)
             button_Quantity.place(x=88,y=172)
             
         else:
@@ -570,19 +588,20 @@ def calculatechange(discount):
 
     Entry_Amount.config(state="normal")
     Discount_Entry.config(state="disabled")
-    button_Quantity.config(text="Enter", command=lambda m=disc: record(disc))
 
-    global total
     global finalprice
+    global totalprice
 
     fprice = StringVar()
-    finalprice=totalprice-discount
-    
-
-    #  finalpricee = "Final Price: " + str(finalprice)
-    # fprice.set(str(finalprice))
-    # Labell.config(text=finalpricee)
-
+    total=totalprice-discount
+    if "disc_val" in globals() and disc_val!="None" and disc_combobox.get()!="None":
+        if disc_val == "Senior Citizen 20%" or disc_val=="PWD 20%":
+            disc=20/100*total
+           
+    finalprice=total-disc
+    totalprice=finalprice
+    button_Quantity.config(text="Enter", command=lambda m=disc: record(disc))
+    totalpricelabel.config(text=str(finalprice))
 
 def record(discount):
     global PageOpen
@@ -590,22 +609,22 @@ def record(discount):
     totalamounttendered = Entry_Amount.get()
     total = int(float(totalamounttendered.strip()))
     change = total - finalprice
-    
 
     if (total < finalprice):
         # totalpricelabel.config(text="Entered Amount Not Enough!")
         messagebox.showerror("Amount Not Enough!", "Please Enter the Right Amount")
     else:
         Labell.config(text="Change: " + "{:.2f}".format(change))
+        Totalprince_Entry.config(text=finalprice)
         Totalchange_Entry.config(text=change)
 
         # get treeview data in list of tuple
         item_tuple = list(zip(itemsLIST, quantityLIST, ProdCodee))
         attendedBy = user_id
-        print(item_tuple)
 
+        discount_SC_PWD=disc_combobox.get()
         e = Employee.Employee()
-        e.addNewTransaction(finalprice, discount, attendedBy, item_tuple)
+        e.addNewTransaction(finalprice, discount_SC_PWD,discount, attendedBy, item_tuple)
         # close this window here
         Entry_Amount.config(state="disabled")
         Discount_Entry.config(state="disabled")
@@ -618,12 +637,16 @@ def record(discount):
 
         root.grab_release()
         windowASK.destroy()
+
         NextTransact.config(state=ACTIVE)
         NextTransact.config(command=newTransact)
         # button_Quantity.config(text="Done", command=windowASK.destroy)
     
         for x in frame_Table.get_children():
             frame_Table.delete(x)
+
+        new_Item_Tuple=list(zip(itemsLIST, quantityLIST,priceList))
+        sales_receipt.App(finalprice,total,totalamounttendered,change, discount,disc_val, attendedBy, new_Item_Tuple)
 
 
 def newTransact():

@@ -382,12 +382,12 @@ class InvortoryGUI:
                         global PageOpen    
                         PageOpen=1
 
-                    if result[-1]=="In Transit":
-                        self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
-                        self.button.place(x=600, y=150)
+                    print(result[-1])
+                    self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
+                    self.button.place(x=600, y=150)
 
-                        self.delivery_delete = Button(self.Frame_Add, text="Delete", command=lambda: delete_delivery())
-                        self.delivery_delete.place(x=550, y=150)
+                    self.delivery_delete = Button(self.Frame_Add, text="Delete", command=lambda: delete_delivery())
+                    self.delivery_delete.place(x=550, y=150)
 
                     def delete_delivery():
                         if len(self.frame_Table.selection())!=0:
@@ -405,7 +405,7 @@ class InvortoryGUI:
 
                     def selectItem(event):
                         selected_item = self.frame_Table.selection()[0]
-                        if selected_item in item_id_list or result[-1]!="In Transit":
+                        if selected_item in item_id_list or result[-1]=="On Hand":
                             self.Add_Delivery1.wm_attributes("-topmost", 0)
                             messagebox.showerror("Error","Item is either On Hand or Already Saved")
                             self.Add_Delivery1.wm_attributes("-topmost", 1)
@@ -453,8 +453,7 @@ class InvortoryGUI:
                             self.Product_ID_EN.config(state='disabled')
                             self.Product_Stack_EN.config(state='disabled')
 
-                            if result[-1]=="In Transit":
-                                self.button.config(state='normal', command=saveChanges)
+                            self.button.config(state='normal', command=saveChanges)
 
                     def saveChanges(): 
                         try:
