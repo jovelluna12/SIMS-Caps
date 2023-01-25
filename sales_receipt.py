@@ -2,23 +2,30 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter import simpledialog
 import tkinter.font as tkFont
 import Employee
 from datetime import datetime
 
+
 class App:
-    def __init__(self,finalprice,total,totalamounttendered,change, discount,disc_comb, attendedBy, item_tuple):
+    def __init__(self,discount,custom_discount,user_id, item_tuple):
+        global root,u_id,items
+        u_id=user_id
+        items=item_tuple
         root = tk.Tk()
         #setting title
         root.title("Sales Summary")
         #setting window size
-        width=600
-        height=500
+        width=700
+        height=600
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
+        root.protocol("WM_DELETE_WINDOW", self.on_Closing)
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
         root.geometry(alignstr)
         root.resizable(width=False, height=False)
+        
 
         GLabel_602=tk.Label(root)
         ft = tkFont.Font(family='Arial',size=22)
@@ -47,6 +54,7 @@ class App:
         style.theme_use("default")
         style.configure("Treeview")
 
+        global frame_Table
         frame_Table = ttk.Treeview(root, height=25)
         frame_Table['columns'] = ("Name", "Price", "QTY", "Total")
         frame_Table.column("#0", width=0, stretch=NO)
@@ -71,7 +79,7 @@ class App:
             subtotal=subtotal+item_tuple[item][2]*item_tuple[item][1]
 
         emp=Employee.Employee()
-        CashName=emp.getEmployee_Name(attendedBy)
+        CashName=emp.getEmployee_Name(user_id)
         GLabel_459=tk.Label(root)
         ft = tkFont.Font(family='Arial',size=10)
         GLabel_459["font"] = ft
@@ -86,7 +94,7 @@ class App:
         GLabel_170["text"] = "Subtotal: PHP "+str(subtotal)
         GLabel_170.place(x=300,y=340)
 
-        VAT=0.12*finalprice
+        VAT=0.12*subtotal
 
         GLabel_139=tk.Label(root)
         ft = tkFont.Font(family='Arial',size=10)
@@ -95,16 +103,11 @@ class App:
         GLabel_139["text"] = "12% VAT: PHP "+str(format(VAT))
         GLabel_139.place(x=300,y=360)
 
-        if disc_comb=="None":
+        global disc1
+        if discount=="Senior Citizen 20%" or discount =="PWD 20%":
+            disc1=20/100*subtotal
+        else: 
             disc1=0
-            
-        if disc_comb=="Senior Citizen 20%" or disc_comb=="PWD 20%":
-            disc1=20/100*finalprice
-        
-        if discount!=0:
-            disc2=discount/100*finalprice
-        else:
-            disc2=0
 
         GLabel_522=tk.Label(root)
         ft = tkFont.Font(family='Arial',size=10)
@@ -112,14 +115,22 @@ class App:
         GLabel_522["fg"] = "#333333"
         GLabel_522["text"] = "Senior/PWD Discount: PHP "+str(format(disc1))
         GLabel_522.place(x=300,y=380)
-        
+
+        global disc
+        if not custom_discount:
+            disc=0
+        else:
+            disc=custom_discount/100*subtotal
 
         GLabel_522=tk.Label(root)
         ft = tkFont.Font(family='Arial',size=10)
         GLabel_522["font"] = ft
         GLabel_522["fg"] = "#333333"
-        GLabel_522["text"] = "LESS: Other Discounts: PHP "+str(format(disc2))
+        GLabel_522["text"] = "LESS: Other Discounts: PHP "+str(format(disc))
         GLabel_522.place(x=300,y=400)
+
+        global finalprice
+        finalprice=subtotal-disc1-disc
 
         GLabel_522=tk.Label(root)
         ft = tkFont.Font(family='Arial',size=10)
@@ -128,24 +139,43 @@ class App:
         GLabel_522["text"] = "Total Amount Due "+str(finalprice)
         GLabel_522.place(x=300,y=420)
 
-        GLabel_522=tk.Label(root)
-        ft = tkFont.Font(family='Arial',size=10)
-        GLabel_522["font"] = ft
-        GLabel_522["fg"] = "#333333"
-        GLabel_522["text"] = "Cash: PHP"+str(totalamounttendered)
-        GLabel_522.place(x=300,y=440)
+        amount=simpledialog.askfloat("Enter Amount Tendered","Enter Amount Tendered")
+        if amount<finalprice:
+            messagebox.showerror("Error","Amount Less than Actual Price")
+        else:
 
-        GLabel_522=tk.Label(root)
-        ft = tkFont.Font(family='Arial',size=10)
-        GLabel_522["font"] = ft
-        GLabel_522["fg"] = "#333333"
-        GLabel_522["text"] = "Change: PHP"+str(change)
-        GLabel_522.place(x=300,y=460)
+            GLabel_522=tk.Label(root)
+            ft = tkFont.Font(family='Arial',size=10)
+            GLabel_522["font"] = ft
+            GLabel_522["fg"] = "#333333"
+            GLabel_522["text"] = "Cash: PHP"+str(amount)
+            GLabel_522.place(x=300,y=440)
+
+            
+            change=amount-finalprice
+
+            GLabel_522=tk.Label(root)
+            ft = tkFont.Font(family='Arial',size=10)
+            GLabel_522["font"] = ft
+            GLabel_522["fg"] = "#333333"
+            GLabel_522["text"] = "Change: PHP"+str(change)
+            GLabel_522.place(x=300,y=460)
 
 
-        Button(root,text="Close",command=lambda: root.destroy()).place(x=250,y=490)
+        Button(root,text="Close and Conclude Transaction",command=lambda: self.close()).place(x=250,y=490)
 
         root.mainloop()
+
+    def close(self):
+        e = Employee.Employee()
+        discount_SC_PWD=disc1
+        e.addNewTransaction(finalprice, discount_SC_PWD,disc, u_id, items)
+        frame_Table.delete(*frame_Table.get_children())
+        root.destroy()
+
+    def on_Closing(self):
+        if messagebox.askyesno("Warning","Warning! Closing this Window will not Save this Transaction.\nContinue Closing?"):
+            root.destroy()
 
 
 # if __name__ == "__main__":

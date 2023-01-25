@@ -57,32 +57,33 @@ class Employee:
 
         dbcursor=self.cursor
         query1="insert into salestransaction (InvoiceNumber,TotalPrice,PWD_SC_Disc,Custom_Discount,attendedBy) values (%s,%s,%s,%s,%s)"
-        if discount_SC_PWD=="Senior Citizen 20%" or discount_SC_PWD=="PWD 20%":
-            disc=20/100*TotalPrice
-        elif discount_SC_PWD=="None":
-            disc=0
-        values=(InvoiceNumber,TotalPrice,disc,Discount,attendedBy)
+        # if discount_SC_PWD=="Senior Citizen 20%" or discount_SC_PWD=="PWD 20%":
+        #     disc=20/100*TotalPrice
+        # elif discount_SC_PWD=="None":
+        #     disc=0
+        print(InvoiceNumber,TotalPrice,discount_SC_PWD,Discount,attendedBy)
+        values=(InvoiceNumber,TotalPrice,discount_SC_PWD,Discount,attendedBy)
         dbcursor.execute(query1,values)
 
         query2="insert into purchasedproducts values (%s,%s,%s,%s,%s)"
         n1=0
         n2=1
         n3=2
-        id=[]
         item=[x[n1] for x in items]
         quantity=[x[n2] for x in items]
-        id=[x[n3] for x in items]
+        id=[x[3] for x in items]
 
         query3="update products set quantity=quantity-%s where ProductName LIKE %s and ProductID=%s"
         for x in range(len(item)):
 
             PurchaseID=randomNumGen.generatePurchaseID()
             items=(PurchaseID,item[x],quantity[x],InvoiceNumber,id[x])
+            print(PurchaseID,item[x],quantity[x],InvoiceNumber,id[x])
             dbcursor.execute(query2,items)
             query3val=(quantity[x],item[x],id[x])
             dbcursor.execute(query3,query3val)
 
-        dbConnector.db.commit()
+        dbConnector.db.commit() 
 
     def viewDeliveryList(self):
         dbcursor=self.cursor

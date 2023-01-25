@@ -511,7 +511,6 @@ def Click_Enter(code,product,price,qty):
                     root.grab_release()
                     window_Qty.destroy()
 
-
 def payment():
     global PageOpen
     def on_close():
@@ -542,18 +541,14 @@ def payment():
             totalpricelabel=Label(windowPay,font=("Arial", 20))
             Labell = Label(windowPay, text="Total Price",font=("Arial", 25))
 
-            Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
-            global button_Quantity
-            button_Quantity = Button(windowPay, text="Enter", padx=5, pady=5, command=discount)
-
-            disc_combobox=ttk.Combobox(windowPay,state='readonly')
-            disc_combobox.set("None")
+            disc_StringVar=StringVar()
+            disc_combobox=ttk.Combobox(windowPay,state='readonly',textvariable=disc_StringVar)
+            disc_StringVar.set("None")
             disc_combobox.place(x=25,y=140)
             disc_combobox['values']=("None","Senior Citizen 20%","PWD 20%")
             
             def callback(event):
-                global disc_val
-                disc_val=disc_combobox.get()
+                disc_StringVar.set(disc_combobox.get())
 
             disc_combobox.bind("<<ComboboxSelected>>",callback)
 
@@ -562,10 +557,21 @@ def payment():
                 
             Labell.place(x=20,y=5)
             totalpricelabel.place(x=90,y=50)
-            Entry_Amount.place(x=25,y=90)
 
             Discount_LBL.place(x=25,y=120)
             Discount_Entry.place(x=100,y=140)
+
+            def conclude_sales():
+                windowASK.grab_release()
+                disc_entry=Discount_Entry.get()
+                windowASK.destroy()
+                new_Item_Tuple=list(zip(itemsLIST, quantityLIST,priceList,ProdCodee))
+                sales_receipt.App( disc_StringVar.get(),disc_entry,user_id, new_Item_Tuple)
+
+            Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
+            Entry_Amount.place(x=25,y=90)
+            global button_Quantity
+            button_Quantity = Button(windowPay, text="Enter", padx=5, pady=5, command= lambda: conclude_sales())
             button_Quantity.place(x=88,y=172)
             
         else:
@@ -573,81 +579,6 @@ def payment():
         PageOpen+=1
     else:
         messagebox.showinfo("Error","The Window already Open!")
-
-def discount():
-    if not Discount_Entry.get():
-        discount = 0
-        calculatechange(discount)
-    else:
-        disc=int(float(Discount_Entry.get()))/100
-        discount=totalprice*disc
-        calculatechange(discount)
-
-def calculatechange(discount):
-    disc=discount
-
-    Entry_Amount.config(state="normal")
-    Discount_Entry.config(state="disabled")
-
-    global finalprice
-    global totalprice
-
-    fprice = StringVar()
-    total=totalprice-discount
-    if "disc_val" in globals() and disc_val!="None" and disc_combobox.get()!="None":
-        if disc_val == "Senior Citizen 20%" or disc_val=="PWD 20%":
-            disc=20/100*total
-           
-    finalprice=total-disc
-    totalprice=finalprice
-    button_Quantity.config(text="Enter", command=lambda m=disc: record(disc))
-    totalpricelabel.config(text=str(finalprice))
-
-def record(discount):
-    global PageOpen
-    PageOpen=1
-    totalamounttendered = Entry_Amount.get()
-    total = int(float(totalamounttendered.strip()))
-    change = total - finalprice
-
-    if (total < finalprice):
-        # totalpricelabel.config(text="Entered Amount Not Enough!")
-        messagebox.showerror("Amount Not Enough!", "Please Enter the Right Amount")
-    else:
-        Labell.config(text="Change: " + "{:.2f}".format(change))
-        Totalprince_Entry.config(text=finalprice)
-        Totalchange_Entry.config(text=change)
-
-        # get treeview data in list of tuple
-        item_tuple = list(zip(itemsLIST, quantityLIST, ProdCodee))
-        attendedBy = user_id
-
-        discount_SC_PWD=disc_combobox.get()
-        e = Employee.Employee()
-        e.addNewTransaction(finalprice, discount_SC_PWD,discount, attendedBy, item_tuple)
-        # close this window here
-        Entry_Amount.config(state="disabled")
-        Discount_Entry.config(state="disabled")
-        
-        # p = Usb(0x0416, 0x5011)
-        # p.text("Record\n"
-        #         ,item_tuple,
-        #         "\n",
-        #         attendedBy)
-
-        root.grab_release()
-        windowASK.destroy()
-
-        NextTransact.config(state=ACTIVE)
-        NextTransact.config(command=newTransact)
-        # button_Quantity.config(text="Done", command=windowASK.destroy)
-    
-        for x in frame_Table.get_children():
-            frame_Table.delete(x)
-
-        new_Item_Tuple=list(zip(itemsLIST, quantityLIST,priceList))
-        sales_receipt.App(finalprice,total,totalamounttendered,change, discount,disc_val, attendedBy, new_Item_Tuple)
-
 
 def newTransact():
     Totalprince_Entry.config(text="")
