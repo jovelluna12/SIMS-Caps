@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-# from escpos.printer import Usb
+import sales_receipt
 
 def start(m,id,user,time):
     if time=="Not Yet Timed In":
@@ -27,7 +27,7 @@ def start(m,id,user,time):
             global frame_Receipt
             frame_Receipt = Frame(root, width=1000,height=605,highlightbackground="black", highlightthickness=3)
             frame_Receipt.grid(row=0, column=0)
-            myLabel1 = Label(frame_Receipt, text="Cresdel Pharmacy!!",font=("Arial",30,'bold'))
+            myLabel1 = Label(frame_Receipt, text="Cresdel Pharmacy",font=("Arial",30,'bold'))
             myLabel1.place(x=0,y=0)
 
             # Table
@@ -358,16 +358,20 @@ def SearchItem(buttonpress):
     var="itemsLIST"
     var2="quantityLIST"
     var3="ProdCodee"
+    var4="priceList"
     if var not in globals():
         if var2 not in globals():
             if var3 not in globals():
-                global ProdCodee
-                global itemsLIST
-                global quantityLIST
+                if var4 not in globals():
+                    global ProdCodee
+                    global itemsLIST
+                    global quantityLIST
+                    global priceList
 
-                ProdCodee=[]
-                itemsLIST=[]
-                quantityLIST=[]
+                    ProdCodee=[]
+                    itemsLIST=[]
+                    quantityLIST=[]
+                    priceList=[]
 
     if ProdCode.index("end")!=0:
         ProdCode=Product_CODE_EN.get()
@@ -434,15 +438,15 @@ def Click_Enter(code,product,price,qty):
     window_Frame = Frame(window_Qty, width=340, height=150)
     window_Frame.pack()
 
-    Label_Quantity = Label(window_Frame, text="Enter QTY",font=("Arial", 20))
+    Label_Quantity = Label(window_Frame, text="ENTER QUANTITY",font=("Arial", 20))
 
     Entry_Quantity = Entry(window_Frame, width=35, borderwidth=3,font=("Arial", 10))
     button_Quantity = Button(window_Frame, text="ENTER", padx=5, pady=5, command=lambda m=Entry_Quantity.get():setQTY(Entry_Quantity.get()))
 
     
-    Label_Quantity.place(x=10,y=20)
-    Entry_Quantity.place(x=30,y=70)
-    button_Quantity.place(x=120,y=100)
+    Label_Quantity.place(x=40,y=20)
+    Entry_Quantity.place(x=40,y=70)
+    button_Quantity.place(x=140,y=100)
     
     ProdID=code
     ProdName=product
@@ -466,6 +470,7 @@ def Click_Enter(code,product,price,qty):
             else:
                 itemsLIST.append(ProdName)
                 quantityLIST.append(ProdQTY)
+                priceList.append(ProdPrice)
 
 
                 Product_ID = str(ProductCODE.get())
@@ -506,7 +511,6 @@ def Click_Enter(code,product,price,qty):
                     root.grab_release()
                     window_Qty.destroy()
 
-
 def payment():
     global PageOpen
     def on_close():
@@ -521,6 +525,7 @@ def payment():
             global Labell
             global Discount_Entry
             global windowASK
+            global disc_combobox, disc_val
             
             windowASK=Toplevel(root)
             windowASK.title("Payment")
@@ -533,21 +538,46 @@ def payment():
             windowASK.grab_set()
 
             global totalpricelabel
-            totalpricelabel=Label(windowPay,font=("Arial", 20),text=totalprice)
-            Labell = Label(windowPay, text="Total Price",font=("Arial", 25))
-            Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
-            global button_Quantity
-            button_Quantity = Button(windowPay, text="Enter", padx=5, pady=5, command=discount)
+            totalpricelabel=Label(windowPay,font=("Arial", 30))
+            Labell = Label(windowPay, text="Discount",font=("Arial", 25))
 
-            Discount_LBL=Label(windowPay, text="Enter Discount, Leave Blank if None")
-            Discount_Entry=Entry(windowPay, width=30, borderwidth=3)
+            disc_StringVar=StringVar()
+            disc_combobox=ttk.Combobox(windowPay,state='readonly',width=25,textvariable=disc_StringVar)
+            disc_StringVar.set("Discount")
+            disc_combobox.place(x=25,y=90)
+            disc_combobox['values']=("None","Senior Citizen 20%","PWD 20%")
+            
+            def callback(event):
+                disc_StringVar.set(disc_combobox.get())
+
+            disc_combobox.bind("<<ComboboxSelected>>",callback)
+            Discount_LBL=Label(windowPay, text="Set Custom Discount, \nLeave Unchanged if None",justify=LEFT)
+
+            Event_LBL=Label(windowPay, text="Discount Promo",justify=LEFT)
+            Discount_Entry=Entry(windowPay, borderwidth=3,width=28)
                 
             Labell.place(x=20,y=5)
-            totalpricelabel.place(x=90,y=50)
-            Entry_Amount.place(x=25,y=90)
+            totalpricelabel.place(x=25,y=50)
 
-            Discount_LBL.place(x=25,y=120)
+            Discount_LBL.place(x=25,y=50)
+            Event_LBL.place(x=25,y=120)
             Discount_Entry.place(x=25,y=140)
+
+            def conclude_sales():
+                global PageOpen
+                PageOpen=1
+                windowASK.grab_release()
+                disc_entry=Discount_Entry.get()
+                windowASK.destroy()
+                new_Item_Tuple=list(zip(itemsLIST, quantityLIST,priceList,ProdCodee))
+                sales_receipt.App( disc_StringVar.get(),disc_entry,user_id, new_Item_Tuple)
+                
+                
+
+            # Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
+            # Entry_Amount.place(x=25,y=90)
+            global button_Quantity
+            button_Quantity = Button(windowPay, text="Enter", padx=5, pady=5, command= lambda: conclude_sales())
             button_Quantity.place(x=88,y=172)
             
         else:
@@ -555,76 +585,6 @@ def payment():
         PageOpen+=1
     else:
         messagebox.showinfo("Error","The Window already Open!")
-
-def discount():
-    if not Discount_Entry.get():
-        discount = 0
-        calculatechange(discount)
-    else:
-        disc=int(float(Discount_Entry.get()))/100
-        discount=totalprice*disc
-        calculatechange(discount)
-
-def calculatechange(discount):
-    disc=discount
-
-    Entry_Amount.config(state="normal")
-    Discount_Entry.config(state="disabled")
-    button_Quantity.config(text="Enter", command=lambda m=disc: record(disc))
-
-    global total
-    global finalprice
-
-    fprice = StringVar()
-    finalprice=totalprice-discount
-    
-
-    #  finalpricee = "Final Price: " + str(finalprice)
-    # fprice.set(str(finalprice))
-    # Labell.config(text=finalpricee)
-
-
-def record(discount):
-    global PageOpen
-    PageOpen=1
-    totalamounttendered = Entry_Amount.get()
-    total = int(float(totalamounttendered.strip()))
-    change = total - finalprice
-    
-
-    if (total < finalprice):
-        # totalpricelabel.config(text="Entered Amount Not Enough!")
-        messagebox.showerror("Amount Not Enough!", "Please Enter the Right Amount")
-    else:
-        Labell.config(text="Change: " + "{:.2f}".format(change))
-        Totalchange_Entry.config(text=change)
-
-        # get treeview data in list of tuple
-        item_tuple = list(zip(itemsLIST, quantityLIST, ProdCodee))
-        attendedBy = user_id
-        print(item_tuple)
-
-        e = Employee.Employee()
-        e.addNewTransaction(finalprice, discount, attendedBy, item_tuple)
-        # close this window here
-        Entry_Amount.config(state="disabled")
-        Discount_Entry.config(state="disabled")
-        
-        # p = Usb(0x0416, 0x5011)
-        # p.text("Record\n"
-        #         ,item_tuple,
-        #         "\n",
-        #         attendedBy)
-
-        root.grab_release()
-        windowASK.destroy()
-        NextTransact.config(state=ACTIVE)
-        NextTransact.config(command=newTransact)
-        # button_Quantity.config(text="Done", command=windowASK.destroy)
-    
-        for x in frame_Table.get_children():
-            frame_Table.delete(x)
-
 
 def newTransact():
     Totalprince_Entry.config(text="")

@@ -70,6 +70,27 @@ class Manager (Employee.Employee):
             
         return result
 
+    def get_Vendor_ID(self,name):
+        query="SELECT id FROM vendor WHERE vendor_name=%s"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(name,))
+        result=dbcursor.fetchone()
+        return result
+
+    def get_Vendors(self):
+        dbcursor = self.dbcursor
+        query="SELECT * FROM vendor"
+        dbcursor.execute(query)
+        result=dbcursor.fetchall()
+        return result
+
+
+    def addVendor_logic(self,vendor_details):
+        dbcursor = self.dbcursor
+        query="INSERT INTO vendor VALUES(%s,%s,%s,%s,%s,%s)"
+        dbcursor.execute(query,vendor_details)
+        dbConnector.db.commit()
+
     def listNone(self,dateFrom,dateTo,batch):
         dbcursor = self.dbcursor
         if dateFrom is not None and dateTo is None and batch == "None":

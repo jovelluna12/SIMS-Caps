@@ -13,7 +13,7 @@ class product:
         self.dbcursor = dbConnector.db.cursor()
     def retrieveBatch(self,code):
         dbcursor = self.dbcursor
-        query = "SELECT ProductID,ProductName,price,quantity,deliverylist.datepurchased,expiry_date FROM products,deliverylist WHERE products.batch_code=%s AND deliverylist.BatchCode=products.batch_code "
+        query = "SELECT ProductID,ProductName,price,quantity,deliverylist.datepurchased,expiry_date, deliverylist.status FROM products,deliverylist WHERE products.batch_code=%s AND deliverylist.BatchCode=products.batch_code "
 
         dbcursor.execute(query, code)
         result=dbcursor.fetchall()
@@ -91,7 +91,7 @@ class product:
 
     def add_deliveryBatch(self,val):
         dbcursor = self.dbcursor
-        query="INSERT INTO deliverylist VALUES(%s,%s,%s,%s)"
+        query="INSERT INTO deliverylist VALUES(%s,%s,%s,%s,%s,%s)"
         dbcursor.execute(query,val)
         dbConnector.db.commit()
 
