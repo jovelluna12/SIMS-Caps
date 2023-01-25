@@ -184,11 +184,16 @@ class App:
     def calculate(self,sub):
         global finalprice,change
         finalprice=sub-disc1-disc
-        amount=simpledialog.askfloat("Enter Amount Tendered","Total Price is "+str(finalprice)+"\nEnter Amount Tendered")
-        if amount<finalprice:
-            messagebox.showerror("Error","Amount Less than Actual Price")
-        else:
-            change=float(amount-finalprice)
+        try:
+            amount=simpledialog.askfloat("Enter Amount Tendered","Total Price is "+str(finalprice)+"\nEnter Amount Tendered")
+            if amount is None:
+                messagebox.showinfo("Closed","Closed Without Saving")
+            elif amount<finalprice and amount is not None:
+                messagebox.showerror("Error","Amount Less than Actual Price")
+            else:
+                change=float(amount-finalprice)
+        except(ValueError):
+            messagebox.showerror("Input Error","Enter a Valid Number")
         return amount, change
 
     def on_Closing(self):
