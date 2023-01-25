@@ -242,11 +242,6 @@ class InvortoryGUI:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
     
-    def refresh(self):
-        self.InvorGUI.update()
-        self.InvorGUI.after(100, self.refresh)
-
-
     def Add_Delivery1_close(self):
             global PageOpen
             self.Add_Delivery1.wm_attributes("-topmost", 0)
@@ -254,7 +249,6 @@ class InvortoryGUI:
                 self.InvorVal.grab_release()
                 PageOpen=1
                 self.Add_Delivery1.destroy()
-                self.refresh
             else:
                 self.Add_Delivery1.wm_attributes("-topmost", 1)
 
@@ -375,7 +369,6 @@ class InvortoryGUI:
                         QtyDif_list.clear()
                         remark_list.clear()
                         item_id_list.clear()
-
                         self.Add_Delivery1.destroy()
 
                     
@@ -515,7 +508,7 @@ class InvortoryGUI:
                     messagebox.showinfo("Error","No Item Selected")
         else:
             messagebox.showinfo("Error","The Window is already Open!")
-
+    
     def Click_Delivery(self):
         self.button_List.config(state="normal")
         self.button_Stack.config(state="normal")
@@ -849,6 +842,7 @@ class InvortoryGUI:
         self.button_Add.config(command=self.add_to_products)
 
     def Add_Deliveries(self):
+        global PageOpen
         self.Add_Delivery.wm_attributes("-topmost", 0)
         if messagebox.askokcancel('Comfirm', 'Please make sure if the product to delivery and Quantity is correct'):
             if 'batch_code' not in locals():
@@ -880,8 +874,11 @@ class InvortoryGUI:
             expiry_date_list.clear()
             order_date_list.clear()
             status_list.clear()
-            PagaOpen = 1 
+            self.InvorVal.grab_release()
+            self.Add_Del['bg']='#54FA9B'
+            PageOpen=1
             self.Add_Delivery.destroy()
+            
         else:
             self.Add_Delivery.wm_attributes("-topmost", 1)
 
@@ -1285,7 +1282,7 @@ class InvortoryGUI:
             self.button_Delete = Button(self.Frame_Add_St, text="Delete", padx=20, pady=5, command=self.Delete)
             self.button_Delete.place(x=700, y=90)
 
-            self.Add_Stack.update()
+            # self.Add_Stack.update()
             PageOpen += 1
 
         else:
@@ -1946,7 +1943,7 @@ class InvortoryGUI:
 
     # Chick ADD END!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def InvorGUI(self):
-        self.InvorVal = Tk()
+        self.InvorVal = tk.Tk()
         self.InvorVal.title("Cresdel Pharmacy!!")
         width = self.InvorVal.winfo_screenwidth()
         height = self.InvorVal.winfo_screenheight()
@@ -1969,7 +1966,7 @@ class InvortoryGUI:
         self.Frame_stack = Frame(self.Frame_main, width=1058, height=540, padx=10, pady=10)
         self.Frame_Empl = Frame(self.Frame_main, width=1058, height=540, padx=10, pady=10)
         self.Frame_Del = Frame(self.Frame_main, width=1058, height=540, padx=10, pady=10)
-
+    
         # For the Side
         self.Frame_Side = Frame(self.InvorVal, width=300, height=743, highlightbackground="black", highlightthickness=3,
                                 padx=10, pady=10)
@@ -2329,4 +2326,3 @@ class InvortoryGUI:
         user_role=role
         user_id=id
         self.InvorGUI()
-
