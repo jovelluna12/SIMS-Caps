@@ -141,9 +141,39 @@ class Manager (Employee.Employee):
         result = dbcursor.fetchall()
         return result
 
+    def get_Transaction_Details(self,invoice_number):
+        dbcursor = self.dbcursor
+        query="SELECT TotalPrice, PWD_SC_Disc, Custom_Discount, DatePurchased,Cash, calculated_change FROM salestransaction WHERE InvoiceNumber=%s;"
+        dbcursor.execute(query,(invoice_number,))
+        result=dbcursor.fetchall()
+        return result
+
+    def get_sales_Attended(self,invoice_number):
+        dbcursor = self.dbcursor
+        query="SELECT employees.Name FROM employees, salestransaction WHERE salestransaction.attendedBy = employees.EmpID AND salestransaction.InvoiceNumber=%s;"
+        dbcursor.execute(query,(invoice_number,))
+        result=dbcursor.fetchone()
+        return result
+
+    def get_itemsSold(self,invoice_number):
+        dbcursor = self.dbcursor
+        query="SELECT purchasedproducts.Item,products.price, purchasedproducts.Quantity,products.price*purchasedproducts.Quantity as TOTAL FROM purchasedproducts, products WHERE purchasedproducts.InvoiceNumber=%s AND purchasedproducts.ProductID=products.ProductID;"
+        dbcursor.execute(query,(invoice_number,))
+        result=dbcursor.fetchall()
+        return result
+    
+    def get_sale_via_id(self, id):
+        dbcursor = self.dbcursor
+        query="SELECT salestransaction.InvoiceNumber, employees.name, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM salestransaction, employees, products,purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID AND salestransaction.attendedBy=employees.EmpID AND salestransaction.InvoiceNumber=%s;"
+        dbcursor.execute(query,(id,))
+        result = dbcursor.fetchall()
+        return result
+        
+
     def productSales(self):
         dbcursor = self.dbcursor
-        query = "SELECT purchasedproducts.PurchaseID,purchasedproducts.Item,purchasedproducts.Quantity,products.price, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM purchasedproducts,products,salestransaction WHERE purchasedproducts.InvoiceNumber=salestransaction.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID GROUP BY purchasedproducts.PurchaseID;"
+        # query = "SELECT purchasedproducts.PurchaseID,purchasedproducts.Item,purchasedproducts.Quantity,products.price, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM purchasedproducts,products,salestransaction WHERE purchasedproducts.InvoiceNumber=salestransaction.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID GROUP BY purchasedproducts.PurchaseID;"
+        query="SELECT salestransaction.InvoiceNumber, employees.name, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM salestransaction, employees, products,purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID AND salestransaction.attendedBy=employees.EmpID;"
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         return result

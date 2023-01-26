@@ -52,17 +52,12 @@ class Employee:
         return dbcursor.lastrowid
 
 
-    def addNewTransaction(self,TotalPrice,discount_SC_PWD,Discount,attendedBy,items):
+    def addNewTransaction(self,TotalPrice,discount_SC_PWD,Discount,cash,change,attendedBy,items):
         PurchaseID, InvoiceNumber = randomNumGen.generateNum()
 
         dbcursor=self.cursor
-        query1="insert into salestransaction (InvoiceNumber,TotalPrice,PWD_SC_Disc,Custom_Discount,attendedBy) values (%s,%s,%s,%s,%s)"
-        # if discount_SC_PWD=="Senior Citizen 20%" or discount_SC_PWD=="PWD 20%":
-        #     disc=20/100*TotalPrice
-        # elif discount_SC_PWD=="None":
-        #     disc=0
-        print(InvoiceNumber,TotalPrice,discount_SC_PWD,Discount,attendedBy)
-        values=(InvoiceNumber,TotalPrice,discount_SC_PWD,Discount,attendedBy)
+        query1="insert into salestransaction (InvoiceNumber,TotalPrice,PWD_SC_Disc,Custom_Discount,Cash,calculated_change,attendedBy) values (%s,%s,%s,%s,%s,%s,%s)"
+        values=(InvoiceNumber,TotalPrice,discount_SC_PWD,Discount,cash,change,attendedBy)
         dbcursor.execute(query1,values)
 
         query2="insert into purchasedproducts values (%s,%s,%s,%s,%s)"
@@ -78,7 +73,6 @@ class Employee:
 
             PurchaseID=randomNumGen.generatePurchaseID()
             items=(PurchaseID,item[x],quantity[x],InvoiceNumber,id[x])
-            print(PurchaseID,item[x],quantity[x],InvoiceNumber,id[x])
             dbcursor.execute(query2,items)
             query3val=(quantity[x],item[x],id[x])
             dbcursor.execute(query3,query3val)

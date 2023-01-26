@@ -9,7 +9,7 @@ from datetime import datetime
 
 class App:
     def __init__(self,discount,custom_discount,user_id, item_tuple):
-        global root,u_id,items, discounted,discounted_custom,disc1,disc,sub
+        global root,u_id,items, discounted,discounted_custom,disc1,disc,sub,amount
         u_id=user_id
         items=item_tuple
         discounted=discount
@@ -111,7 +111,7 @@ class App:
     def close(self):
         e = Employee.Employee()
         discount_SC_PWD=disc1
-        e.addNewTransaction(finalprice, discount_SC_PWD,disc, u_id, items)
+        e.addNewTransaction(finalprice, discount_SC_PWD,disc,amount,change, u_id, items)
         frame_Table.delete(*frame_Table.get_children())
         root.destroy()
 
@@ -133,13 +133,21 @@ class App:
             disc=float(discounted_custom)/100*subtotal
 
         return disc1, disc
+    
+    # def Payment_GUI():
+    #     Payment_G = Toplevel(root)
+    #     Payment_G.title("Amount Tendered")
+    #     # Payment_G.protocol("WM_DELETE_WINDOW",on_close)
+    #     Payment_G.resizable(False,False)
+    #     Payment_G.wm_attributes("-topmost", 1)
+    #     Payment_G.grab_set()
 
 
     def calculate(self,sub):
         global finalprice,change
         finalprice=sub-disc1-disc
         try:
-            amount=simpledialog.askfloat("Enter Amount Tendered","Total Price is "+str(finalprice)+"\nEnter Amount Tendered")
+            amount=simpledialog.askfloat("Payment","Total Price is "+str(finalprice)+"\nEnter Amount Tendered")
             if amount is None:
                 messagebox.showinfo("Closed","Closed Without Saving")
             elif amount<finalprice and amount is not None:
@@ -154,6 +162,6 @@ class App:
         if messagebox.askyesno("Warning","Warning! Closing this Window will not Save this Transaction.\nContinue Closing?"):
             root.destroy()
 
-
+ 
 # if __name__ == "__main__":
 #     app = App()

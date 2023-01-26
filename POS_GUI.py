@@ -572,8 +572,6 @@ def payment():
                 new_Item_Tuple=list(zip(itemsLIST, quantityLIST,priceList,ProdCodee))
                 sales_receipt.App( disc_StringVar.get(),disc_entry,user_id, new_Item_Tuple)
                 
-                
-
             # Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
             # Entry_Amount.place(x=25,y=90)
             global button_Quantity
