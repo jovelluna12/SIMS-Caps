@@ -391,16 +391,21 @@ class InvortoryGUI:
                         name = namee.get()
                         qtyy = qty.get()
 
-                        return_goods=list(zip(idd_list,batch_list,ref_list,QtyDif_list,remark_list))
-                        prod.return_to_sender(return_goods)
-
+                        qtyIN=[]
                         for item in self.frame_Table.get_children():
                             id = self.frame_Table.item(item)['values'][0]
                             name = self.frame_Table.item(item)['values'][1]
                             priceeee = self.frame_Table.item(item)['values'][2]
                             qtyyy = self.frame_Table.item(item)['values'][3]
                             datee = self.frame_Table.item(item)['values'][5]
+                            qtyIN.append(qtyyy)
                             prod.editDelivery(id, name, priceeee, qtyyy, datee)
+
+                        return_goods=list(zip(idd_list,batch_list,ref_list,QtyDif_list,remark_list))
+                        return2=list(zip(QtyDif_list,batch_list))
+                        return3=list(zip(qtyIN,batch_list))
+                        return4=list(zip(remark_list,batch_list))
+                        prod.return_to_sender(return_goods,return2,return3,return4)
 
                         self.frame_Table.delete(*self.frame_Table.get_children())
                         idd_list.clear()
@@ -413,6 +418,7 @@ class InvortoryGUI:
                         self.Add_Delivery1.destroy()
                         global PageOpen    
                         PageOpen=1
+                        View_Delivery_List_1.VDL(batch)
 
                     print(result[-1])
                     self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
@@ -510,11 +516,7 @@ class InvortoryGUI:
                                     x = self.frame_Table.item(selectedItem)['values'][4]
                                     self.frame_Table.item(selectedItem,text="a", values=(
                                     self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
-
-
-                                    # self.frame_Table.insert(parent='', index='end', values=(
-                                    # self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
-                                    
+ 
                                     self.Product_ID_EN.config(state='normal')
                                     self.Product_Price_EN.config(state='normal')
                                     self.Product_Stack_EN.config(state='normal')
@@ -532,10 +534,43 @@ class InvortoryGUI:
                                     self.Product_Stack_EN.config(state='disabled')
 
                             else:
-                                selectedItem = self.frame_Table.selection()[0]
-                                x = self.frame_Table.item(selectedItem)['values'][4]
-                                self.frame_Table.item(selectedItem,text="a", values=(
-                                self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), self.Product_Stack_EN.get(), x, self.Product_date_EN.get_date()))
+                                QTY_diff=int(New_QTY_lbl.get())-int(qty.get())
+                                remark_dialog=simpledialog.askstring("Remarks", "New QTY is greater than Order QTY.\nQTY will be added to list of Items on Hand\nEnter Remark", parent=self.Frame_Add)
+                                if remark_dialog:
+                                    prod=Product.product()
+                                    ref=prod.get_ref_id(namee.get())
+                                    ref=ref[0]
+                                            
+                                    idd_list.append(idd.get())
+                                    batch_list.append(batch[0])
+                                    ref_list.append(ref)
+                                    QtyDif_list.append('-')
+                                    remark_list.append("added: "+remark_dialog)
+
+                                    newQTY=int(qty.get())+QTY_diff
+
+                                    selectedItem = self.frame_Table.selection()[0]
+                                    item_id_list.append(selectedItem)
+                                    x = self.frame_Table.item(selectedItem)['values'][4]
+                                    self.frame_Table.item(selectedItem,text="a", values=(
+                                    self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
+ 
+                                    self.Product_ID_EN.config(state='normal')
+                                    self.Product_Price_EN.config(state='normal')
+                                    self.Product_Stack_EN.config(state='normal')
+                                    self.Product_date_EN.config(state='normal')
+                                    self.Product_price_EN.config(state='normal')
+
+                                    self.Product_ID_EN.delete(0,END)
+                                    self.Product_Price_EN.delete(0,END)
+                                    self.Product_Stack_EN.delete(0,END)
+                                    self.Product_price_EN.delete(0,END)
+
+                                    self.Product_Price_EN.config(state='disabled')
+                                    self.Product_price_EN.config(state='disabled')
+                                    self.Product_ID_EN.config(state='disabled')
+                                    self.Product_Stack_EN.config(state='disabled')
+
                         except(ValueError):
                             self.Add_Delivery1.wm_attributes("-topmost", 0)
                             messagebox.showerror("Invalid Input","Please Enter a Valid Input")
@@ -599,8 +634,7 @@ class InvortoryGUI:
                 batch=(batch,)
                 prod=Product.product()
                 res=prod.retrieveBatch(batch)
-                View_Delivery_List_1.VDL()
-            # POForm.App()
+                View_Delivery_List_1.VDL(batch)
 
         self.Button_Receive=Button(self.Frame_Del,text="View PO Form",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=lambda: PO())
         self.Button_Receive.place(x=840,y=0)
@@ -916,11 +950,25 @@ class InvortoryGUI:
                 zip(ProductID_list, ref_id_list, ProdName_list, quantity_list, price_list, status_list, batch_code_list,
                     expiry_date_list))
 
-            values = (batch_code, VendID,ShipMean,order_date, arrival_date, 'In Transit')
+            GrossAmount=float(sum(price_list)+sum(quantity_list))
+            VAT=12/100*float(GrossAmount)
+            if discount.get()=="":
+                disc=0
+            else:
+                disc=discount.get()
+            Discount=float(disc)/100*GrossAmount
+            NETamount=GrossAmount-Discount
+
+            values = (batch_code, VendID,ShipMean,GrossAmount,VAT,Discount,NETamount,order_date, arrival_date, 'In Transit')
+
+
+            delivery_item_tuple = list(
+                zip(batch_code_list,ProductID_list,quantity_list,"-","-","-"))
 
             b = Product.product()
             b.add_deliveryBatch(values)
             b.addMany_Del(item_tuple)
+            b.addto_DeliveryItems(delivery_item_tuple)
 
             self.frame_Table.delete(*self.frame_Table.get_children())
 
@@ -985,6 +1033,11 @@ class InvortoryGUI:
             ShipMean=ShipMethod.get()
             if Vendor_EN.get()!="Select Vendor":
                 button_Add.config(state='normal')
+
+        global discount
+        Label(Frame_Add_Em, text="Enter Discount. Leave Blank if None").place(x=60,y=230)
+        discount=Entry(Frame_Add_Em)
+        discount.place(x=60, y=250)
 
         Vendor_EN.bind("<<ComboboxSelected>>",set_VendID)
         ShipMethod.bind("<<ComboboxSelected>>",set_ShipMethod)
@@ -1060,7 +1113,7 @@ class InvortoryGUI:
             self.Product_CODE_EN.bind("<<ComboboxSelected>>", self.setPrice)    
             self.Product_CODE_EN.bind("<KeyRelease>",self.search_delivery)
 
-            self.Product_date_LA = Label(self.Frame_Add, text="Date")
+            self.Product_date_LA = Label(self.Frame_Add, text="Date",state='disabled')
             self.Product_date_EN = DateEntry(self.Frame_Add, selectmode='day', width=20)
             self.Product_date_LA.place(x=20, y=120)
             self.Product_date_EN.place(x=20, y=140)
@@ -1159,57 +1212,55 @@ class InvortoryGUI:
     def Click_Add_Em(self):
         global PageOpen
         if PageOpen<2:
-            if user_role=='Manager': messagebox.showerror("Access not Granted","Only the Owner is allowed to Open this")
-            else:
-                self.button_Add_Em['bg']='gray'
-                self.Add_Employee = Toplevel(self.InvorVal)
-                self.Add_Employee.title("Employeee!")
-                self.Add_Employee.geometry("500x400")
-                self.Add_Employee.resizable(False, False)
-                self.Add_Employee.protocol("WM_DELETE_WINDOW", self.Employee_on_close)
-                self.Add_Employee.wm_attributes("-topmost", 1)
-                self.Add_Employee.grab_set()
+            self.button_Add_Em['bg']='gray'
+            self.Add_Employee = Toplevel(self.InvorVal)
+            self.Add_Employee.title("Employeee!")
+            self.Add_Employee.geometry("500x400")
+            self.Add_Employee.resizable(False, False)
+            self.Add_Employee.protocol("WM_DELETE_WINDOW", self.Employee_on_close)
+            self.Add_Employee.wm_attributes("-topmost", 1)
+            self.Add_Employee.grab_set()
 
-                global btn, frame
-                btn = self.button_Add_Em
-                frame = self.Add_Employee
+            global btn, frame
+            btn = self.button_Add_Em
+            frame = self.Add_Employee
 
-                self.Frame_Add_Em = Frame(self.Add_Employee, width=800, height=500, )
-                self.Frame_Add_Em.place(x=0, y=0)
+            self.Frame_Add_Em = Frame(self.Add_Employee, width=800, height=500, )
+            self.Frame_Add_Em.place(x=0, y=0)
 
-                Frma = Label(self.Frame_Add_Em, text="Add Employee", width=20, font=("Arial", 35), anchor=W)
-                Frma.place(x=20, y=20)
+            Frma = Label(self.Frame_Add_Em, text="Add Employee", width=20, font=("Arial", 35), anchor=W)
+            Frma.place(x=20, y=20)
 
-                self.Fname = StringVar()
-                self.Employee_Lname_LA = Label(self.Frame_Add_Em, text="Full Name:")
-                self.Employee_Lname_EN = Entry(self.Frame_Add_Em, width=60, borderwidth=4, textvariable=self.Fname)
-                self.Employee_Lname_LA.place(x=60, y=110)
-                self.Employee_Lname_EN.place(x=60, y=130)
+            self.Fname = StringVar()
+            self.Employee_Lname_LA = Label(self.Frame_Add_Em, text="Full Name:")
+            self.Employee_Lname_EN = Entry(self.Frame_Add_Em, width=60, borderwidth=4, textvariable=self.Fname)
+            self.Employee_Lname_LA.place(x=60, y=110)
+            self.Employee_Lname_EN.place(x=60, y=130)
 
-                self.Employee_Username_LA = Label(self.Frame_Add_Em, text="Username:")
-                self.username = StringVar()
-                self.Employee_Username_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.username, borderwidth=4)
-                self.Employee_Username_LA.place(x=60, y=160)
-                self.Employee_Username_EN.place(x=60, y=180)
+            self.Employee_Username_LA = Label(self.Frame_Add_Em, text="Username:")
+            self.username = StringVar()
+            self.Employee_Username_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.username, borderwidth=4)
+            self.Employee_Username_LA.place(x=60, y=160)
+            self.Employee_Username_EN.place(x=60, y=180)
 
-                self.Employee_Password_LA = Label(self.Frame_Add_Em, text="Password:")
-                self.password = StringVar()
-                self.Employee_Password_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.password, show="*",
+            self.Employee_Password_LA = Label(self.Frame_Add_Em, text="Password:")
+            self.password = StringVar()
+            self.Employee_Password_EN = Entry(self.Frame_Add_Em, width=60, textvariable=self.password, show="*",
                                                 borderwidth=4)
-                self.Employee_Password_LA.place(x=60, y=210)
-                self.Employee_Password_EN.place(x=60, y=230)
+            self.Employee_Password_LA.place(x=60, y=210)
+            self.Employee_Password_EN.place(x=60, y=230)
 
-                self.Employee_Role_LA = Label(self.Frame_Add_Em, text="Role:")
-                self.chosen_val = tk.StringVar(self.Frame_Add_Em)
-                self.chosen_val.set("Select Role")
-                self.Role = ttk.Combobox(self.Frame_Add_Em, textvariable=self.chosen_val, state='readonly')
-                self.Role['values'] = ('Cashier', 'Manager')
-                self.Role.place(x=60, y=280)
-                self.Employee_Role_LA.place(x=60, y=260)
+            self.Employee_Role_LA = Label(self.Frame_Add_Em, text="Role:")
+            self.chosen_val = tk.StringVar(self.Frame_Add_Em)
+            self.chosen_val.set("Select Role")
+            self.Role = ttk.Combobox(self.Frame_Add_Em, textvariable=self.chosen_val, state='readonly')
+            self.Role['values'] = ('Cashier', 'Manager')
+            self.Role.place(x=60, y=280)
+            self.Employee_Role_LA.place(x=60, y=260)
 
-                self.button_Add = Button(self.Frame_Add_Em, text="Add", padx=20, pady=5, command=self.Click_AddS_Em)
-                self.button_Add.place(x=360, y=330)
-                PageOpen += 1
+            self.button_Add = Button(self.Frame_Add_Em, text="Add", padx=20, pady=5, command=self.Click_AddS_Em)
+            self.button_Add.place(x=360, y=330)
+            PageOpen += 1
         else:
             messagebox.showinfo("Error","The Window already Open!")
 

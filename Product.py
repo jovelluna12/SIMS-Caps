@@ -76,11 +76,17 @@ class product:
         dbcursor.executemany(query, vals)
         dbConnector.db.commit()
 
-    def return_to_sender(self,return_goods):
+    def return_to_sender(self,return_goods,items2,items3,items4):
         dbcursor = self.dbcursor
         query="INSERT INTO return_to_sender(ProductID,BatchCode,ref_id,qty,remarks) VALUES(%s,%s,%s,%s,%s)"
-
+        query2="UPDATE delivery_items SET qty_out=%s WHERE list=%s"
+        query3="UPDATE delivery_items SET qty_in=%s WHERE list=%s"
+        query4="UPDATE delivery_items SET remark=%s WHERE list=%s"
         dbcursor.executemany(query,return_goods)
+        dbcursor.executemany(query2,items2)
+        dbcursor.executemany(query3,items3)
+        dbcursor.executemany(query4,items4)
+
         dbConnector.db.commit()
 
     def get_batch_Codes(self):
@@ -91,7 +97,8 @@ class product:
 
     def add_deliveryBatch(self,val):
         dbcursor = self.dbcursor
-        query="INSERT INTO deliverylist VALUES(%s,%s,%s,%s,%s,%s)"
+
+        query="INSERT INTO deliverylist VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         dbcursor.execute(query,val)
         dbConnector.db.commit()
 
@@ -109,6 +116,13 @@ class product:
         dbcursor.execute(query,(code,))
         result=dbcursor.fetchall()
         return result
+
+    def addto_DeliveryItems(self,items):
+        dbcursor = self.dbcursor
+        query="INSERT INTO delivery_items (list,Product_Id,	qty,qty_in,	qty_out,remark) VALUES(%s,%s,%s,%s,%s,%s)"
+        dbcursor.executemany(query,items)
+        dbConnector.db.commit()
+
     def addMany_Del(self,vals):
         dbcursor = self.dbcursor
         query = "INSERT INTO products (ProductID,ref_id,ProductName,quantity,price,status,batch_code,expiry_date) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"

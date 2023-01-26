@@ -168,7 +168,27 @@ class Manager (Employee.Employee):
         dbcursor.execute(query,(id,))
         result = dbcursor.fetchall()
         return result
-        
+
+    def getPO_Items(self,id):
+        query="SELECT delivery_items.id, products.ProductName, products.price, delivery_items.qty, delivery_items.qty_in, delivery_items.qty_out, delivery_items.remark FROM delivery_items,products WHERE delivery_items.list=%s AND delivery_items.list=products.batch_code;"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(id[0],))
+        result = dbcursor.fetchall()
+        return result
+
+    def getPO_details(self,id):
+        query="SELECT GrossAmount, VAT, Discount, NET_Amount FROM deliverylist WHERE BatchCode=%s"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(id,))
+        result = dbcursor.fetchone()
+        return result
+
+    def getPO_Vendor(self,id):
+        query="SELECT vendor.vendor_name, vendor.vendor_address, vendor.contact_num, vendor.email_add, vendor.shipping_fee FROM vendor, deliverylist WHERE deliverylist.vendor_id=vendor.id AND deliverylist.BatchCode=%s"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(id,))
+        result = dbcursor.fetchone()
+        return result
 
     def productSales(self):
         dbcursor = self.dbcursor
