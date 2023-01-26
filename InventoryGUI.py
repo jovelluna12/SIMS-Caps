@@ -199,9 +199,6 @@ class InvortoryGUI:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
         
-
-    
-    
     def Click_Stack(self):
         self.button_List.config(state="normal")
         self.button_Stack.config(state="disabled")
@@ -1909,20 +1906,26 @@ class InvortoryGUI:
                     Inven_Clear_Filterbutton=Button(self.Add_Notify,text="Clear Filters")
                     Inven_Clear_Filterbutton.place(x=360, y=95)
         
-                    self.export_Table['columns'] = (
-                    'Reference ID', "Item", "Price", "Remaining Quantity")
+                    self.export_Table['columns'] = ('Reference ID', "Item", "Price","DATEIN","DATEOUT","QTYIN","QTYOUT","Remaining Quantity")
                     self.export_Table.column("#0", width=0, stretch=NO)
-                    self.export_Table.column("Reference ID", anchor=W,width=50)
+                    self.export_Table.column("Reference ID", anchor=W,width=30)
                     self.export_Table.column("Item", anchor=W,width=300)
                     self.export_Table.column("Price", anchor=E,width=50)
-                    self.export_Table.column("Remaining Quantity", anchor=E,width=70)
+                    self.export_Table.column("DATEIN", anchor=E,width=70)
+                    self.export_Table.column("DATEOUT", anchor=E,width=70)
+                    self.export_Table.column("QTYIN", anchor=E,width=50)
+                    self.export_Table.column("QTYOUT", anchor=E,width=50)
+                    self.export_Table.column("Remaining Quantity", anchor=E,width=50)
                         
                     self.export_Table.heading("#0")
-                    self.export_Table.heading("Reference ID", text="Reference ID", anchor=W)
+                    self.export_Table.heading("Reference ID", text="Ref-ID", anchor=W)
                     self.export_Table.heading("Item", text="Item", anchor=W)
                     self.export_Table.heading("Price", text="Price", anchor=W)
-                    self.export_Table.heading("Remaining Quantity", text="Remaining Quantity", anchor=W)
-
+                    self.export_Table.heading("DATEIN", text="Date IN", anchor=W)
+                    self.export_Table.heading("DATEOUT", text="Date OUT", anchor=W)
+                    self.export_Table.heading("QTYIN", text="QTY IN", anchor=W)
+                    self.export_Table.heading("QTYOUT", text="QTY OUT", anchor=W)
+                    self.export_Table.heading("Remaining Quantity", text="Total QTY", anchor=W)
                     self.export_Table.pack()
 
                 elif report_type == "Delivery":
