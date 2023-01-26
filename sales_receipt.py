@@ -117,7 +117,7 @@ class App:
 
     def computeSubtotal(self):
         subtotal=0
-        for item in range(len(items)):
+        for item in range(len(items)): 
             subtotal=subtotal+items[item][2]*items[item][1]
         return subtotal
 
@@ -133,7 +133,7 @@ class App:
             disc=float(discounted_custom)/100*subtotal
 
         return disc1, disc
-    
+
     def Payment_GUI(self):
         self.Payment_G = Toplevel()
         self.Payment_G.title("Amount Tendered")
@@ -178,7 +178,7 @@ class App:
         global finalprice,change
         finalprice=sub-disc1-disc
         try:
-            amount=simpledialog.askfloat("Payment","Total Price is "+str(finalprice)+"\nEnter Amount Tendered")
+            amount=simpledialog.askfloat("Enter Amount Tendered","Total Price is "+str(finalprice)+"\nEnter Amount Tendered")
             if amount is None:
                 messagebox.showinfo("Closed","Closed Without Saving")
             elif amount<finalprice and amount is not None:
