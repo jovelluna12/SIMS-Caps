@@ -3,6 +3,9 @@ import datetime
 from datetime import date, datetime 
 from tkinter import simpledialog
 from email_validator import validate_email, EmailNotValidError
+import salesVIEW
+
+
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -11,9 +14,11 @@ import tkinter
 from tracemalloc import start
 import Employee
 import Manager
+
 import datetime
 from datetime import datetime
 import calendar
+
 from tkinter import filedialog as fd
 from tkcalendar import DateEntry
 from PIL import Image, ImageTk
@@ -200,8 +205,6 @@ class InvortoryGUI:
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
         
 
-    
-    
     def Click_Stack(self):
         self.button_List.config(state="normal")
         self.button_Stack.config(state="disabled")
@@ -214,16 +217,12 @@ class InvortoryGUI:
 
         self.Frame_stack.pack(fill='both')
         self.Label_title = Label(self.Frame_stack, text="SALES Page", font=("Arial", 15)).place(x=0, y=0)
-        Search=Label(self.Frame_stack,text="Receipt ID:").place(x=670,y=4)
-        Search_Entry=Entry(self.Frame_stack,width=30).place(x=730,y=4)
-        Search_button=Button(self.Frame_stack,text="Search",).place(x=920,y=0)
-        View_button=Button(self.Frame_stack,text="View",).place(x=980,y=0)
 
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
         self.frame_Table = ttk.Treeview(self.Frame_stack, height=23)
-        self.frame_Table['columns'] = ("ID", "Name", "Sales", "Date Purchased")
+        self.frame_Table['columns'] = ("ID", "Name",  "Sales", "Date Purchased")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=100, stretch=NO)
         self.frame_Table.column("Name", anchor=W, width=450, stretch=NO)
@@ -235,6 +234,7 @@ class InvortoryGUI:
         self.frame_Table.heading("Name", text="Attending Cashier", anchor=W)
         self.frame_Table.heading("Sales", text="Sales", anchor=W)
         self.frame_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
+        self.frame_Table.config(selectmode="browse")
         self.frame_Table.place(x=0, y=30)
         m1 = Manager.Manager()
         result = m1.productSales()
@@ -242,7 +242,44 @@ class InvortoryGUI:
         for x in result:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+        def view_sales():
+            if self.frame_Table.selection()==():
+                messagebox.showerror("No Item Selected","Please Select an Item")
+            else:
+                salesVIEW.App(self.frame_Table.item(self.frame_Table.selection())['values'][0])
+
+        def search_sales():
+            if Search_Entry.get()=="":
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                result = m1.productSales()
+                count = 0
+                for x in result:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+            else:
+                res=Manager.Manager().get_sale_via_id(Search_Entry.get())
+                count = 0
+                self.frame_Table.delete(*self.frame_Table.get_children())
+                for x in res:
+                    count += 1
+                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+
+        Search=Label(self.Frame_stack,text="Receipt ID:").place(x=670,y=4)
+        Search_Entry=Entry(self.Frame_stack,width=30)
+        Search_Entry.place(x=730,y=4)
+        Search_button=Button(self.Frame_stack,text="Search",command=lambda: search_sales()).place(x=920,y=0)
+        View_button=Button(self.Frame_stack,text="View",command=lambda: view_sales()).place(x=980,y=0)
+
+        
     
+    def refresh(self):
+        self.InvorGUI.update()
+        self.InvorGUI.after(100, self.refresh)
+
+
     def Add_Delivery1_close(self):
             global PageOpen
             self.Add_Delivery1.wm_attributes("-topmost", 0)
@@ -250,6 +287,7 @@ class InvortoryGUI:
                 self.InvorVal.grab_release()
                 PageOpen=1
                 self.Add_Delivery1.destroy()
+                self.refresh
             else:
                 self.Add_Delivery1.wm_attributes("-topmost", 1)
 
@@ -370,6 +408,7 @@ class InvortoryGUI:
                         QtyDif_list.clear()
                         remark_list.clear()
                         item_id_list.clear()
+
                         self.Add_Delivery1.destroy()
                         global PageOpen    
                         PageOpen=1
@@ -515,7 +554,7 @@ class InvortoryGUI:
                     messagebox.showinfo("Error","No Item Selected")
         else:
             messagebox.showinfo("Error","The Window is already Open!")
-    
+
     def Click_Delivery(self):
         self.button_List.config(state="normal")
         self.button_Stack.config(state="normal")
@@ -1347,7 +1386,7 @@ class InvortoryGUI:
             self.button_Delete = Button(self.Frame_Add_St, text="Delete", padx=20, pady=5, command=self.Delete)
             self.button_Delete.place(x=700, y=90)
 
-            # self.Add_Stack.update()
+            self.Add_Stack.update()
             PageOpen += 1
 
         else:
@@ -2008,7 +2047,7 @@ class InvortoryGUI:
 
     # Chick ADD END!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def InvorGUI(self):
-        self.InvorVal = tk.Tk()
+        self.InvorVal = Tk()
         self.InvorVal.title("Cresdel Pharmacy!!")
         width = self.InvorVal.winfo_screenwidth()
         height = self.InvorVal.winfo_screenheight()
@@ -2031,7 +2070,7 @@ class InvortoryGUI:
         self.Frame_stack = Frame(self.Frame_main, width=1058, height=540, padx=10, pady=10)
         self.Frame_Empl = Frame(self.Frame_main, width=1058, height=540, padx=10, pady=10)
         self.Frame_Del = Frame(self.Frame_main, width=1058, height=540, padx=10, pady=10)
-    
+
         # For the Side
         self.Frame_Side = Frame(self.InvorVal, width=300, height=743, highlightbackground="black", highlightthickness=3,
                                 padx=10, pady=10)

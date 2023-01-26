@@ -4,11 +4,11 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import simpledialog
 import tkinter.font as tkFont
-import Employee
+import Employee, Manager
 from datetime import datetime
 
 class App:
-    def __init__(self):
+    def __init__(self,invoice_id):
         root = tk.Tk()
         root.title("Sales Summary")
         width=600
@@ -53,49 +53,49 @@ class App:
         scrollbar.place(relx=1.0, rely=0.0, anchor="ne")
         frame_Table.configure(yscrollcommand=scrollbar.set)
         frame_Table.place(x=0,y=0,width=530,height=300)
-        
-        # global subtotal
-        # count=0
-        # subtotal=0
-        # for item in range(len(item_tuple)):
-        #     frame_Table.insert('',index='end',iid=count,values=(item_tuple[item][0],item_tuple[item][2],item_tuple[item][1],item_tuple[item][2]*item_tuple[item][1]))
-        #     count+=1
-        #     subtotal=subtotal+item_tuple[item][2]*item_tuple[item][1]
-        
-       
-        # emp=Employee.Employee()
-        # CashName=emp.getEmployee_Name(user_id)
-        
-        GLabel_450=tk.Label(root,text="Cashier: ",font=('Arial',15),justify=LEFT)
+
+        emp=Manager.Manager()
+        res=emp.get_itemsSold(invoice_id)
+        count=0
+        subtotal=float(0)
+        for item in res:
+            frame_Table.insert('',index='end',iid=count,text=item, values=item)
+            count+=1
+            subtotal+=float(item[-1])
+
+        CashName=emp.get_sales_Attended(invoice_id)
+
+        GLabel_450=tk.Label(root,text="Cashier: "+str(CashName[0]),font=('Arial',15),justify=LEFT)
         GLabel_450.place(x=20,y=470)
 
-        GLabel_450=tk.Label(root,text="Invoice No: ",font=('Arial',15),justify=LEFT)
+        GLabel_450=tk.Label(root,text="Invoice No: "+str(invoice_id),font=('Arial',15),justify=LEFT)
         GLabel_450.place(x=20,y=500)
 
-        GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}",font=('Arial',10),justify=LEFT)
-        GLabel_170.place(x=350,y=510)
+        VAT=0.12*subtotal
 
-        # VAT=0.12*subtotal
+        GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(subtotal),font=('Arial',10),justify=LEFT)
+        GLabel_170.place(x=350,y=510)
         
-        GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}",font=('Arial',10),justify=LEFT)
+        GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(VAT),font=('Arial',10),justify=LEFT)
         GLabel_139.place(x=350,y=530)
 
-        GLabel_522=tk.Label(root,text="Senior/PWD Discount: PHP {:.2f}",font=('Arial',10),justify=LEFT)
+        details=emp.get_Transaction_Details(invoice_id)
+
+        GLabel_522=tk.Label(root,text="Senior/PWD Discount: PHP {:.2f}".format(details[0][1]),font=('Arial',10),justify=LEFT)
         GLabel_522.place(x=350,y=550)
 
-        GLabel_523=tk.Label(root,text="LESS: Other Discounts: PHP {:.2f}",font=('Arial',10),justify=LEFT)
+        GLabel_523=tk.Label(root,text="LESS: Other Discounts: PHP {:.2f}".format(details[0][2]),font=('Arial',10),justify=LEFT)
         GLabel_523.place(x=350,y=570)
 
 
-        GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}",font=('Arial',10),justify=LEFT)
+        GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}".format(details[0][0]),font=('Arial',10),justify=LEFT)
         GLabel_524.place(x=350,y=590)
 
-        GLabel_525=tk.Label(root,text="Cash: PHP {:.2f}",font=('Arial',10),justify=LEFT)
+        GLabel_525=tk.Label(root,text="Cash: PHP {:.2f}".format(details[0][4]),font=('Arial',10),justify=LEFT)
         GLabel_525.place(x=350,y=610)            
 
-        GLabel_526=tk.Label(root,text="Change: PHP {:.2f}",font=('Arial',10),justify=LEFT)
+        GLabel_526=tk.Label(root,text="Change: PHP {:.2f}".format(details[0][5]),font=('Arial',10),justify=LEFT)
         GLabel_526.place(x=350,y=630)
-
 
         root.mainloop()
 

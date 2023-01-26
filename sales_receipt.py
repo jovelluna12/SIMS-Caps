@@ -9,7 +9,7 @@ from datetime import datetime
 
 class App:
     def __init__(self,discount,custom_discount,user_id, item_tuple):
-        global root,u_id,items, discounted,discounted_custom,disc1,disc,sub
+        global root,u_id,items, discounted,discounted_custom,disc1,disc,sub,amount
         u_id=user_id
         items=item_tuple
         discounted=discount
@@ -111,7 +111,7 @@ class App:
     def close(self):
         e = Employee.Employee()
         discount_SC_PWD=disc1
-        e.addNewTransaction(finalprice, discount_SC_PWD,disc, u_id, items)
+        e.addNewTransaction(finalprice, discount_SC_PWD,disc,amount,change, u_id, items)
         frame_Table.delete(*frame_Table.get_children())
         root.destroy()
 
@@ -154,6 +154,6 @@ class App:
         if messagebox.askyesno("Warning","Warning! Closing this Window will not Save this Transaction.\nContinue Closing?"):
             root.destroy()
 
-
+ 
 # if __name__ == "__main__":
 #     app = App()
