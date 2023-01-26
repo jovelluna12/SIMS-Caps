@@ -391,6 +391,10 @@ class InvortoryGUI:
                         qtyy = qty.get()
 
                         qtyIN=[]
+                        item_names=[]
+                        price_list=[]
+                        remain=[]
+                        date_list=[]
                         for item in self.frame_Table.get_children():
                             id = self.frame_Table.item(item)['values'][0]
                             name = self.frame_Table.item(item)['values'][1]
@@ -398,6 +402,11 @@ class InvortoryGUI:
                             qtyyy = self.frame_Table.item(item)['values'][3]
                             datee = self.frame_Table.item(item)['values'][5]
                             qtyIN.append(qtyyy)
+                            item_names.append(name)
+                            price_list.append(priceeee)
+                            remainBal=prod.getRemainingBal(id)
+                            remain.append(remainBal)
+                            date_list.append(datee)
                             prod.editDelivery(id, name, priceeee, qtyyy, datee)
 
                         return_goods=list(zip(idd_list,batch_list,ref_list,QtyDif_list,remark_list))
@@ -405,6 +414,9 @@ class InvortoryGUI:
                         return3=list(zip(qtyIN,batch_list))
                         return4=list(zip(remark_list,batch_list))
                         prod.return_to_sender(return_goods,return2,return3,return4)
+
+                        items=list(zip(item_names,price_list,date_list,'-',qtyIN,'-',remain))
+                        prod.Inventory(items)
 
                         self.frame_Table.delete(*self.frame_Table.get_children())
                         idd_list.clear()
@@ -964,10 +976,13 @@ class InvortoryGUI:
             delivery_item_tuple = list(
                 zip(batch_code_list,ProductID_list,quantity_list,"-","-","-"))
 
+            # inventoryTUPLE=list(zip(ProdName_list,price_list,date_list,'-',quantity_list,'-','-'))
+
             b = Product.product()
             b.add_deliveryBatch(values)
             b.addMany_Del(item_tuple)
             b.addto_DeliveryItems(delivery_item_tuple)
+            # b.Inventory(inventoryTUPLE)
 
             self.frame_Table.delete(*self.frame_Table.get_children())
 
@@ -2017,8 +2032,13 @@ class InvortoryGUI:
                     self.export_Table.heading("DATEOUT", text="Date OUT", anchor=W)
                     self.export_Table.heading("QTYIN", text="QTY IN", anchor=W)
                     self.export_Table.heading("QTYOUT", text="QTY OUT", anchor=W)
-                    self.export_Table.heading("Remaining Quantity", text="Total QTY", anchor=W)
+                    self.export_Table.heading("Remaining Quantity", text="Remaining Balance", anchor=W)
                     self.export_Table.pack()
+
+                    count = 0
+                    for item in range(len(result)):
+                        self.export_Table.insert('', index='end', iid=count, text=item, values=(result[item][0],result[item][1],result[item][2],result[item][3],result[item][4],result[item][5],result[item][6],'-'))
+                        count += 1
 
                 elif report_type == "Delivery":
                     try:
@@ -2085,10 +2105,6 @@ class InvortoryGUI:
 
                 #     self.export_Table.pack()
 
-                count = 0
-                for item in result:
-                        self.export_Table.insert('', index='end', iid=count, text=item, values=(item))
-                        count += 1
                 
                     # if report_type == 'Forecast':
                     #     for item in range(len(result)):
@@ -2108,7 +2124,7 @@ class InvortoryGUI:
     # Chick ADD END!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def InvorGUI(self):
         self.InvorVal = Tk()
-        self.InvorVal.title("Cresdel Pharmacy!!")
+        self.InvorVal.title("Cresdel Pharmacy")
         width = self.InvorVal.winfo_screenwidth()
         height = self.InvorVal.winfo_screenheight()
         self.InvorVal.geometry("%dx%d" % (width, height))

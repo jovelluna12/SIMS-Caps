@@ -89,6 +89,30 @@ class product:
 
         dbConnector.db.commit()
 
+    def getRemainingBal(self,id):
+        dbcursor = self.dbcursor
+        print(id)
+        query="SELECT id FROM products_onhand WHERE id=%s;"
+        dbcursor.execute(query,(id,))
+        result=dbcursor.fetchone()
+        if result==None:
+            return 0
+        else:
+            return result
+
+    def Inventory(self,items):
+        dbcursor = self.dbcursor
+        query="INSERT INTO inventory (item,price,date_in,date_out,Qty_in,Qty_out,RemainBalance) VALUES(%s,%s,%s,%s,%s,%s,%s)"
+        dbcursor.executemany(query,items)
+
+        query="INSERT INTO products_onhand(item,price,qty) VALUES(%s,%s,%s)"
+        for i in range(len(items)):
+            if items[i][6]==0:
+                dbcursor.execute(query,(items[i][0],items[i][1],items[i][4]))
+                
+
+        dbConnector.db.commit()
+
     def get_batch_Codes(self):
         query="SELECT batch_code from products LEFT JOIN return_to_sender ON products.batch_code=return_to_sender.BatchCode;"
         dbcursor = self.dbcursor

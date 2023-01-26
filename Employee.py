@@ -56,6 +56,7 @@ class Employee:
         PurchaseID, InvoiceNumber = randomNumGen.generateNum()
 
         dbcursor=self.cursor
+        print(InvoiceNumber,TotalPrice,discount_SC_PWD,Discount,cash,change,attendedBy)
         query1="insert into salestransaction (InvoiceNumber,TotalPrice,PWD_SC_Disc,Custom_Discount,Cash,calculated_change,attendedBy) values (%s,%s,%s,%s,%s,%s,%s)"
         values=(InvoiceNumber,TotalPrice,discount_SC_PWD,Discount,cash,change,attendedBy)
         dbcursor.execute(query1,values)
