@@ -12,7 +12,7 @@ class App:
         root = tk.Tk()
         root.title("Sales Summary")
         width=600
-        height=700
+        height=650
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
@@ -66,39 +66,41 @@ class App:
         CashName=emp.get_sales_Attended(invoice_id)
 
         GLabel_450=tk.Label(root,text="Cashier: "+str(CashName[0]),font=('Arial',15),justify=LEFT)
-        GLabel_450.place(x=20,y=470)
+        GLabel_450.place(x=20,y=460)
 
         GLabel_450=tk.Label(root,text="Invoice No: "+str(invoice_id),font=('Arial',15),justify=LEFT)
-        GLabel_450.place(x=20,y=500)
+        GLabel_450.place(x=20,y=490)
 
         VAT=0.12*subtotal
 
         GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(subtotal),font=('Arial',10),justify=LEFT)
-        GLabel_170.place(x=350,y=510)
+        GLabel_170.place(x=350,y=460)
         
         GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(VAT),font=('Arial',10),justify=LEFT)
-        GLabel_139.place(x=350,y=530)
+        GLabel_139.place(x=350,y=480)
 
         details=emp.get_Transaction_Details(invoice_id)
 
         GLabel_522=tk.Label(root,text="Senior/PWD Discount: PHP {:.2f}".format(details[0][1]),font=('Arial',10),justify=LEFT)
-        GLabel_522.place(x=350,y=550)
+        GLabel_522.place(x=350,y=500)
 
         GLabel_523=tk.Label(root,text="LESS: Other Discounts: PHP {:.2f}".format(details[0][2]),font=('Arial',10),justify=LEFT)
-        GLabel_523.place(x=350,y=570)
-
+        GLabel_523.place(x=350,y=520)
 
         GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}".format(details[0][0]),font=('Arial',10),justify=LEFT)
-        GLabel_524.place(x=350,y=590)
+        GLabel_524.place(x=350,y=540)
 
         GLabel_525=tk.Label(root,text="Cash: PHP {:.2f}".format(details[0][4]),font=('Arial',10),justify=LEFT)
-        GLabel_525.place(x=350,y=610)            
+        GLabel_525.place(x=350,y=560)            
 
         GLabel_526=tk.Label(root,text="Change: PHP {:.2f}".format(details[0][5]),font=('Arial',10),justify=LEFT)
-        GLabel_526.place(x=350,y=630)
+        GLabel_526.place(x=350,y=580)
+
+        Close=Button(root,text="Close",font=('Arial',10),command=root.destroy)
+        Close.place(x=260,y=610)
 
         root.mainloop()
 
 
-if __name__ == "__main__":
-    app = App()
+# if __name__ == "__main__":
+#     app = App()
