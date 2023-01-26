@@ -4,6 +4,7 @@ from datetime import date, datetime
 from tkinter import simpledialog
 from email_validator import validate_email, EmailNotValidError
 import salesVIEW
+import View_Delivery_List_1
 
 
 import tkinter as tk
@@ -590,12 +591,15 @@ class InvortoryGUI:
         self.frame_Table.place(x=0, y=30)
 
         def PO():
-            item=self.frame_Table.selection()[0]
-            batch=self.frame_Table.item(item)['values'][0]
-            batch=(batch,)
-            prod=Product.product()
-            res=prod.retrieveBatch(batch)
-            print(res)
+            if self.frame_Table.selection()==():
+                messagebox.showerror("No Item Selected","Select an Item")
+            else:
+                item=self.frame_Table.selection()[0]
+                batch=self.frame_Table.item(item)['values'][0]
+                batch=(batch,)
+                prod=Product.product()
+                res=prod.retrieveBatch(batch)
+                View_Delivery_List_1.VDL()
             # POForm.App()
 
         self.Button_Receive=Button(self.Frame_Del,text="View PO Form",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=lambda: PO())
