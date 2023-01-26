@@ -113,26 +113,11 @@ class VDL:
         Vendor_Ship=tk.Label(root,text="Total Amount Shipping: ",font=('Arial',10),justify=LEFT)
         Vendor_Ship.place(x=10,y=550)
 
-        this=Button(root,text="this",command=self.Payment_GUI)
-        this.place(x=1,y=2)
-
         root.mainloop()
     
     def on_Closing(self):
         if messagebox.askyesno("Warning","Closing this Window this Transaction.\nContinue Closing?"):
             root.destroy()
-    
-    def Payment_GUI(self):
-        Payment_G = Toplevel()
-        Payment_G.title("Amount Tendered")
-        # Payment_G.protocol("WM_DELETE_WINDOW",on_close)
-        Payment_G.wm_attributes("-topmost", 1)
-
-        Payment_Frame=Frame(Payment_G)
-        Total_pay=Label(Payment_G,text="Total Price is ",font=('Arial',15))
-        Total_pay.pack()
-
-
 
 if __name__ == "__main__":
     vdl = VDL()

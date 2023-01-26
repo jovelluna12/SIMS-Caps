@@ -134,13 +134,44 @@ class App:
 
         return disc1, disc
     
-    # def Payment_GUI():
-    #     Payment_G = Toplevel(root)
-    #     Payment_G.title("Amount Tendered")
-    #     # Payment_G.protocol("WM_DELETE_WINDOW",on_close)
-    #     Payment_G.resizable(False,False)
-    #     Payment_G.wm_attributes("-topmost", 1)
-    #     Payment_G.grab_set()
+    def Payment_GUI(self):
+        self.Payment_G = Toplevel()
+        self.Payment_G.title("Amount Tendered")
+        width=300
+        height=200
+        screenwidth = root.winfo_screenwidth()
+        screenheight = root.winfo_screenheight()
+        alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+        self.Payment_G.geometry(alignstr)
+        self.Payment_G.protocol("WM_DELETE_WINDOW",self.pay_on_closing)
+        self.Payment_G.wm_attributes("-topmost", 1)
+        self.Payment_G.resizable(False,False)
+
+        Total_=Label(self.Payment_G,text=" ",font=('Arial',10))
+        Total_.pack()
+
+        Total_pay=Label(self.Payment_G,text="Total Price is "+str(finalprice),font=('Arial',20,"bold"))
+        Total_pay.pack()
+
+        Total_EAT=Label(self.Payment_G,text="Enter Amount Tendered ",font=('Arial',15))
+        Total_EAT.pack()
+
+        Total_Entry=Entry(self.Payment_G,width=20,font=('Arial',15))
+        Total_Entry.pack()
+        
+        Total_1=Label(self.Payment_G,text=" ",font=('Arial',10))
+        Total_1.pack()
+
+        Payment_Button=Button(self.Payment_G,text="Enter",width=20,borderwidth=5,bg="green")
+        Payment_Button.pack()
+
+        Total_2=Label(self.Payment_G,text=" ",font=('Arial',10))
+        Total_2.pack()
+
+    def pay_on_closing(self):
+        self.Payment_G.wm_attributes("-topmost", 0)
+        if messagebox.askyesno("Warning","Closing this Window this Transaction.\nContinue Closing?"):
+            root.destroy()
 
 
     def calculate(self,sub):
