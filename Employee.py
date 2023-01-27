@@ -74,6 +74,7 @@ class Employee:
 
             PurchaseID=randomNumGen.generatePurchaseID()
             items=(PurchaseID,item[x],quantity[x],InvoiceNumber,id[x])
+            print(items)
             dbcursor.execute(query2,items)
             query3val=(quantity[x],item[x],id[x])
             dbcursor.execute(query3,query3val)

@@ -413,7 +413,7 @@ class InvortoryGUI:
                             date_list.append(datee)
                             prod.editDelivery(id, name, priceeee, qtyyy, datee)
                             ite=(name,priceeee,datee,'-',qtyyy,'-',remainBal)
-                            prod.Inventory(ite)
+                            prod.Inventory(ite,'Inventory')
                             prod.delivery_qtyIN(qtyyy,batch)
                             i+=1
 

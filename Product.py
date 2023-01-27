@@ -88,7 +88,7 @@ class product:
         query2="UPDATE delivery_items SET qty_out=%s WHERE list=%s"
 
         query4="UPDATE delivery_items SET remark=%s WHERE list=%s"
-        dbcursor.executemany(query,return_goods)
+        dbcursor.executemany(query,return_goods)    
         dbcursor.executemany(query2,items2)
         dbcursor.executemany(query4,items4)
 
@@ -105,20 +105,35 @@ class product:
         else:
             return result
 
-    def Inventory(self,items):
+    def Inventory(self,items,InventType):
         dbcursor = self.dbcursor
         query="INSERT INTO inventory (item,price,date_in,date_out,Qty_in,Qty_out,RemainBalance) VALUES(%s,%s,%s,%s,%s,%s,%s)"
         dbcursor.execute(query,items)
+        
+        query2="SELECT item FROM products_onhand WHERE item=%s"
+        dbcursor.execute(query2,(items[0],))
+        res=dbcursor.fetchall()
+        result=dbcursor.rowcount
+        print(result)
 
-        query="INSERT INTO products_onhand(item,price,qty) VALUES(%s,%s,%s)"
-        dbcursor.execute(query,(items[0],items[1],items[4]))
+        if result !=0 and InventType=='Sale':
+            query="UPDATE products_onhand SET qty=qty-%s WHERE item=%s"
+            dbcursor.execute(query, (items[4],items[0]))
+        elif result !=0 and InventType=='Inventory':
+            query="UPDATE products_onhand SET qty=qty+%s WHERE item=%s"
+            dbcursor.execute(query, (items[4],items[0]))
+        elif result ==0 and InventType=='Inventory': 
+            query="INSERT INTO products_onhand(item,price,qty) VALUES(%s,%s,%s)"
+            dbcursor.execute(query,(items[0],items[1],items[4]))
+        elif result ==0 and InventType=="Sale":
+            return None
                 
         dbConnector.db.commit()
 
     def get_batch_Codes(self):
         query="SELECT batch_code from products LEFT JOIN return_to_sender ON products.batch_code=return_to_sender.BatchCode;"
         dbcursor = self.dbcursor
-        dbcursor.execute(query)
+        dbcursor.execute(query) 
         return dbcursor.fetchall()
 
     def add_deliveryBatch(self,val):
@@ -240,12 +255,13 @@ class product:
 
         dbcursor.execute(query, val)
         dbConnector.db.commit()
+        
 
 
 
     def viewALL(self,val):
         dbcursor = self.dbcursor
-        query = "SELECT ProductID,ProductName,price,batch_code,Quantity FROM products WHERE ProductName LIKE {}".format("\'%"+val+"%\' AND status='On Hand'")
+        query = "SELECT id, item, price, qty FROM products_onhand WHERE item LIKE {}".format("\'%"+val+"%\'")
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         dbConnector.db.commit()

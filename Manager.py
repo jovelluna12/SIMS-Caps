@@ -176,6 +176,13 @@ class Manager (Employee.Employee):
         result = dbcursor.fetchall()
         return result
 
+    def getDateArrived_Purchased(self,id):
+        query="SELECT datepurchased, expectedarrivaldate, status FROM deliverylist WHERE BatchCode=%s"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(id[0],))
+        result = dbcursor.fetchone()
+        return result
+
     def getPO_details(self,id):
         query="SELECT GrossAmount, VAT, Discount, NET_Amount FROM deliverylist WHERE BatchCode=%s"
         dbcursor = self.dbcursor
@@ -196,6 +203,13 @@ class Manager (Employee.Employee):
         query="SELECT salestransaction.InvoiceNumber, employees.name, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM salestransaction, employees, products,purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID AND salestransaction.attendedBy=employees.EmpID;"
         dbcursor.execute(query)
         result = dbcursor.fetchall()
+        return result
+
+    def view_onHand(self):
+        dbcursor=self.dbcursor
+        query="SELECT id, item, price, qty FROM products_onhand"
+        dbcursor.execute(query)
+        result= dbcursor.fetchall()
         return result
         
     def viewInv(self):

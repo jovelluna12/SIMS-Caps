@@ -26,14 +26,18 @@ class VDL:
         Adrress=tk.Label(root,text="Ilaya Carmen, Cagayan de Oro City",font=('Arial',15),justify=LEFT)
         Adrress.place(x=10,y=85)
 
-        Dstore=tk.Label(root,text="Purchase Order:",font=('Arial',12),justify=LEFT)
+        man=Manager.Manager()
+        res=man.getDateArrived_Purchased(id)
+
+        Dstore=tk.Label(root,text="PO Number: "+str(id[0]),font=('Arial',12),justify=LEFT)
         Dstore.place(x=10,y=115)
 
-        DateAr=tk.Label(root,text="Scheduled Arrival Date:",font=('Arial',12),justify=LEFT)
+        DateAr=tk.Label(root,text="Date Ordered: "+str(res[1]),font=('Arial',12),justify=LEFT)
         DateAr.place(x=310,y=115)
 
-        DateRE=tk.Label(root,text="Date Received:",font=('Arial',12),justify=LEFT)
-        DateRE.place(x=560,y=115)
+        if res[2]!="In Transit":
+            DateRE=tk.Label(root,text="Date Received: "+str(res[0]),font=('Arial',12),justify=LEFT)
+            DateRE.place(x=560,y=115)
 
         style=ttk.Style()
         style.theme_use("default")
