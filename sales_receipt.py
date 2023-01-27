@@ -4,7 +4,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import simpledialog
 import tkinter.font as tkFont
-import Employee
+import Employee, Product
 from datetime import datetime
 
 class App:
@@ -70,7 +70,7 @@ class App:
         for item in range(len(item_tuple)):
             frame_Table.insert('',index='end',iid=count,values=(item_tuple[item][0],item_tuple[item][2],item_tuple[item][1],item_tuple[item][2]*item_tuple[item][1]))
             count+=1
-            subtotal=subtotal+item_tuple[item][2]*item_tuple[item][1]
+            subtotal=subtotal+float(item_tuple[item][2])*float(item_tuple[item][1])
         
        
         emp=Employee.Employee()
@@ -110,15 +110,27 @@ class App:
 
     def close(self):
         e = Employee.Employee()
+        p=Product.product()
         discount_SC_PWD=disc1
         e.addNewTransaction(finalprice, discount_SC_PWD,disc,amount,change, u_id, items)
+        ite=frame_Table.get_children()
+        for i in range(len(ite)):
+        # print(ite)
+            # print(items)
+            # code=items[i][0]
+            rem=p.getRemainingBal(items[i][0])
+            InventItems=(items[i][0],items[i][2],'-',datetime.today().strftime('%Y-%m-%d'),'-',items[i][1],rem[i][0]-items[i][1])
+            p.Inventory(InventItems,'Sale')
+
         frame_Table.delete(*frame_Table.get_children())
+
+        
         root.destroy()
 
     def computeSubtotal(self):
         subtotal=0
-        for item in range(len(items)):
-            subtotal=subtotal+items[item][2]*items[item][1]
+        for item in range(len(items)): 
+            subtotal=subtotal+float(items[item][2])*float(items[item][1])
         return subtotal
 
     def determineDiscount(self):
@@ -133,7 +145,7 @@ class App:
             disc=float(discounted_custom)/100*subtotal
 
         return disc1, disc
-    
+
     def Payment_GUI(self):
         self.Payment_G = Toplevel()
         self.Payment_G.title("Amount Tendered")
@@ -178,7 +190,7 @@ class App:
         global finalprice,change
         finalprice=sub-disc1-disc
         try:
-            amount=simpledialog.askfloat("Payment","Total Price is "+str(finalprice)+"\nEnter Amount Tendered")
+            amount=simpledialog.askfloat("Enter Amount Tendered","Total Price is "+str(finalprice)+"\nEnter Amount Tendered")
             if amount is None:
                 messagebox.showinfo("Closed","Closed Without Saving")
             elif amount<finalprice and amount is not None:

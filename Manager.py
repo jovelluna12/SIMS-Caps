@@ -168,7 +168,34 @@ class Manager (Employee.Employee):
         dbcursor.execute(query,(id,))
         result = dbcursor.fetchall()
         return result
-        
+
+    def getPO_Items(self,id):
+        query="SELECT delivery_items.id, products.ProductName, products.price, delivery_items.qty, delivery_items.qty_in, delivery_items.qty_out, delivery_items.remark FROM delivery_items,products WHERE delivery_items.list=%s AND delivery_items.list=products.batch_code;"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(id[0],))
+        result = dbcursor.fetchall()
+        return result
+
+    def getDateArrived_Purchased(self,id):
+        query="SELECT datepurchased, expectedarrivaldate, status FROM deliverylist WHERE BatchCode=%s"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(id[0],))
+        result = dbcursor.fetchone()
+        return result
+
+    def getPO_details(self,id):
+        query="SELECT GrossAmount, VAT, Discount, NET_Amount FROM deliverylist WHERE BatchCode=%s"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(id,))
+        result = dbcursor.fetchone()
+        return result
+
+    def getPO_Vendor(self,id):
+        query="SELECT vendor.vendor_name, vendor.vendor_address, vendor.contact_num, vendor.email_add, vendor.shipping_fee FROM vendor, deliverylist WHERE deliverylist.vendor_id=vendor.id AND deliverylist.BatchCode=%s"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(id,))
+        result = dbcursor.fetchone()
+        return result
 
     def productSales(self):
         dbcursor = self.dbcursor
@@ -176,6 +203,13 @@ class Manager (Employee.Employee):
         query="SELECT salestransaction.InvoiceNumber, employees.name, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM salestransaction, employees, products,purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID AND salestransaction.attendedBy=employees.EmpID;"
         dbcursor.execute(query)
         result = dbcursor.fetchall()
+        return result
+
+    def view_onHand(self):
+        dbcursor=self.dbcursor
+        query="SELECT id, item, price, qty FROM products_onhand"
+        dbcursor.execute(query)
+        result= dbcursor.fetchall()
         return result
         
     def viewInv(self):
@@ -190,13 +224,13 @@ class Manager (Employee.Employee):
         dbcursor = self.dbcursor
         if report=="Sales":
             # query="SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item,purchasedproducts.Quantity, salestransaction.TotalPrice, salestransaction.Discount,salestransaction.DatePurchased FROM salestransaction, purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND DATE(salestransaction.DatePurchased) >= (DATE(NOW()) - INTERVAL 30 DAY) ORDER BY DatePurchased;"
-            query= "SELECT salestransaction.InvoiceNumber, purchasedproducts.PurchaseID, purchasedproducts.Item,purchasedproducts.Quantity,products.price, salestransaction.Discount, salestransaction.DatePurchased, salestransaction.TotalPrice FROM salestransaction, purchasedproducts, products WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND salestransaction.DatePurchased >= %s AND salestransaction.DatePurchased <=%s ORDER BY DatePurchased;"
+            query= "SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,deliverylist.expectedarrivaldate,salestransaction.DatePurchased,delivery_items.qty_in, purchasedproducts.Quantity FROM products_directory, products, delivery_items,salestransaction ,purchasedproducts WHERE products.ref_id=products_directory.ref_id GROUP BY products.ref_id;"
             
             dbcursor.execute(query,(scope_from,scope_to))
             return dbcursor.fetchall()
 
         if report=="Inventory" and scope_from==None and scope_to==None:
-            query="SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,SUM(products.quantity) AS QUANTITY FROM products_directory, products WHERE products.ref_id=products_directory.ref_id GROUP BY products.ref_id;;"
+            query="SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,deliverylist.expectedarrivaldate,salestransaction.DatePurchased,delivery_items.qty_in, purchasedproducts.Quantity FROM products_directory,deliverylist, products, delivery_items,salestransaction ,purchasedproducts WHERE products.ref_id=products_directory.ref_id;"
             dbcursor.execute(query)
 
             return dbcursor.fetchall()

@@ -51,6 +51,13 @@ class Employee:
         dbConnector.db.commit()
         return dbcursor.lastrowid
 
+    def getCode(self,item):
+        dbcursor=self.cursor
+        query="SELECT products.ProductID FROM products, deliverylist WHERE products.batch_code=deliverylist.BatchCode AND products.ProductName=%s GROUP BY deliverylist.datepurchased ASC "
+        dbcursor.execute(query,(item,))
+        result=dbcursor.fetchone()
+        return result
+
 
     def addNewTransaction(self,TotalPrice,discount_SC_PWD,Discount,cash,change,attendedBy,items):
         PurchaseID, InvoiceNumber = randomNumGen.generateNum()
@@ -70,7 +77,6 @@ class Employee:
 
         query3="update products set quantity=quantity-%s where ProductName LIKE %s and ProductID=%s"
         for x in range(len(item)):
-
             PurchaseID=randomNumGen.generatePurchaseID()
             items=(PurchaseID,item[x],quantity[x],InvoiceNumber,id[x])
             dbcursor.execute(query2,items)

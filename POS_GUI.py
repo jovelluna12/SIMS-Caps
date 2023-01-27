@@ -249,20 +249,18 @@ def Click_List():
         window_Frame2.place(x=0,y=100)
 
         Search_Table = ttk.Treeview(window_Frame2, height=27)
-        Search_Table['column'] = ("ID", "Name", "Price",'Batch Number',"Stack")
+        Search_Table['column'] = ("ID", "Name", "Price","Stack")
         Search_Table.column("#0", width=0, stretch=NO, anchor=W)
         Search_Table.column("ID", width=50, stretch=NO, anchor=W)
         Search_Table.column("Name", width=290, stretch=NO, anchor=W)
-        Search_Table.column("Batch Number", width=100, stretch=NO, anchor=W)
         Search_Table.column("Price", width=70, stretch=NO, anchor=E)
         Search_Table.column("Stack", width=70, stretch=NO, anchor=CENTER)
 
         Search_Table.heading("#0")
         Search_Table.heading("ID", text="ID", anchor=W)
         Search_Table.heading("Name", text="Name", anchor=W)
-        Search_Table.heading("Batch Number", text="Batch No", anchor=W)
         Search_Table.heading("Price", text="Price", anchor=W)
-        Search_Table.heading("Stack", text="Stack", anchor=W)
+        Search_Table.heading("Stack", text="Quantity", anchor=W)
         scrollbar = ttk.Scrollbar(window_Frame2, orient="vertical", command=Search_Table.yview)
         scrollbar.place(relx=1.0, rely=0.0, anchor="ne")
         Search_Table.configure(yscrollcommand=scrollbar.set)
@@ -276,7 +274,7 @@ def Click_List():
             code=Search_Table.item(curItem)['values'][0]
             product=Search_Table.item(curItem)['values'][1]
             price=Search_Table.item(curItem)['values'][2]
-            qty=Search_Table.item(curItem)['values'][4]
+            qty=Search_Table.item(curItem)['values'][3]
             ProductCODE.config(state='normal')
             Product_Name_EN.config(state='normal')
             Product_Prices_EN.config(state='normal')
@@ -302,7 +300,7 @@ def Click_List():
         button_Search.place(x=380,y=68)
 
         m = Manager.Manager()
-        m1 = m.viewInv()
+        m1 = m.view_onHand()
         count = 0
         if len(m1) == 0:
             for item in Search_Table.get_children():
@@ -328,7 +326,7 @@ def search():
             Search_Table.delete(item)
 
         m = Manager.Manager()
-        m1 = m.viewInv()
+        m1 = m.view_onHand()
 
         count = 0
         if len(m1)==0:
@@ -416,7 +414,10 @@ def SearchItem(buttonpress):
                 # print("this")
 
     elif ProdCode.index("end")==0 and ProductCODE.index('end')!=0 and Product_Name_EN.index('end')!=0 and Product_Prices_EN.index('end')!=0:
-        ProdCodee.append(code)
+        
+        emp=Employee.Employee()
+        code=emp.getCode(product)
+        ProdCodee.append(code[0])
         prod=Product.product()
         # POS_Transaction.get_item_details(product,price,code)
         #button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
@@ -427,7 +428,7 @@ def SearchItem(buttonpress):
             
 # Button Enter/search the item
 def Click_Enter(code,product,price,qty):
-    
+
     window_Qty = Toplevel(root)
     window_Qty.title("Quantity!")
     window_Qty.geometry("330x150")
@@ -450,6 +451,7 @@ def Click_Enter(code,product,price,qty):
     
     ProdID=code
     ProdName=product
+    global ProdPrice
     ProdPrice=price
     # ProdQTY=result[3]
     RemainingQTY=qty
@@ -470,7 +472,7 @@ def Click_Enter(code,product,price,qty):
             else:
                 itemsLIST.append(ProdName)
                 quantityLIST.append(ProdQTY)
-                priceList.append(ProdPrice)
+                priceList.append(price)
 
 
                 Product_ID = str(ProductCODE.get())
@@ -478,29 +480,31 @@ def Click_Enter(code,product,price,qty):
                 if Product_ID == "" or Product_Name == "":
                     messagebox.showerror("Product Search", "Please Enter the Product ID or Name")
                 else:
-                    try:
-                        ProductCODE.config(state='normal')
-                        Product_Name_EN.config(state='normal')
-                        Product_Prices_EN.config(state='normal')
+                    # try:
+                    ProductCODE.config(state='normal')
+                    Product_Name_EN.config(state='normal')
+                    Product_Prices_EN.config(state='normal')
 
-                        ProductCODE.delete(0, 'end')
-                        Product_Name_EN.delete(0, 'end')
-                        Product_Prices_EN.delete(0, 'end')
+                    ProductCODE.delete(0, 'end')
+                    Product_Name_EN.delete(0, 'end')
+                    Product_Prices_EN.delete(0, 'end')
 
-                        ProductCODE.config(state='disabled')
-                        Product_Name_EN.config(state='disabled')
-                        Product_Prices_EN.config(state='disabled')
+                    ProductCODE.config(state='disabled')
+                    Product_Name_EN.config(state='disabled')
+                    Product_Prices_EN.config(state='disabled')
 
-                        frame_Table.insert(parent='', index='end', iid=ProdID, text=(ProdID, ProdName, ProdPrice, ProdQTY,float(ProdPrice*ProdQTY)),
+                    ProdPrice=float(price)
+
+                    frame_Table.insert(parent='', index='end', iid=ProdID, text=(ProdID, ProdName, ProdPrice, ProdQTY,float(ProdPrice*ProdQTY)),
                                            values=(ProdID, ProdName, ProdPrice, ProdQTY,float(ProdPrice*ProdQTY)))
                         # button_confirm.config(state="disabled")
 
-                    except:
-                        messagebox.showerror("Product Search", "Item Already Existed")
+                    # except:
+                        # messagebox.showerror("Product Search", "Item Already Existed")
 
                     subtotal=[]
                     for x in frame_Table.get_children():
-                        subtotal.append(frame_Table.item(x)["values"][2]*frame_Table.item(x)["values"][3])
+                        subtotal.append(float(frame_Table.item(x)["values"][2])*float(frame_Table.item(x)["values"][3]))
 
                     global totalprice
                     totalprice = sum(subtotal)
