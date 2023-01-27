@@ -94,31 +94,33 @@ class VDL:
         GLabel_523=tk.Label(root,text="Discount: {:.2f}".format(res[2]),font=('Arial',10),justify=LEFT)
         GLabel_523.place(x=600,y=510)
 
-        GLabel_524=tk.Label(root,text="NET Amount: PHP {:.2f}".format(res[3]),font=('Arial',10),justify=LEFT)
-        GLabel_524.place(x=600,y=530)
-
 
         #VENDOR INFORMATION>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         emp=Manager.Manager()
-        res=emp.getPO_Vendor(id[0])
+        res1=emp.getPO_Vendor(id[0])
 
         Vendor_ID=tk.Label(root,text="Vendor Details: ",font=('Arial',15),justify=LEFT)
         Vendor_ID.place(x=10,y=440)
 
-        Vendor_Name=tk.Label(root,text="Vendor Name: "+str(res[0]),font=('Arial',10),justify=LEFT)
+        Vendor_Name=tk.Label(root,text="Vendor Name: "+str(res1[0]),font=('Arial',10),justify=LEFT)
         Vendor_Name.place(x=10,y=470)
         
-        Vendor_Address=tk.Label(root,text="Vendor Address: "+str(res[1]),font=('Arial',10),justify=LEFT)
+        Vendor_Address=tk.Label(root,text="Vendor Address: "+str(res1[1]),font=('Arial',10),justify=LEFT)
         Vendor_Address.place(x=10,y=490)
 
-        Vendor_Contact=tk.Label(root,text="Contact Number: "+str(res[2]),font=('Arial',10),justify=LEFT)
+        Vendor_Contact=tk.Label(root,text="Contact Number: "+str(res1[2]),font=('Arial',10),justify=LEFT)
         Vendor_Contact.place(x=10,y=510)
 
-        Vendor_Email=tk.Label(root,text="Email: "+str(res[3]),font=('Arial',10),justify=LEFT)
+        Vendor_Email=tk.Label(root,text="Email: "+str(res1[3]),font=('Arial',10),justify=LEFT)
         Vendor_Email.place(x=10,y=530)
 
-        Vendor_Ship=tk.Label(root,text="Shipping Fee: "+str(res[4]),font=('Arial',10),justify=LEFT)
+        Vendor_Ship=tk.Label(root,text="Shipping Fee: "+str(res1[4]),font=('Arial',10),justify=LEFT)
         Vendor_Ship.place(x=600,y=550)
+
+
+        GLabel_524=tk.Label(root,text="NET Amount: PHP {:.2f}".format(res[3]-res1[4]),font=('Arial',10),justify=LEFT)
+        GLabel_524.place(x=600,y=530)
+
 
         root.mainloop()
 

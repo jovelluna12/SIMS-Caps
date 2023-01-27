@@ -362,27 +362,27 @@ class InvortoryGUI:
 
                     Label(self.Frame_Add, text="CRESDEL PHARMACY",font=("Arial", 30)).place(x=10, y=10)
 
-                    self.frame_Table = ttk.Treeview(self.Frame_ListD, height=15)
-                    self.frame_Table['columns'] = ("ID", "Name", "Price", "Quantity", "Order Date", "Expiration Date")
-                    self.frame_Table.column("#0", width=0, stretch=NO)
-                    self.frame_Table.column("ID", anchor=W, width=50)
-                    self.frame_Table.column("Name", anchor=W, width=246)
-                    self.frame_Table.column("Price", anchor=CENTER, width=100)
-                    self.frame_Table.column("Quantity", anchor=E, width=80)
-                    self.frame_Table.column("Order Date", anchor=E, width=150)
-                    self.frame_Table.column("Expiration Date", anchor=E, width=150)
+                    self.frame_Del = ttk.Treeview(self.Frame_ListD, height=15)
+                    self.frame_Del['columns'] = ("ID", "Name", "Price", "Quantity", "Order Date", "Expiration Date")
+                    self.frame_Del.column("#0", width=0, stretch=NO)
+                    self.frame_Del.column("ID", anchor=W, width=50)
+                    self.frame_Del.column("Name", anchor=W, width=246)
+                    self.frame_Del.column("Price", anchor=CENTER, width=100)
+                    self.frame_Del.column("Quantity", anchor=E, width=80)
+                    self.frame_Del.column("Order Date", anchor=E, width=150)
+                    self.frame_Del.column("Expiration Date", anchor=E, width=150)
 
-                    self.frame_Table.heading("#0")
-                    self.frame_Table.heading("ID", text="ID", anchor=W)
-                    self.frame_Table.heading("Name", text="Product Name", anchor=W)
-                    self.frame_Table.heading("Price", text="Price", anchor=CENTER)
-                    self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
-                    self.frame_Table.heading("Order Date", text="Order Date", anchor=W)
-                    self.frame_Table.heading("Expiration Date", text="Expiration Date", anchor=W)
+                    self.frame_Del.heading("#0")
+                    self.frame_Del.heading("ID", text="ID", anchor=W)
+                    self.frame_Del.heading("Name", text="Product Name", anchor=W)
+                    self.frame_Del.heading("Price", text="Price", anchor=CENTER)
+                    self.frame_Del.heading("Quantity", text="Quantity", anchor=W)
+                    self.frame_Del.heading("Order Date", text="Order Date", anchor=W)
+                    self.frame_Del.heading("Expiration Date", text="Expiration Date", anchor=W)
 
-                    self.frame_Table.pack(fill='both')
-                    self.frame_Table.grid(row=1, column=0)
-                    self.frame_Table.configure(selectmode="browse")
+                    self.frame_Del.pack(fill='both')
+                    self.frame_Del.grid(row=1, column=0)
+                    self.frame_Del.configure(selectmode="browse")
 
                     def confirm_delivery():
                         prod = Product.product()
@@ -395,19 +395,28 @@ class InvortoryGUI:
                         price_list=[]
                         remain=[]
                         date_list=[]
-                        for item in self.frame_Table.get_children():
-                            id = self.frame_Table.item(item)['values'][0]
-                            name = self.frame_Table.item(item)['values'][1]
-                            priceeee = self.frame_Table.item(item)['values'][2]
-                            qtyyy = self.frame_Table.item(item)['values'][3]
-                            datee = self.frame_Table.item(item)['values'][5]
+                        i=0
+                        for item in self.frame_Del.get_children():
+                            id = self.frame_Del.item(item)['values'][0]
+                            name = self.frame_Del.item(item)['values'][1]
+                            priceeee = self.frame_Del.item(item)['values'][2]
+                            qtyyy = self.frame_Del.item(item)['values'][3]
+                            datee = self.frame_Del.item(item)['values'][5]
                             qtyIN.append(qtyyy)
                             item_names.append(name)
                             price_list.append(priceeee)
                             remainBal=prod.getRemainingBal(id)
-                            remain.append(remainBal)
+                            if remainBal==0:
+                                remainBal=qtyyy
+                            else:
+                                remain.append(remainBal)
                             date_list.append(datee)
                             prod.editDelivery(id, name, priceeee, qtyyy, datee)
+                            ite=(name,priceeee,datee,'-',qtyyy,'-',remainBal)
+                            prod.Inventory(ite)
+                            prod.delivery_qtyIN(qtyyy,batch)
+                            i+=1
+
 
                         return_goods=list(zip(idd_list,batch_list,ref_list,QtyDif_list,remark_list))
                         return2=list(zip(QtyDif_list,batch_list))
@@ -415,10 +424,7 @@ class InvortoryGUI:
                         return4=list(zip(remark_list,batch_list))
                         prod.return_to_sender(return_goods,return2,return3,return4)
 
-                        items=list(zip(item_names,price_list,date_list,'-',qtyIN,'-',remain))
-                        prod.Inventory(items)
-
-                        self.frame_Table.delete(*self.frame_Table.get_children())
+                        self.frame_Del.delete(*self.frame_Del.get_children())
                         idd_list.clear()
                         batch_list.clear()
                         ref_list.clear()
@@ -431,7 +437,7 @@ class InvortoryGUI:
                         PageOpen=1
                         View_Delivery_List_1.VDL(batch)
 
-                    print(result[-1])
+
                     self.button = Button(self.Frame_Add, text="Confirm Delivery", command=confirm_delivery)
                     self.button.place(x=600, y=150)
 
@@ -440,32 +446,32 @@ class InvortoryGUI:
 
                     def delete_delivery():
                         if len(self.frame_Table.selection())!=0:
-                            selected_items=self.frame_Table.item(self.frame_Table.selection())
+                            selected_items=self.frame_Del.item(self.frame_Del.selection())
                             id=selected_items['values'][0]
                             a=Product.product()
                             a.delete_del(id)
-                            self.frame_Table.delete(self.frame_Table.selection())
+                            self.frame_Del.delete(self.frame_Del.selection())
                         else:
                             a=Product.product()
                             id=batch
                             a.delete_del_batch(id)
-                            self.frame_Table.delete(*self.frame_Table.get_children())
+                            self.frame_Del.delete(*self.frame_Del.get_children())
                     
 
                     def selectItem(event):
-                        selected_item = self.frame_Table.selection()[0]
+                        selected_item = self.frame_Del.selection()[0]
                         if selected_item in item_id_list or result[-1]=="On Hand":
                             self.Add_Delivery1.wm_attributes("-topmost", 0)
                             messagebox.showerror("Error","Item is either On Hand or Already Saved")
                             self.Add_Delivery1.wm_attributes("-topmost", 1)
                         
                         else:
-                            selected_item = self.frame_Table.selection()[0]
-                            id = self.frame_Table.item(selected_item)['values'][0]
-                            name = self.frame_Table.item(selected_item)['values'][1]
-                            pricee = self.frame_Table.item(selected_item)['values'][2]
-                            quantity = self.frame_Table.item(selected_item)['values'][3]
-                            expire = self.frame_Table.item(selected_item)['values'][5]
+                            selected_item = self.frame_Del.selection()[0]
+                            id = self.frame_Del.item(selected_item)['values'][0]
+                            name = self.frame_Del.item(selected_item)['values'][1]
+                            pricee = self.frame_Del.item(selected_item)['values'][2]
+                            quantity = self.frame_Del.item(selected_item)['values'][3]
+                            expire = self.frame_Del.item(selected_item)['values'][5]
 
                             self.Product_ID_EN.config(state='normal')
                             self.Product_Price_EN.config(state='normal')
@@ -522,10 +528,10 @@ class InvortoryGUI:
 
                                     newQTY=int(qty.get())-QTY_diff
 
-                                    selectedItem = self.frame_Table.selection()[0]
+                                    selectedItem = self.frame_Del.selection()[0]
                                     item_id_list.append(selectedItem)
-                                    x = self.frame_Table.item(selectedItem)['values'][4]
-                                    self.frame_Table.item(selectedItem,text="a", values=(
+                                    x = self.frame_Del.item(selectedItem)['values'][4]
+                                    self.frame_Del.item(selectedItem,text="a", values=(
                                     self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
  
                                     self.Product_ID_EN.config(state='normal')
@@ -544,7 +550,7 @@ class InvortoryGUI:
                                     self.Product_ID_EN.config(state='disabled')
                                     self.Product_Stack_EN.config(state='disabled')
 
-                            else:
+                            elif int(New_QTY_lbl.get()) > int(qty.get()):
                                 QTY_diff=int(New_QTY_lbl.get())-int(qty.get())
                                 remark_dialog=simpledialog.askstring("Remarks", "New QTY is greater than Order QTY.\nQTY will be added to list of Items on Hand\nEnter Remark", parent=self.Frame_Add)
                                 if remark_dialog:
@@ -556,7 +562,7 @@ class InvortoryGUI:
                                     batch_list.append(batch[0])
                                     ref_list.append(ref)
                                     QtyDif_list.append('-')
-                                    remark_list.append("added: "+remark_dialog)
+                                    remark_list.append("ADDED: "+remark_dialog)
 
                                     newQTY=int(qty.get())+QTY_diff
 
@@ -581,6 +587,40 @@ class InvortoryGUI:
                                     self.Product_price_EN.config(state='disabled')
                                     self.Product_ID_EN.config(state='disabled')
                                     self.Product_Stack_EN.config(state='disabled')
+                            else: 
+                                prod=Product.product()
+                                ref=prod.get_ref_id(namee.get())
+                                ref=ref[0]
+                                            
+                                idd_list.append(idd.get())
+                                batch_list.append(batch[0])
+                                ref_list.append(ref)
+                                QtyDif_list.append(int(New_QTY_lbl))
+                                remark_list.append('-')
+
+                                newQTY=int(New_QTY_lbl)
+
+                                selectedItem = self.frame_Table.selection()[0]
+                                item_id_list.append(selectedItem)
+                                x = self.frame_Table.item(selectedItem)['values'][4]
+                                self.frame_Table.item(selectedItem,text="a", values=(
+                                self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
+ 
+                                self.Product_ID_EN.config(state='normal')
+                                self.Product_Price_EN.config(state='normal')
+                                self.Product_Stack_EN.config(state='normal')
+                                self.Product_date_EN.config(state='normal')
+                                self.Product_price_EN.config(state='normal')
+
+                                self.Product_ID_EN.delete(0,END)
+                                self.Product_Price_EN.delete(0,END)
+                                self.Product_Stack_EN.delete(0,END)
+                                self.Product_price_EN.delete(0,END)
+
+                                self.Product_Price_EN.config(state='disabled')
+                                self.Product_price_EN.config(state='disabled')
+                                self.Product_ID_EN.config(state='disabled')
+                                self.Product_Stack_EN.config(state='disabled')
 
                         except(ValueError):
                             self.Add_Delivery1.wm_attributes("-topmost", 0)
@@ -592,10 +632,10 @@ class InvortoryGUI:
 
                     count = 0
                     for i in result:
-                        self.frame_Table.insert(parent='', index='end', iid=count, text=i, values=i)
+                        self.frame_Del.insert(parent='', index='end', iid=count, text=i, values=i)
                         count += 1
 
-                    self.frame_Table.bind("<Double-1>", selectItem)
+                    self.frame_Del.bind("<Double-1>", selectItem)
                     PageOpen += 1
                 else:
                     messagebox.showinfo("Error","No Item Selected")
@@ -961,17 +1001,18 @@ class InvortoryGUI:
                 zip(ProductID_list, ref_id_list, ProdName_list, quantity_list, price_list, status_list, batch_code_list,
                     expiry_date_list))
 
-            GrossAmount=float(sum(price_list)+sum(quantity_list))
+            GrossAmount=float(sum(price_list)*sum(quantity_list))
+
             VAT=12/100*float(GrossAmount)
             if discount.get()=="":
                 disc=0
             else:
                 disc=discount.get()
+                
             Discount=float(disc)/100*GrossAmount
             NETamount=GrossAmount-Discount
 
             values = (batch_code, VendID,ShipMean,GrossAmount,VAT,Discount,NETamount,order_date, arrival_date, 'In Transit')
-
 
             delivery_item_tuple = list(
                 zip(batch_code_list,ProductID_list,quantity_list,"-","-","-"))

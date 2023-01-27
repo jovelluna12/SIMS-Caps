@@ -113,6 +113,8 @@ class App:
         discount_SC_PWD=disc1
         e.addNewTransaction(finalprice, discount_SC_PWD,disc,amount,change, u_id, items)
         frame_Table.delete(*frame_Table.get_children())
+
+        
         root.destroy()
 
     def computeSubtotal(self):

@@ -76,15 +76,20 @@ class product:
         dbcursor.executemany(query, vals)
         dbConnector.db.commit()
 
+    def delivery_qtyIN(self,qtyIN,listt):
+        dbcursor = self.dbcursor
+        query3="UPDATE delivery_items SET qty_in=%s WHERE list=%s"
+        dbcursor.execute(query3,(qtyIN,listt[0]))
+        dbConnector.db.commit()
+
     def return_to_sender(self,return_goods,items2,items3,items4):
         dbcursor = self.dbcursor
         query="INSERT INTO return_to_sender(ProductID,BatchCode,ref_id,qty,remarks) VALUES(%s,%s,%s,%s,%s)"
         query2="UPDATE delivery_items SET qty_out=%s WHERE list=%s"
-        query3="UPDATE delivery_items SET qty_in=%s WHERE list=%s"
+
         query4="UPDATE delivery_items SET remark=%s WHERE list=%s"
         dbcursor.executemany(query,return_goods)
         dbcursor.executemany(query2,items2)
-        dbcursor.executemany(query3,items3)
         dbcursor.executemany(query4,items4)
 
         dbConnector.db.commit()
@@ -103,14 +108,11 @@ class product:
     def Inventory(self,items):
         dbcursor = self.dbcursor
         query="INSERT INTO inventory (item,price,date_in,date_out,Qty_in,Qty_out,RemainBalance) VALUES(%s,%s,%s,%s,%s,%s,%s)"
-        dbcursor.executemany(query,items)
+        dbcursor.execute(query,items)
 
         query="INSERT INTO products_onhand(item,price,qty) VALUES(%s,%s,%s)"
-        for i in range(len(items)):
-            if items[i][6]==0:
-                dbcursor.execute(query,(items[i][0],items[i][1],items[i][4]))
+        dbcursor.execute(query,(items[0],items[1],items[4]))
                 
-
         dbConnector.db.commit()
 
     def get_batch_Codes(self):
