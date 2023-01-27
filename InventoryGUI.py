@@ -2131,7 +2131,7 @@ class InvortoryGUI:
             global Vendor_EN,Vendor_add_EN,contact_EN,em_EN,Vendor_Ship_EN,root
             root=Tk()
             root.title("Add Vendor")
-            root.geometry("500x400")
+            root.geometry("500x450")
             root.resizable(False, False)
             root.wm_attributes("-topmost", 1)
             root.grab_set()
@@ -2177,6 +2177,9 @@ class InvortoryGUI:
 
         button_Out= Button(self.Frame_Side,text="Add Vendor",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=lambda: add_vendor_func())
         button_Out.place(x=160,y=550)
+
+        button_Dis= Button(self.Frame_Side,text="Discout Setting",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Discount_Change)
+        button_Dis.place(x=40,y=550)
 
         def goto_forecast():
             forecast.GUI()
@@ -2500,6 +2503,66 @@ class InvortoryGUI:
         self.button_Add_Pm.config(state='normal')
         # self.btn_Notification.config(state='normal')
         frame.destroy()
+    
+
+    def DisC_on_Closing(self):
+        self.DisChange.wm_attributes("-topmost", 0)
+        if messagebox.askyesno("Warning","Closing this Window this Discount Setting.\nContinue Closing?"):
+            self.InvorVal.grab_release()
+            self.DisChange.destroy()
+
+    def Discount_Change(self):
+        self.DisChange = Toplevel(self.InvorVal)
+        self.DisChange.title("Discount Setting")
+        width=300
+        height=300
+        screenwidth = self.InvorVal.winfo_screenwidth()
+        screenheight = self.InvorVal.winfo_screenheight()
+        alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+        self.DisChange.geometry(alignstr)
+        self.DisChange.protocol("WM_DELETE_WINDOW",self.DisC_on_Closing)
+        self.DisChange.wm_attributes("-topmost", 1)
+        self.DisChange.resizable(False,False)
+        self.DisChange.grab_set()
+
+        Total_=Label(self.DisChange,text=" ",font=('Arial',10))
+        Total_.pack()
+
+        DisSet=Label(self.DisChange,text="DISCOUNT Setting",font=('Arial',20))
+        DisSet.pack()
+
+        Total1=Label(self.DisChange,text=" ",font=('Arial',5))
+        Total1.pack()
+
+        VAT=Label(self.DisChange,text="VAT = ",width=30,anchor=W,font=('Arial',10))
+        VAT.pack()
+        VAT_En=Entry(self.DisChange,width=20,font=('Arial',12))
+        VAT_En.pack()
+
+        Total2=Label(self.DisChange,text=" ",font=('Arial',5))
+        Total2.pack()
+
+        Senior=Label(self.DisChange,text="Senior Citizens=",width=30,anchor=W,font=('Arial',10))
+        Senior.pack()
+        Senior=Entry(self.DisChange,width=20,font=('Arial',12))
+        Senior.pack()
+
+        Total2=Label(self.DisChange,text=" ",font=('Arial',5))
+        Total2.pack()
+
+        PWD=Label(self.DisChange,text="Persons With Disabilities=",width=30,anchor=W,font=('Arial',10))
+        PWD.pack()
+        PWD_En=Entry(self.DisChange,width=20,font=('Arial',12))
+        PWD_En.pack()
+
+        Total2=Label(self.DisChange,text=" ",font=('Arial',5))
+        Total2.pack()
+
+        Submit=Button(self.DisChange,text="Change",width=6,borderwidth=5,bg="green")
+        Submit.place(x=150,y=250)
+
+        Cancel=Button(self.DisChange,text="Cancel",width=6,borderwidth=5,bg="grey",command=self.DisC_on_Closing)
+        Cancel.place(x=220,y=250)
 
     def start(self, id, role):
         global user_role, user_id

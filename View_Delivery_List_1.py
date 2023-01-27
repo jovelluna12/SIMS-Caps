@@ -119,5 +119,6 @@ class VDL:
         if messagebox.askyesno("Warning","Closing this Window this Transaction.\nContinue Closing?"):
             root.destroy()
 
-if __name__ == "__main__":
-    vdl = VDL()
+
+# if __name__ == "__main__":
+#     vdl = VDL()
