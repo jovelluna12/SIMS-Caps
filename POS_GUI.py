@@ -409,15 +409,15 @@ def SearchItem(buttonpress):
 
                 result1=(result[0],result[1],result[2],result[3])
                 # POS_Transaction.get_item_details(product,price,code)
-                print(code, product, price, qty)
                 Click_Enter(code,product,price,qty)
                 #button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))
                 # print("this")
 
     elif ProdCode.index("end")==0 and ProductCODE.index('end')!=0 and Product_Name_EN.index('end')!=0 and Product_Prices_EN.index('end')!=0:
-        print(code, product, price, qty)
-
-        ProdCodee.append(code)
+        
+        emp=Employee.Employee()
+        code=emp.getCode(product)
+        ProdCodee.append(code[0])
         prod=Product.product()
         # POS_Transaction.get_item_details(product,price,code)
         #button_confirm.config(state="active",command=lambda m="confirm":Click_Enter(code,product,price,qty))

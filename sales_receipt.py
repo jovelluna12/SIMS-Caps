@@ -116,11 +116,10 @@ class App:
         ite=frame_Table.get_children()
         for i in range(len(ite)):
         # print(ite)
-        # print(items)
-            code=items[i][-1]
-            print(code)
-            rem=p.getRemainingBal(items[i][-1])
-            InventItems=(items[i][0],items[i][2],'-',datetime.today().strftime('%Y-%m-%d'),'-',items[i][1],rem)
+            # print(items)
+            # code=items[i][0]
+            rem=p.getRemainingBal(items[i][0])
+            InventItems=(items[i][0],items[i][2],'-',datetime.today().strftime('%Y-%m-%d'),'-',items[i][1],rem[i][0]-items[i][1])
             p.Inventory(InventItems,'Sale')
 
         frame_Table.delete(*frame_Table.get_children())

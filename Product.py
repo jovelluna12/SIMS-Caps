@@ -97,16 +97,20 @@ class product:
     def getRemainingBal(self,id):
         dbcursor = self.dbcursor
         print(id)
-        query="SELECT id FROM products_onhand WHERE id=%s;"
+        query="SELECT qty FROM products_onhand WHERE item=%s;"
         dbcursor.execute(query,(id,))
-        result=dbcursor.fetchone()
-        if result==None:
+        result=dbcursor.fetchall()
+        res=dbcursor.rowcount
+        print(result)
+        print(res)
+        if res==0:
             return 0
         else:
             return result
 
     def Inventory(self,items,InventType):
         dbcursor = self.dbcursor
+        print(items)
         query="INSERT INTO inventory (item,price,date_in,date_out,Qty_in,Qty_out,RemainBalance) VALUES(%s,%s,%s,%s,%s,%s,%s)"
         dbcursor.execute(query,items)
         
@@ -117,8 +121,10 @@ class product:
         print(result)
 
         if result !=0 and InventType=='Sale':
+            print('s')
             query="UPDATE products_onhand SET qty=qty-%s WHERE item=%s"
-            dbcursor.execute(query, (items[4],items[0]))
+            print(items[4],items[0])
+            dbcursor.execute(query, (items[5],items[0]))
         elif result !=0 and InventType=='Inventory':
             query="UPDATE products_onhand SET qty=qty+%s WHERE item=%s"
             dbcursor.execute(query, (items[4],items[0]))
