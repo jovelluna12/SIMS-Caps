@@ -1044,60 +1044,81 @@ class InvortoryGUI:
         else:
             self.Add_Delivery.wm_attributes("-topmost", 1)
 
-    def chooseVendor(self):
-        root=Tk()
-        root.title("Generate PO Form")
-        root.geometry("500x400")
-        root.resizable(False, False)
-        root.wm_attributes("-topmost", 1)
+    def chooseVendor_close(self):
+            global PageOpen
+            self.CVendor.wm_attributes("-topmost", 0)
+            if messagebox.askokcancel('Close', 'Are you sure you want to close Window?'):
+                self.Add_Delivery.grab_set()
+                PageOpen=1
+                self.Add_Delivery.wm_attributes("-topmost", 1)
+                self.CVendor.destroy()
+            else:
+                self.CVendor.wm_attributes("-topmost", 1)
+    
+    def Vendor_EN_Clear(self,event):
+                self.Vendor_EN1.set("")
 
-        Frame_Add_Em = Frame(root, width=800, height=400, )
+    def ShipMethod_clear(self,event):
+                self.ShipMethod.set("")
+
+
+    def chooseVendor(self):
+        self.Add_Delivery.wm_attributes("-topmost", 0)
+        self.CVendor=Toplevel(self.Add_Delivery)
+        self.CVendor.title("Generate PO Form")
+        self.CVendor.geometry("400x300")
+        self.CVendor.resizable(False, False)
+        self.CVendor.protocol("WM_DELETE_WINDOW", self.chooseVendor_close)
+        self.CVendor.wm_attributes("-topmost", 1)
+        self.CVendor.grab_set()
+
+        Frame_Add_Em = Frame(self.CVendor, width=400, height=400, )
         Frame_Add_Em.place(x=0, y=0)
 
         Frma = Label(Frame_Add_Em, text="Choose Vendor", width=20, font=("Arial", 35), anchor=W)
         Frma.place(x=20, y=20)
 
         Name_LA = Label(Frame_Add_Em, text="Company Name of Vendor:")
-        Vendor_EN = ttk.Combobox(Frame_Add_Em, width=60)
-        Name_LA.place(x=60, y=110)
-        Vendor_EN.place(x=60, y=130)
-        Vendor_EN.set("Select Vendor")
+        self.Vendor_EN1 = ttk.Combobox(Frame_Add_Em, width=50)
+        self.Vendor_EN1.bind("<Button-1>", self.Vendor_EN_Clear)
+        Name_LA.place(x=20, y=80)
+        self.Vendor_EN1.place(x=20, y=100)
+        self.Vendor_EN1.set("Select Vendor")
         man=Manager.Manager()
         res=man.get_Vendors()
-        Vendor_EN['values']=[x[1] for x in res]
+        self.Vendor_EN1['values']=[x[1] for x in res]
 
         MethodLA = Label(Frame_Add_Em, text="Choose Shipping Method:")
-        ShipMethod = ttk.Combobox(Frame_Add_Em, width=60)
-        MethodLA.place(x=60, y=150)
-        ShipMethod.place(x=60, y=170)
-        ShipMethod.set("Select Shipping Method")
-        ShipMethod['values']=("Ground","Air","Sea")
+        self.ShipMethod = ttk.Combobox(Frame_Add_Em, width=50)
+        self.ShipMethod.bind("<Button-1>", self.ShipMethod_clear)
+        MethodLA.place(x=20, y=130)
+        self.ShipMethod.place(x=20, y=150)
+        self.ShipMethod.set("Select Shipping Method")
+        self.ShipMethod['values']=("Ground","Air","Sea")
 
         button_Add = Button(Frame_Add_Em, text="Add", padx=20, pady=5,command= lambda: self.Add_Deliveries(),state='disabled')
-        button_Add.place(x=360, y=230)
+        button_Add.place(x=280, y=230)
         def set_VendID(event):
             man=Manager.Manager()
-            VendIDs=man.get_Vendor_ID(Vendor_EN.get())
+            VendIDs=man.get_Vendor_ID(self.Vendor_EN1.get())
             global VendID
             VendID=VendIDs[0]
-            if ShipMethod.get()!="Select Shipping Method":
+            if self.ShipMethod.get()!="Select Shipping Method":
                 button_Add.config(state='normal')
 
         def set_ShipMethod(event):
             global ShipMean
-            ShipMean=ShipMethod.get()
-            if Vendor_EN.get()!="Select Vendor":
+            ShipMean=self.ShipMethod.get()
+            if self.Vendor_EN1.get()!="Select Vendor":
                 button_Add.config(state='normal')
 
         global discount
-        Label(Frame_Add_Em, text="Enter Discount. Leave Blank if None").place(x=60,y=230)
+        Label(Frame_Add_Em, text="Enter Discount. Leave Blank if None").place(x=20,y=180)
         discount=Entry(Frame_Add_Em)
-        discount.place(x=60, y=250)
+        discount.place(x=20, y=200)
 
-        Vendor_EN.bind("<<ComboboxSelected>>",set_VendID)
-        ShipMethod.bind("<<ComboboxSelected>>",set_ShipMethod)
-
-        root.mainloop()
+        self.Vendor_EN1.bind("<<ComboboxSelected>>",set_VendID)
+        self.ShipMethod.bind("<<ComboboxSelected>>",set_ShipMethod)
 
     def search_delivery(self,event):
         value=event.widget.get()
@@ -1115,7 +1136,9 @@ class InvortoryGUI:
             n = 1
             event.widget['values']=([x[n] for x in re])
 
-  
+    def clear_text(self,event):
+                self.chosen_val.set("")
+
     def Add_on_close(self):
             global PageOpen
             self.Add_Delivery.wm_attributes("-topmost", 0)
@@ -1159,6 +1182,7 @@ class InvortoryGUI:
             self.APD = Label(self.Frame_Add, text="Add Products on Delivery", font=("Arial", 40)).place(x=10, y=5)
             self.Product_CODE_LA = Label(self.Frame_Add, text="Select Product Name")
             self.Product_CODE_EN = ttk.Combobox(self.Frame_Add, textvariable=self.chosen_val, width=50)
+            self.Product_CODE_EN.bind("<Button-1>", self.clear_text)
             self.Product_CODE_LA.place(x=20, y=70)
             self.Product_CODE_EN.place(x=20, y=90)
 
@@ -1291,6 +1315,7 @@ class InvortoryGUI:
             self.Employee_Lname_EN = Entry(self.Frame_Add_Em, width=60, borderwidth=4, textvariable=self.Fname)
             self.Employee_Lname_LA.place(x=60, y=110)
             self.Employee_Lname_EN.place(x=60, y=130)
+            
 
             self.Employee_Username_LA = Label(self.Frame_Add_Em, text="Username:")
             self.username = StringVar()
@@ -1395,6 +1420,9 @@ class InvortoryGUI:
             self.Add_Stack.destroy()
         else:
             self.Add_Stack.wm_attributes("-topmost", 1)
+    
+    def Stack_Product_text(self,event):
+        self.Stack_Product_Name_EN.set("")
 
     def Click_Add_Product(self):
         global PageOpen
@@ -1430,6 +1458,7 @@ class InvortoryGUI:
 
             self.Stack_Product_Name_LA = Label(self.Frame_Add_St, text="Product Name:")
             self.Stack_Product_Name_EN = ttk.Combobox(self.Frame_Add_St, textvariable=self.chosen_val)
+            self.Stack_Product_Name_EN.bind("<Button-1>", self.Stack_Product_text)
             self.Stack_Product_Name_LA.place(x=20, y=80)
             self.Stack_Product_Name_EN.place(x=20, y=100)
             self.Stack_Product_Name_EN.config(width=50)
@@ -2647,7 +2676,7 @@ class InvortoryGUI:
         Label(self.DisChange, text="Select ").pack()
         Dis_Ven = ttk.Combobox(self.DisChange, width=20)
         Dis_Ven.pack()
-        Dis_Ven['values'] = ("Sales", "Inventory", "Delivery")
+        Dis_Ven['values'] = ("Sales", "Inventory")
 
         VAT=Label(self.DisChange,text="VAT = ",width=30,anchor=W,font=('Arial',10))
         VAT.pack()

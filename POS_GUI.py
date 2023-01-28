@@ -134,8 +134,6 @@ def start(m,id,user,time):
             Product_CODE_LA.place(x=20,y=360)
             Product_CODE_EN.place(x=20,y=380)
 
-
-
             # Button List
             button_1 = Button(frame_Detail, text="1", padx=22, pady=12, command=lambda: Button_LOGIC(1))
             button_2 = Button(frame_Detail, text="2", padx=22, pady=12, command=lambda: Button_LOGIC(2))
@@ -232,8 +230,8 @@ def Click_List():
         global Search_Table
         window_list = Toplevel(root)
         window_list.title("PRODUCT LISTS!")
-        List_width=600
-        List_height=670
+        List_width=520
+        List_height=640
         window_list.geometry(f'{List_width}x{List_height}+{400}+{30}')
         window_list.protocol("WM_DELETE_WINDOW",on_close)
         window_list.resizable(False,False)
@@ -242,17 +240,17 @@ def Click_List():
         window_list.grab_set()
         is_closing = FALSE
 
-        window_FrameL = Frame(window_list, width=600, height=100)
+        window_FrameL = Frame(window_list, width=520, height=100)
         window_FrameL.grid(row=0, column=0)
 
-        window_Frame2 = Frame(window_list, width=600, height=600,highlightbackground="black", highlightthickness=1, padx=5, pady=5)
+        window_Frame2 = Frame(window_list, width=520, height=600,highlightbackground="black", highlightthickness=1, padx=5, pady=5)
         window_Frame2.place(x=0,y=100)
 
-        Search_Table = ttk.Treeview(window_Frame2, height=27)
+        Search_Table = ttk.Treeview(window_Frame2, height=25)
         Search_Table['column'] = ("ID", "Name", "Price","Stack")
         Search_Table.column("#0", width=0, stretch=NO, anchor=W)
         Search_Table.column("ID", width=50, stretch=NO, anchor=W)
-        Search_Table.column("Name", width=290, stretch=NO, anchor=W)
+        Search_Table.column("Name", width=300, stretch=NO, anchor=W)
         Search_Table.column("Price", width=70, stretch=NO, anchor=E)
         Search_Table.column("Stack", width=70, stretch=NO, anchor=CENTER)
 
@@ -294,6 +292,8 @@ def Click_List():
         Label_Search = Label(window_FrameL, text="Search:")
         Entry_Search = Entry(window_FrameL, width=50, borderwidth=3)
         button_Search = Button(window_FrameL, text="Search", padx=5, pady=0, command=search)
+        button_Close = Button(window_FrameL, text="Close", padx=5, pady=0,command=on_close)
+        button_Close.place(x=440,y=68)
 
         Label_Search.place(x=20,y=70)
         Entry_Search.place(x=63,y=70)
@@ -310,8 +310,6 @@ def Click_List():
                 count += 1
                 Search_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
-        button_Close = Button(window_FrameL, text="Close", command=on_close)
-        button_Close.place(x=500,y=68)
     
         PageOpen+=1
     else:
