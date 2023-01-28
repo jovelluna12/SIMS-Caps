@@ -2078,7 +2078,7 @@ class InvortoryGUI:
 
                     count = 0
                     for item in range(len(result)):
-                        self.export_Table.insert('', index='end', iid=count, text=item, values=(result[item][0],result[item][1],result[item][2],result[item][3],result[item][4],result[item][5],result[item][6],'-'))
+                        self.export_Table.insert('', index='end', iid=count, text=item, values=(result[item][0],result[item][1],result[item][2],result[item][3],result[item][4],result[item][5],result[item][6],result[item][7]))
                         count += 1
 
                 elif report_type == "Delivery":

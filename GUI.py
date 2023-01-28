@@ -180,7 +180,7 @@ class GUI():
             self.Noti_canvas.create_window((0,0), window=self.Noti_post,anchor=NW)
 
             a=Manager.Manager()
-            message,name,batch,id=a.notify_expiry()
+            message,name=a.notify_expiry()
 
             widgets=[]
             ids=[]
@@ -194,19 +194,19 @@ class GUI():
                 self.Noti_MessageBOX=Frame(self.Noti_NotiBOX,width=410,height=100,highlightbackground="black", highlightthickness=1,padx=5,pady=5)
                 self.Noti_MessageBOX.grid(row=0,column=0)
 
-                self.Noti_MTitle=Label(self.Noti_MessageBOX,text=name[x]+" of Batch "+str(batch[x])+" with an ID of "+str(id[x]),font=("Arial", 12),width=43,height=2,anchor=W,wraplength=400)
+                self.Noti_MTitle=Label(self.Noti_MessageBOX,text=name[x],font=("Arial", 12),width=43,height=2,anchor=W,wraplength=400)
                 ids.append(id[x])
                 self.Noti_MTitle.place(x=0,y=0)
                 self.Noti_MBody=Label(self.Noti_MessageBOX,text=thing,font=("Arial", 10),wraplength=400,)
                 self.Noti_MBody.place(x=0,y=50)
 
                 for widget in widgets:
-                    for i in ids:
+                    # for i in ids:
                         # wid=lambda w=widget: check(w)
                         # noted=lambda id=i: noteChecked(id)
                         
-                        self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Close",command=lambda w=widget, id=i: (check(w), noteChecked(id)))
-                        self.Noti_NotiButton.grid(row=0,column=1,padx=10)
+                    self.Noti_NotiButton=Button(self.Noti_NotiBOX,text="Close",command=lambda w=widget: (check(w), noteChecked(name[x])))
+                    self.Noti_NotiButton.grid(row=0,column=1,padx=10)
 
                 x+=1
             def check(w):
