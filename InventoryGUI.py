@@ -415,22 +415,26 @@ class InvortoryGUI:
                             ite=(name,priceeee,datee,'-',qtyyy,'-',remainBal)
                             prod.Inventory(ite,'Inventory')
                             prod.delivery_qtyIN(qtyyy,batch)
+
+
                             i+=1
 
 
-                        return_goods=list(zip(idd_list,batch_list,ref_list,QtyDif_list,remark_list))
-                        return2=list(zip(QtyDif_list,batch_list))
-                        return3=list(zip(qtyIN,batch_list))
-                        return4=list(zip(remark_list,batch_list))
-                        prod.return_to_sender(return_goods,return2,return3,return4)
+                            return_goods=list(zip(idd_list,batch_list,ref_list,QtyDif_list,remark_list))
+                            return2=list(zip(QtyDif_list,batch_list))
+                            return3=list(zip(qtyIN,batch_list))
+                            return4=list(zip(remark_list,batch_list))
+                            prod.return_to_sender(return_goods,return2,return3,return4)
+                            
+                            idd_list.clear()
+                            batch_list.clear()
+                            ref_list.clear()
+                            QtyDif_list.clear()
+                            remark_list.clear()
+                            item_id_list.clear()
 
                         self.frame_Del.delete(*self.frame_Del.get_children())
-                        idd_list.clear()
-                        batch_list.clear()
-                        ref_list.clear()
-                        QtyDif_list.clear()
-                        remark_list.clear()
-                        item_id_list.clear()
+                        
 
                         self.Add_Delivery1.destroy()
                         global PageOpen    
@@ -459,14 +463,16 @@ class InvortoryGUI:
                     
 
                     def selectItem(event):
+                        global selected_item
                         selected_item = self.frame_Del.selection()[0]
+                        print(selected_item)
                         if selected_item in item_id_list or result[-1]=="On Hand":
                             self.Add_Delivery1.wm_attributes("-topmost", 0)
                             messagebox.showerror("Error","Item is either On Hand or Already Saved")
                             self.Add_Delivery1.wm_attributes("-topmost", 1)
                         
                         else:
-                            selected_item = self.frame_Del.selection()[0]
+                            # selected_item = self.frame_Del.selection()[0]
                             id = self.frame_Del.item(selected_item)['values'][0]
                             name = self.frame_Del.item(selected_item)['values'][1]
                             pricee = self.frame_Del.item(selected_item)['values'][2]
@@ -528,10 +534,11 @@ class InvortoryGUI:
 
                                     newQTY=int(qty.get())-QTY_diff
 
-                                    selectedItem = self.frame_Del.selection()[0]
-                                    item_id_list.append(selectedItem)
-                                    x = self.frame_Del.item(selectedItem)['values'][4]
-                                    self.frame_Del.item(selectedItem,text="a", values=(
+                                    # selectedItem = self.frame_Del.selection()[0]
+                                    print(selected_item)
+                                    item_id_list.append(selected_item)
+                                    x = self.frame_Del.item(selected_item)['values'][4]
+                                    self.frame_Del.item(selected_item,text="a", values=(
                                     self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
  
                                     self.Product_ID_EN.config(state='normal')
@@ -566,10 +573,11 @@ class InvortoryGUI:
 
                                     newQTY=int(qty.get())+QTY_diff
 
-                                    selectedItem = self.frame_Table.selection()[0]
-                                    item_id_list.append(selectedItem)
-                                    x = self.frame_Table.item(selectedItem)['values'][4]
-                                    self.frame_Table.item(selectedItem,text="a", values=(
+                                    # selectedItem = self.frame_Table.selection()[0]
+                                    print(selected_item)
+                                    item_id_list.append(selected_item)
+                                    x = self.frame_Table.item(selected_item)['values'][4]
+                                    self.frame_Table.item(selected_item,text="a", values=(
                                     self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
  
                                     self.Product_ID_EN.config(state='normal')
@@ -587,40 +595,40 @@ class InvortoryGUI:
                                     self.Product_price_EN.config(state='disabled')
                                     self.Product_ID_EN.config(state='disabled')
                                     self.Product_Stack_EN.config(state='disabled')
-                            else: 
-                                prod=Product.product()
-                                ref=prod.get_ref_id(namee.get())
-                                ref=ref[0]
+                            # else: 
+                            #     prod=Product.product()
+                            #     ref=prod.get_ref_id(namee.get())
+                            #     ref=ref[0]
                                             
-                                idd_list.append(idd.get())
-                                batch_list.append(batch[0])
-                                ref_list.append(ref)
-                                QtyDif_list.append(int(New_QTY_lbl))
-                                remark_list.append('-')
+                            #     idd_list.append(idd.get())
+                            #     batch_list.append(batch[0])
+                            #     ref_list.append(ref)
+                            #     QtyDif_list.append(int(New_QTY_lbl))
+                            #     remark_list.append('-')
 
-                                newQTY=int(New_QTY_lbl)
+                            #     newQTY=int(New_QTY_lbl)
 
-                                selectedItem = self.frame_Table.selection()[0]
-                                item_id_list.append(selectedItem)
-                                x = self.frame_Table.item(selectedItem)['values'][4]
-                                self.frame_Table.item(selectedItem,text="a", values=(
-                                self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
+                            #     selectedItem = self.frame_Table.selection()[0]
+                            #     item_id_list.append(selectedItem)
+                            #     x = self.frame_Table.item(selectedItem)['values'][4]
+                            #     self.frame_Table.item(selectedItem,text="a", values=(
+                            #     self.Product_ID_EN.get(), self.Product_Price_EN.get(), self.Product_price_EN.get(), newQTY, x, self.Product_date_EN.get_date()))
  
-                                self.Product_ID_EN.config(state='normal')
-                                self.Product_Price_EN.config(state='normal')
-                                self.Product_Stack_EN.config(state='normal')
-                                self.Product_date_EN.config(state='normal')
-                                self.Product_price_EN.config(state='normal')
+                            #     self.Product_ID_EN.config(state='normal')
+                            #     self.Product_Price_EN.config(state='normal')
+                            #     self.Product_Stack_EN.config(state='normal')
+                            #     self.Product_date_EN.config(state='normal')
+                            #     self.Product_price_EN.config(state='normal')
 
-                                self.Product_ID_EN.delete(0,END)
-                                self.Product_Price_EN.delete(0,END)
-                                self.Product_Stack_EN.delete(0,END)
-                                self.Product_price_EN.delete(0,END)
+                            #     self.Product_ID_EN.delete(0,END)
+                            #     self.Product_Price_EN.delete(0,END)
+                            #     self.Product_Stack_EN.delete(0,END)
+                            #     self.Product_price_EN.delete(0,END)
 
-                                self.Product_Price_EN.config(state='disabled')
-                                self.Product_price_EN.config(state='disabled')
-                                self.Product_ID_EN.config(state='disabled')
-                                self.Product_Stack_EN.config(state='disabled')
+                            #     self.Product_Price_EN.config(state='disabled')
+                            #     self.Product_price_EN.config(state='disabled')
+                            #     self.Product_ID_EN.config(state='disabled')
+                            #     self.Product_Stack_EN.config(state='disabled')
 
                         except(ValueError):
                             self.Add_Delivery1.wm_attributes("-topmost", 0)

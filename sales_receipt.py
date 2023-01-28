@@ -124,7 +124,6 @@ class App:
             # code=items[i][0]
             rem=p.getRemainingBal(items[i][0])
             rem=[x[0] for x in rem]
-            print(rem)
             InventItems=(items[i][0],items[i][2],'-',datetime.today().strftime('%Y-%m-%d'),'-',items[i][1],rem[0]-items[i][1])
             p.Inventory(InventItems,'Sale')
 
