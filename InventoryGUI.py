@@ -2623,7 +2623,7 @@ class InvortoryGUI:
         self.DisChange = Toplevel(self.InvorVal)
         self.DisChange.title("Discount Setting")
         width=300
-        height=360
+        height=400
         screenwidth = self.InvorVal.winfo_screenwidth()
         screenheight = self.InvorVal.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
@@ -2633,6 +2633,7 @@ class InvortoryGUI:
         self.DisChange.resizable(False,False)
         self.DisChange.grab_set()
 
+
         Total_=Label(self.DisChange,text=" ",font=('Arial',10))
         Total_.pack()
 
@@ -2641,6 +2642,12 @@ class InvortoryGUI:
 
         Total1=Label(self.DisChange,text=" ",font=('Arial',5))
         Total1.pack()
+
+        selected = StringVar()
+        Label(self.DisChange, text="Select ").pack()
+        Dis_Ven = ttk.Combobox(self.DisChange, width=20)
+        Dis_Ven.pack()
+        Dis_Ven['values'] = ("Sales", "Inventory", "Delivery")
 
         VAT=Label(self.DisChange,text="VAT = ",width=30,anchor=W,font=('Arial',10))
         VAT.pack()
@@ -2675,10 +2682,10 @@ class InvortoryGUI:
         Total2.pack()
 
         Submit=Button(self.DisChange,text="Change",width=6,borderwidth=5,bg="green")
-        Submit.place(x=150,y=310)
+        Submit.place(x=150,y=350)
 
         Cancel=Button(self.DisChange,text="Cancel",width=6,borderwidth=5,bg="grey",command=self.DisC_on_Closing)
-        Cancel.place(x=220,y=310)
+        Cancel.place(x=220,y=350)
 
     def start(self, id, role):
         global user_role, user_id
