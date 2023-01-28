@@ -12,6 +12,27 @@ class Manager (Employee.Employee):
         result = dbcursor.fetchall()
         return result
 
+    def inventory(self):
+        dbcursor=self.dbcursor
+        query="SELECT * FROM inventory;"
+        dbcursor.execute(query)
+        result=dbcursor.fetchall()
+        return result
+
+    def get_AllProducts(self):
+        dbcursor = self.dbcursor
+        query="SELECT * from products_directory"
+        dbcursor.execute(query)
+        result=dbcursor.fetchall()
+        return result
+    
+    def get_ProductInventHistory(self, name):
+        dbcursor = self.dbcursor
+        query="SELECT * from inventory WHERE item=%s"
+        dbcursor.execute(query,(name,))
+        result=dbcursor.fetchall()
+        return result
+
     def get_inTransit(self,dateFrom,dateTo,batch):
         dbcursor = self.dbcursor
         if dateFrom is not None and dateTo is None and batch == "None":
@@ -319,6 +340,8 @@ class Manager (Employee.Employee):
             x+=1
         # return messages,name,batch,id
         return messages,name
+
+    
 
     def viewSales(self):
         dbcursor = self.dbcursor

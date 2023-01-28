@@ -6,6 +6,10 @@ from tkinter import simpledialog
 import tkinter.font as tkFont
 import Employee, Product
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+
 
 class App:
     def __init__(self,discount,custom_discount,user_id, item_tuple):
@@ -81,7 +85,7 @@ class App:
         GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(subtotal),font=('Arial',10),justify=LEFT)
         GLabel_170.place(x=350,y=470)
 
-        VAT=0.12*subtotal
+        VAT=os.getenv('VAT')/100*subtotal
         
         GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(VAT),font=('Arial',10),justify=LEFT)
         GLabel_139.place(x=350,y=490)
@@ -123,7 +127,6 @@ class App:
             p.Inventory(InventItems,'Sale')
 
         frame_Table.delete(*frame_Table.get_children())
-
         
         root.destroy()
 
@@ -134,8 +137,13 @@ class App:
         return subtotal
 
     def determineDiscount(self):
-        if discounted=="Senior Citizen 20%" or discounted =="PWD 20%":
-            disc1=float(20/100*sub)
+        if discounted=="Senior Citizen 20%":
+            percent=os.getenv('SC_DISCOUNT')
+            disc1=float(int(percent)/100*sub)
+
+        elif discounted =="PWD 20%":
+            percent=os.getenv('PWD_DISCOUNT')
+            disc1=float(int(percent)/100*sub)
         else: 
             disc1=0
 

@@ -1659,7 +1659,33 @@ class InvortoryGUI:
                 
         self.Inven_Filter_close()
 
+    def Inven_filter_results(self):
+        man=Manager.Manager()
+        # global filter_from, filter_to,filter,batch,FilterList
+        # if str(filter_from.cget("state"))=="normal":
+        #     from_filter=filter_from.get_date()
+        # else: 
+        #     from_filter=None
+
+        # if str(filter_to.cget("state"))=="normal":
+        #         to_filter=filter_to.get_date()
+        # else: 
+        #     to_filter=None
+
+        #     fill=filter.get()
+        #     batch_code=batch.get()
+        #     man=Manager.Manager()
+        
+        res=man.get_ProductInventHistory(filterrT.get())
+        
+        count = 0
+        self.export_Table.delete(*self.export_Table.get_children())
+        for x in res:
+            self.export_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+            count += 1
+
     def Inven_Filter_GUI(self):
+        global filterrT,filter_from, filter_to,filter,batch,FilterList
         self.InvorVal.grab_release()
         self.Add_Notify.wm_attributes("-topmost", 0)
 
@@ -1672,23 +1698,25 @@ class InvortoryGUI:
         self.Inven_FilterList.wm_attributes("-topmost", 1)
         
         Label(self.Inven_FilterList,text="Inventory FILTER",font=("Arial", 25, "bold")).place(x=10,y=10)
-        Label(self.Inven_FilterList,text="Use the following settings to Filter out the Results.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=33,y=80)
-        Label(self.Inven_FilterList,text="Select Filter:").place(x=33,y=150)
-        filter = ttk.Combobox(self.Inven_FilterList,width=10,state='readonly')
-        filter.place(x=100, y=150)
-        filter.set("None")
-        filter["values"]=("None","In Transit","On Hand")
+        # Label(self.Inven_FilterList,text="Use the following settings to Filter out the Results.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=33,y=80)
+        Label(self.Inven_FilterList,text="Select Product:").place(x=35,y=135)
+        filterrT = ttk.Combobox(self.Inven_FilterList,width=50,state='readonly')
+        filterrT.place(x=100, y=150)
+        man=Manager.Manager()
+        res=man.get_AllProducts()
+        filterrT.set("None")
+        filterrT["values"]=[x[1] for x in res]
 
-        Label(self.Inven_FilterList,text="Select Batch:").place(x=277,y=150)
-        batch = ttk.Combobox(self.Inven_FilterList,width=10,state='readonly')
-        batch.place(x=350, y=150)
+        # Label(self.Inven_FilterList,text="Select Batch:").place(x=277,y=150)
+        # batch = ttk.Combobox(self.Inven_FilterList,width=10,state='readonly')
+        # batch.place(x=350, y=150)
 
-        prod=Product.product()
-        res=prod.get_batch_Codes()
-        batch_list=[x[0] for x in res]
-        batch_list.insert(0,"None")
-        batch.set("None")
-        batch["values"]=(batch_list)
+        # prod=Product.product()
+        # res=prod.get_batch_Codes()
+        # batch_list=[x[0] for x in res]
+        # batch_list.insert(0,"None")
+        # batch.set("None")
+        # batch["values"]=(batch_list)
 
         def no_sel():
             filter_from.config(state='disabled')
@@ -1698,129 +1726,38 @@ class InvortoryGUI:
             filter_from.config(state='normal')
             filter_to.config(state='normal')
 
-        var=IntVar()
-        var.set(0)
-        Label(self.Inven_FilterList,text="Configure Date Parameters").place(x=33,y=180)
-        Radiobutton(self.Inven_FilterList,text="No Parameters",variable=var,value=0,command=no_sel).place(x=100,y=200)
-        Radiobutton(self.Inven_FilterList,text="Allow Date",variable=var,value=1,command=sel).place(x=230,y=200)
+        # var=IntVar()
+        # var.set(0)
+        # Label(self.Inven_FilterList,text="Configure Date Parameters").place(x=33,y=180)
+        # Radiobutton(self.Inven_FilterList,text="No Parameters",variable=var,value=0,command=no_sel).place(x=100,y=200)
+        # Radiobutton(self.Inven_FilterList,text="Allow Date",variable=var,value=1,command=sel).place(x=230,y=200)
 
-        Label(self.Inven_FilterList,text="Recorded From :").place(x=33,y=230)
-        filter_from = DateEntry(self.Inven_FilterList,state='disabled') 
-        filter_from.place(x=140, y=230)
+        # Label(self.Inven_FilterList,text="Recorded From :").place(x=33,y=230)
+        # filter_from = DateEntry(self.Inven_FilterList,state='disabled') 
+        # filter_from.place(x=140, y=230)
 
-        Label(self.Inven_FilterList,text="Recorded To :").place(x=33,y=260)
-        filter_to = DateEntry(self.Inven_FilterList,state='disabled') 
-        filter_to.place(x=140, y=260)
+        # Label(self.Inven_FilterList,text="Recorded To :").place(x=33,y=260)
+        # filter_to = DateEntry(self.Inven_FilterList,state='disabled') 
+        # filter_to.place(x=140, y=260)
             
-        Button(self.Inven_FilterList,text="Filter",bg="green",command=self.filter_results).place(x=340,y=300)
+        Button(self.Inven_FilterList,text="Filter",bg="green",command=self.Inven_filter_results).place(x=340,y=300)
         Button(self.Inven_FilterList,text="Cancel",command=self.Inven_Filter_close).place(x=390,y=300)
 
     #Delivery>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     def Del_Filter_close(self):
         self.Add_Notify.grab_release()
-        self.Del_FilterList.wm_attributes("-topmost", 1)
-        self.Del_FilterList.destroy()
+        self.Inven_FilterList.destroy()
+
+    def Del_ClearFilter(self):
+        self.export_Table.delete(*self.export_Table.get_children())
+        man=Manager.Manager()
+        result=man.inventory()
+        count=0
+        for item in range(len(result)):
+            self.export_Table.insert('', index='end', iid=count, text=item, values=(result[item][0],result[item][1],result[item][2],result[item][3],result[item][4],result[item][5],result[item][6],result[item][7]))
+            count += 1
         
-    def Del_Filter_results(self):
-        # global filter_from, filter_to,filter,batch,self.Sale_FilterList
-        if str(filter_from.cget("state"))=="normal":
-            from_filter=filter_from.get_date()
-        else: 
-            from_filter=None
-
-        if str(filter_to.cget("state"))=="normal":
-                to_filter=filter_to.get_date()
-        else: 
-            to_filter=None
-
-            fill=filter.get()
-            batch_code=batch.get()
-            man=Manager.Manager()
-
-        if fill=="In Transit":
-            res=man.get_inTransit(from_filter,to_filter,batch_code)
-            count = 0
-            self.frame_Table.delete(*self.frame_Table.get_children())
-            for x in res:
-                count += 1
-                self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-           
-
-        if fill=="On Hand":
-                res=man.get_OnHand(from_filter,to_filter,batch_code)
-                count = 0
-                self.frame_Table.delete(*self.frame_Table.get_children())
-                for x in res:
-                    count += 1
-                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-                
-
-        if fill=="None":
-                res=man.listNone(from_filter,to_filter,batch_code)
-                count = 0
-                self.frame_Table.delete(*self.frame_Table.get_children())
-                for x in res:
-                    count += 1
-                    self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-                
-        self.Del_Filter_close()
-
-    def Del_Filter_GUI(self):
-        self.InvorVal.grab_release()
-        self.Add_Notify.wm_attributes("-topmost", 0)
-
-        self.Del_FilterList=Toplevel(self.Add_Notify)
-        self.Del_FilterList.title("Filter out Results")
-        self.Del_FilterList.geometry("480x340")
-        self.Del_FilterList.resizable(False,False)
-        self.Del_FilterList.protocol("WM_DELETE_WINDOW",self.Del_Filter_close)
-        self.Del_FilterList.grab_set()
-        self.Del_FilterList.wm_attributes("-topmost", 1)
-        
-        Label(self.Del_FilterList,text="Delivery FILTER",font=("Arial", 25, "bold")).place(x=10,y=10)
-        Label(self.Del_FilterList,text="Use the following settings to Filter out the Results.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=33,y=80)
-        Label(self.Del_FilterList,text="Select Filter:").place(x=33,y=150)
-        filter = ttk.Combobox(self.Del_FilterList,width=10,state='readonly')
-        filter.place(x=100, y=150)
-        filter.set("None")
-        filter["values"]=("None","In Transit","On Hand")
-
-        Label(self.Del_FilterList,text="Select Batch:").place(x=277,y=150)
-        batch = ttk.Combobox(self.Del_FilterList,width=10,state='readonly')
-        batch.place(x=350, y=150)
-
-        prod=Product.product()
-        res=prod.get_batch_Codes()
-        batch_list=[x[0] for x in res]
-        batch_list.insert(0,"None")
-        batch.set("None")
-        batch["values"]=(batch_list)
-
-        def no_sel():
-            filter_from.config(state='disabled')
-            filter_to.config(state='disabled')
-
-        def sel():
-            filter_from.config(state='normal')
-            filter_to.config(state='normal')
-
-        var=IntVar()
-        var.set(0)
-        Label(self.Del_FilterList,text="Configure Date Parameters").place(x=33,y=180)
-        Radiobutton(self.Del_FilterList,text="No Parameters",variable=var,value=0,command=no_sel).place(x=100,y=200)
-        Radiobutton(self.Del_FilterList,text="Allow Date",variable=var,value=1,command=sel).place(x=230,y=200)
-
-        Label(self.Del_FilterList,text="Recorded From :").place(x=33,y=230)
-        filter_from = DateEntry(self.Del_FilterList,state='disabled') 
-        filter_from.place(x=140, y=230)
-
-        Label(self.Del_FilterList,text="Recorded To :").place(x=33,y=260)
-        filter_to = DateEntry(self.Del_FilterList,state='disabled') 
-        filter_to.place(x=140, y=260)
-            
-        Button(self.Del_FilterList,text="Filter",bg="green",command=self.Del_Filter_results).place(x=340,y=300)
-        Button(self.Del_FilterList,text="Cancel",command=self.Del_Filter_close).place(x=390,y=300)
-
+    
     def Delete(self):
         select = self.frame_Table.selection()[0]
         id=self.frame_Table.item(select)["values"][0]
@@ -1864,17 +1801,17 @@ class InvortoryGUI:
             self.Frame_Add_nofi = Frame(self.Add_Notify, width=800, height=200)
             self.Frame_Add_nofi.place(x=0, y=0)
 
-            self.Frma = Label(self.Frame_Add_nofi, text="Export to Spreadsheet", width=20, font=("Arial", 35), anchor=W)
+            self.Frma = Label(self.Frame_Add_nofi, text="View Inventory", width=20, font=("Arial", 35), anchor=W)
             self.Frma.place(x=10, y=10)
                 
             selected = StringVar()
-            Label(self.Add_Notify, text="Select What to Export").place(x=20, y=80)
+            Label(self.Add_Notify, text="Select What to View").place(x=20, y=80)
             reports = ttk.Combobox(self.Add_Notify, width=20)
             reports.place(x=20, y=100)
-            reports['values'] = ("Sales", "Inventory", "Delivery")
+            reports['values'] = ("Inventory")
             
             # Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
-            export = Button(self.Add_Notify, text="Export", state='disabled')
+            export = Button(self.Add_Notify, text="View Inventory", state='disabled')
             export.place(x=740, y=97)
 
             Table_BOX=Frame(self.Add_Notify,highlightbackground="black", highlightthickness=3)
@@ -2010,7 +1947,6 @@ class InvortoryGUI:
                         Deli_Clear_Filterbutton.place_forget()
                     except(NameError):
                         pass
-
                     
                     Filterbutton=Button(self.Add_Notify,text="Sales Filter",command=self.Sale_Filter_GUI)
                     Filterbutton.place(x=200, y=95)
@@ -2051,7 +1987,7 @@ class InvortoryGUI:
 
                     Inven_Filterbutton=Button(self.Add_Notify,text="Inventory Filter",command=self.Inven_Filter_GUI)
                     Inven_Filterbutton.place(x=200, y=95)
-                    Inven_Clear_Filterbutton=Button(self.Add_Notify,text="Clear Filters")
+                    Inven_Clear_Filterbutton=Button(self.Add_Notify,text="Clear Filters",command=self.Del_ClearFilter)
                     Inven_Clear_Filterbutton.place(x=360, y=95)
         
                     self.export_Table['columns'] = ('Reference ID', "Item", "Price","DATEIN","DATEOUT","QTYIN","QTYOUT","Remaining Quantity")
@@ -2214,7 +2150,7 @@ class InvortoryGUI:
 
         self.button_Add_Pm = Button(self.Frame_Side, text="ADD Product", padx=10, pady=10, width=10, height=1,
                                     bg='#54FA9B', command=self.Click_Add_Product)
-        self.btn_Notification = Button(self.Frame_Side, text="Export", padx=10, pady=10, width=10, height=1,
+        self.btn_Notification = Button(self.Frame_Side, text="View Inventory", padx=10, pady=10, width=10, height=1,
                                        bg='#54FA9B', command=self.notify_UI)
         button_Out= Button(self.Frame_Side,text="Back Home",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.InvorVal.destroy)
         button_Out.place(x=160,y=600)
@@ -2280,7 +2216,7 @@ class InvortoryGUI:
 
             root.mainloop()
 
-        self.btn_Notification = Button(self.Frame_Side, text="Export", padx=10, pady=10, width=10, height=1,
+        self.btn_Notification = Button(self.Frame_Side, text="View Inventory", padx=10, pady=10, width=10, height=1,
                                        bg='#54FA9B', command=self.notify_UI)
 
         button_Out= Button(self.Frame_Side,text="Add Vendor",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=lambda: add_vendor_func())
@@ -2292,8 +2228,8 @@ class InvortoryGUI:
         def goto_forecast():
             forecast.GUI()
 
-        button_Out= Button(self.Frame_Side,text="Forecast",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=goto_forecast)
-        button_Out.place(x=40,y=600)
+        # button_Out= Button(self.Frame_Side,text="Forecast",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=goto_forecast)
+        # button_Out.place(x=40,y=600)
 
         self.button_List.place(x=40, y=300)
         self.button_Stack.place(x=160, y=300)
@@ -2642,7 +2578,7 @@ class InvortoryGUI:
         Total1=Label(self.DisChange,text=" ",font=('Arial',5))
         Total1.pack()
 
-        VAT=Label(self.DisChange,text="VAT = ",width=30,anchor=W,font=('Arial',10))
+        VAT=Label(self.DisChange,text="VAT",width=30,anchor=W,font=('Arial',10))
         VAT.pack()
         VAT_En=Entry(self.DisChange,width=27,font=('Arial',12))
         VAT_En.pack()
@@ -2650,7 +2586,7 @@ class InvortoryGUI:
         Total2=Label(self.DisChange,text=" ",font=('Arial',5))
         Total2.pack()
 
-        Senior=Label(self.DisChange,text="Senior Citizens=",width=30,anchor=W,font=('Arial',10))
+        Senior=Label(self.DisChange,text="Senior Citizen Discount",width=30,anchor=W,font=('Arial',10))
         Senior.pack()
         Senior=Entry(self.DisChange,width=27,font=('Arial',12))
         Senior.pack()
@@ -2658,7 +2594,7 @@ class InvortoryGUI:
         Total2=Label(self.DisChange,text=" ",font=('Arial',5))
         Total2.pack()
 
-        PWD=Label(self.DisChange,text="Persons With Disabilities=",width=30,anchor=W,font=('Arial',10))
+        PWD=Label(self.DisChange,text="PWD Discount",width=30,anchor=W,font=('Arial',10))
         PWD.pack()
         PWD_En=Entry(self.DisChange,width=27,font=('Arial',12))
         PWD_En.pack()
@@ -2666,7 +2602,7 @@ class InvortoryGUI:
         Total2=Label(self.DisChange,text=" ",font=('Arial',5))
         Total2.pack()
 
-        Safe=Label(self.DisChange,text="Safety Level=",width=30,anchor=W,font=('Arial',10))
+        Safe=Label(self.DisChange,text="Safety Stock Percentage",width=30,anchor=W,font=('Arial',10))
         Safe.pack()
         Safe_En=Entry(self.DisChange,width=27,font=('Arial',12))
         Safe_En.pack()
@@ -2674,7 +2610,7 @@ class InvortoryGUI:
         Total2=Label(self.DisChange,text=" ",font=('Arial',5))
         Total2.pack()
 
-        Submit=Button(self.DisChange,text="Change",width=6,borderwidth=5,bg="green")
+        Submit=Button(self.DisChange,text="Save",width=6,borderwidth=5,bg="green")
         Submit.place(x=150,y=310)
 
         Cancel=Button(self.DisChange,text="Cancel",width=6,borderwidth=5,bg="grey",command=self.DisC_on_Closing)
