@@ -2623,7 +2623,7 @@ class InvortoryGUI:
         self.DisChange = Toplevel(self.InvorVal)
         self.DisChange.title("Discount Setting")
         width=300
-        height=300
+        height=360
         screenwidth = self.InvorVal.winfo_screenwidth()
         screenheight = self.InvorVal.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
@@ -2644,7 +2644,7 @@ class InvortoryGUI:
 
         VAT=Label(self.DisChange,text="VAT = ",width=30,anchor=W,font=('Arial',10))
         VAT.pack()
-        VAT_En=Entry(self.DisChange,width=20,font=('Arial',12))
+        VAT_En=Entry(self.DisChange,width=27,font=('Arial',12))
         VAT_En.pack()
 
         Total2=Label(self.DisChange,text=" ",font=('Arial',5))
@@ -2652,7 +2652,7 @@ class InvortoryGUI:
 
         Senior=Label(self.DisChange,text="Senior Citizens=",width=30,anchor=W,font=('Arial',10))
         Senior.pack()
-        Senior=Entry(self.DisChange,width=20,font=('Arial',12))
+        Senior=Entry(self.DisChange,width=27,font=('Arial',12))
         Senior.pack()
 
         Total2=Label(self.DisChange,text=" ",font=('Arial',5))
@@ -2660,17 +2660,25 @@ class InvortoryGUI:
 
         PWD=Label(self.DisChange,text="Persons With Disabilities=",width=30,anchor=W,font=('Arial',10))
         PWD.pack()
-        PWD_En=Entry(self.DisChange,width=20,font=('Arial',12))
+        PWD_En=Entry(self.DisChange,width=27,font=('Arial',12))
         PWD_En.pack()
 
         Total2=Label(self.DisChange,text=" ",font=('Arial',5))
         Total2.pack()
 
+        Safe=Label(self.DisChange,text="Safety Level=",width=30,anchor=W,font=('Arial',10))
+        Safe.pack()
+        Safe_En=Entry(self.DisChange,width=27,font=('Arial',12))
+        Safe_En.pack()
+
+        Total2=Label(self.DisChange,text=" ",font=('Arial',5))
+        Total2.pack()
+
         Submit=Button(self.DisChange,text="Change",width=6,borderwidth=5,bg="green")
-        Submit.place(x=150,y=250)
+        Submit.place(x=150,y=310)
 
         Cancel=Button(self.DisChange,text="Cancel",width=6,borderwidth=5,bg="grey",command=self.DisC_on_Closing)
-        Cancel.place(x=220,y=250)
+        Cancel.place(x=220,y=310)
 
     def start(self, id, role):
         global user_role, user_id
