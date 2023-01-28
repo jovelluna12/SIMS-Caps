@@ -2222,8 +2222,8 @@ class InvortoryGUI:
         button_Out= Button(self.Frame_Side,text="Add Vendor",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=lambda: add_vendor_func())
         button_Out.place(x=160,y=550)
 
-        button_Dis= Button(self.Frame_Side,text="Discout Setting",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Discount_Change)
-        button_Dis.place(x=40,y=550)
+        # button_Dis= Button(self.Frame_Side,text="Discout Setting",padx=10,pady=10,width=10,height=1,bg='#54FA9B',command=self.Discount_Change)
+        # button_Dis.place(x=40,y=550)
 
         def goto_forecast():
             forecast.GUI()
