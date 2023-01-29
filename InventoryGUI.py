@@ -412,7 +412,8 @@ class InvortoryGUI:
                                 remain.append(remainBal)
                             date_list.append(datee)
                             prod.editDelivery(id, name, priceeee, qtyyy, datee)
-                            ite=(name,priceeee,datee,'-',qtyyy,'-',remainBal)
+                            today=datetime.now().strftime("%Y-%m-%d")
+                            ite=(name,priceeee,today,'-',qtyyy,'-',remainBal)
                             prod.Inventory(ite,'Inventory')
                             prod.delivery_qtyIN(qtyyy,batch)
 
