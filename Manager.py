@@ -12,6 +12,27 @@ class Manager (Employee.Employee):
         result = dbcursor.fetchall()
         return result
 
+    def inventory(self):
+        dbcursor=self.dbcursor
+        query="SELECT * FROM inventory;"
+        dbcursor.execute(query)
+        result=dbcursor.fetchall()
+        return result
+
+    def get_AllProducts(self):
+        dbcursor = self.dbcursor
+        query="SELECT * from products_directory"
+        dbcursor.execute(query)
+        result=dbcursor.fetchall()
+        return result
+    
+    def get_ProductInventHistory(self, name):
+        dbcursor = self.dbcursor
+        query="SELECT * from inventory WHERE item=%s"
+        dbcursor.execute(query,(name,))
+        result=dbcursor.fetchall()
+        return result
+
     def get_inTransit(self,dateFrom,dateTo,batch):
         dbcursor = self.dbcursor
         if dateFrom is not None and dateTo is None and batch == "None":
@@ -230,7 +251,8 @@ class Manager (Employee.Employee):
             return dbcursor.fetchall()
 
         if report=="Inventory" and scope_from==None and scope_to==None:
-            query="SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,deliverylist.expectedarrivaldate,salestransaction.DatePurchased,delivery_items.qty_in, purchasedproducts.Quantity FROM products_directory,deliverylist, products, delivery_items,salestransaction ,purchasedproducts WHERE products.ref_id=products_directory.ref_id;"
+            # query="SELECT products_directory.ref_id, products_directory.product_name,products_directory.price,deliverylist.expectedarrivaldate,salestransaction.DatePurchased,delivery_items.qty_in, purchasedproducts.Quantity FROM products_directory,deliverylist, products, delivery_items,salestransaction ,purchasedproducts WHERE products.ref_id=products_directory.ref_id;"
+            query="SELECT * FROM inventory;"
             dbcursor.execute(query)
 
             return dbcursor.fetchall()
@@ -259,11 +281,27 @@ class Manager (Employee.Employee):
         dbcursor.execute(query,val)
         dbConnector.db.commit()
 
+    def get_Ave_LeadTime(self):
+        dbcursor = self.dbcursor
+        query="SELECT AVG(DATEDIFF(datepurchased,expectedarrivaldate)) FROM deliverylist"
+        dbcursor.execute(query)
+        result=dbcursor.fetchone()
+        return result
+
+    def get_SafetyStock(self):
+        dbcursor = self.dbcursor
+        query="SELECT "
+
     def notify_expiry(self):
         dbcursor=self.dbcursor
-        query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable' AND status!='In Transit' AND note!='Checked'"
+        # query="SELECT ProductID,ProductName,expiry_date,batch_code FROM products WHERE status!='Expired' AND status!='Unsellable' AND status!='In Transit' AND note!='Checked'"
+        query="SELECT * FROM products_onhand"
+        ROP_query='SELECT MAX(RemainBalance) FROM inventory WHERE item="%s";'
         dbcursor.execute(query)
         result=dbcursor.fetchall()
+
+        query_date='SELECT expiry_date FROM products WHERE ProductName=%s GROUP BY expiry_date ASC LIMIT 1'
+        
     
         x=0
         messages=[]
@@ -271,29 +309,39 @@ class Manager (Employee.Employee):
         name=[]
         batch=[]
         for i in result:
+            print(i[1])
+            # print(ex_date)
+            dbcursor.execute(query_date, (i[1],))
+            ex_date=dbcursor.fetchall()
+            print(ex_date)
+            
+            dbcursor.execute(ROP_query,i[1])
+            ROP=dbcursor.fetchone()
             days_left=7
             if result!=None:
-                diff=result[x][2]-datetime.today().date()
+                diff=ex_date[x][0]-datetime.today().date()
                 today_left=diff.days
-
+                
                 if today_left<=0:
                     man=Product.product()
                     man.editStatus('Unsellable',result[x][0])
                     
-                    message=str(result[x][1])+ "of Batch "+str(result[x][3])+" is Expired and Unsellable"
+                    message=str("Product "+result[x][1])+ "is Expired and Unsellable"
                     messages.append(message)
-                    id.append(result[x][0])
                     name.append(result[x][1])
-                    batch.append(result[x][3])
 
-                if today_left<=days_left:
-                    message=str(result[x][1])+ "of Batch "+str(result[x][3])+" is about to Expire in "+str(today_left)+" days"
+                elif today_left<=days_left:
+                    message=str(result[x][1])+ " is about to Expire in "+str(today_left)+" days"
+
+                elif result[x][3] <=ROP[0]:
+                    message=str(result[x][1])+ " needs Reordering"
                     messages.append(message)
-                    id.append(result[x][0])
                     name.append(result[x][1])
-                    batch.append(result[x][3])
             x+=1
-        return messages,name,batch,id
+        # return messages,name,batch,id
+        return messages,name
+
+    
 
     def viewSales(self):
         dbcursor = self.dbcursor

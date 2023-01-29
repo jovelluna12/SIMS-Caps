@@ -6,6 +6,10 @@ from tkinter import simpledialog
 import tkinter.font as tkFont
 import Employee, Product
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+
 
 class App:
     def __init__(self,discount,custom_discount,user_id, item_tuple):
@@ -68,7 +72,7 @@ class App:
         count=0
         subtotal=0
         for item in range(len(item_tuple)):
-            frame_Table.insert('',index='end',iid=count,values=(item_tuple[item][0],item_tuple[item][2],item_tuple[item][1],item_tuple[item][2]*item_tuple[item][1]))
+            frame_Table.insert('',index='end',iid=count,values=(item_tuple[item][0],item_tuple[item][2],item_tuple[item][1],float(item_tuple[item][2])*int(item_tuple[item][1])))
             count+=1
             subtotal=subtotal+float(item_tuple[item][2])*float(item_tuple[item][1])
         
@@ -81,7 +85,7 @@ class App:
         GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(subtotal),font=('Arial',10),justify=LEFT)
         GLabel_170.place(x=350,y=470)
 
-        VAT=0.12*subtotal
+        VAT=int(os.getenv('VAT'))/100*subtotal
         
         GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(VAT),font=('Arial',10),justify=LEFT)
         GLabel_139.place(x=350,y=490)
@@ -119,23 +123,30 @@ class App:
             # print(items)
             # code=items[i][0]
             rem=p.getRemainingBal(items[i][0])
-            InventItems=(items[i][0],items[i][2],'-',datetime.today().strftime('%Y-%m-%d'),'-',items[i][1],rem[i][0]-items[i][1])
+            rem=[x[0] for x in rem]
+            InventItems=(items[i][0],items[i][2],'-',datetime.today().strftime('%Y-%m-%d'),'-',items[i][1],rem[0]-items[i][1])
             p.Inventory(InventItems,'Sale')
 
         frame_Table.delete(*frame_Table.get_children())
-
         
         root.destroy()
 
     def computeSubtotal(self):
         subtotal=0
-        for item in range(len(items)): 
+        for item in range(len(items)):
+            print(items) 
+            print(float(items[item][2]),float(items[item][1]))
             subtotal=subtotal+float(items[item][2])*float(items[item][1])
         return subtotal
 
     def determineDiscount(self):
-        if discounted=="Senior Citizen 20%" or discounted =="PWD 20%":
-            disc1=float(20/100*sub)
+        if discounted=="Senior Citizen 20%":
+            percent=os.getenv('SC_DISCOUNT')
+            disc1=float(int(percent)/100*sub)
+
+        elif discounted =="PWD 20%":
+            percent=os.getenv('PWD_DISCOUNT')
+            disc1=float(int(percent)/100*sub)
         else: 
             disc1=0
 
