@@ -12,8 +12,8 @@ class VDL:
         global root
         root = tk.Tk()
         root.title("Delivery Detail")
-        width=950
-        height=630
+        width=1140
+        height=600
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
@@ -45,7 +45,7 @@ class VDL:
 
         global QTYIN_Table
         Table=Frame(root)
-        Table.place(x=10,y=140,width=922,height=300)
+        Table.place(x=10,y=140,width=1125,height=300)
         QTYIN_Table = ttk.Treeview(Table, height=25)
         QTYIN_Table['columns'] = ("ID","Name", "Price","QTY","QTYIN","QTYOUT","MARK","TotalQTY","TotalPrice")
         QTYIN_Table.column("#0", width=0, stretch=NO)
@@ -55,7 +55,7 @@ class VDL:
         QTYIN_Table.column("QTY",anchor=CENTER,width=40,stretch=NO)
         QTYIN_Table.column("QTYIN",anchor=CENTER,width=60,stretch=NO)
         QTYIN_Table.column("QTYOUT",anchor=CENTER,width=60,stretch=NO)
-        QTYIN_Table.column("MARK",anchor=CENTER,width=100,stretch=NO)
+        QTYIN_Table.column("MARK",anchor=CENTER,width=300,stretch=NO)
         QTYIN_Table.column("TotalQTY",anchor=CENTER,width=60,stretch=NO)
         QTYIN_Table.column("TotalPrice",anchor=E,width=65,stretch=NO)
 
