@@ -162,9 +162,10 @@ class InvortoryGUI:
 
         self.Frame_List.pack()
         self.Label_title = Label(self.Frame_List, text="List Page", font=("Arial", 15)).place(x=0, y=0)
-
         btn_filter_clear=Button(self.Frame_List,text="Filters",bg="green",command=self.filter_GUI)
         btn_filter_clear.place(x=890, y=0)
+        self.Framescroll1=Frame(self.Frame_List)
+        self.Framescroll1.place(x=0, y=30)
 
         def clear_filter():
             m1 = Manager.Manager()
@@ -177,18 +178,17 @@ class InvortoryGUI:
 
         btn_filter_clear=Button(self.Frame_List,text="Clear Filters",command=lambda: clear_filter())
         btn_filter_clear.place(x=940, y=0)
-
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
-        self.frame_Table = ttk.Treeview(self.Frame_List, height=23)
+        self.frame_Table = ttk.Treeview(self.Framescroll1, height=23)
         self.frame_Table['columns'] = ("ID", "Name", "Status", "Price", "Quantity")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=100, stretch=NO)
         self.frame_Table.column("Name", anchor=W, width=500, stretch=NO)
         self.frame_Table.column("Status", anchor=W, width=150, stretch=NO)
         self.frame_Table.column("Price", anchor=CENTER, width=131, stretch=NO)
-        self.frame_Table.column("Quantity", anchor=E, width=150, stretch=NO)
+        self.frame_Table.column("Quantity", anchor=E, width=140, stretch=NO)
         # Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID", text="ID", anchor=W)
@@ -196,7 +196,10 @@ class InvortoryGUI:
         self.frame_Table.heading("Status", text="Status", anchor=W)
         self.frame_Table.heading("Price", text="Price", anchor=CENTER)
         self.frame_Table.heading("Quantity", text="Quantity", anchor=W)
-        self.frame_Table.place(x=0, y=30)
+        scrollbar = ttk.Scrollbar(self.Framescroll1, orient="vertical", command=self.frame_Table.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.frame_Table.configure(yscrollcommand=scrollbar.set)    
+        self.frame_Table.pack()
 
         m1 = Manager.Manager()
         result = m1.inventoryList()
@@ -223,8 +226,6 @@ class InvortoryGUI:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
-
-    
     def Stack_Filter_close(self):
         self.InvorVal.grab_release()
         StackFilterList.destroy()
@@ -264,25 +265,29 @@ class InvortoryGUI:
 
         self.Frame_stack.pack(fill='both')
         self.Label_title = Label(self.Frame_stack, text="SALES Page", font=("Arial", 15)).place(x=0, y=0)
+        self.Stack_scroll=Frame(self.Frame_stack)
+        self.Stack_scroll.place(x=0, y=30)
 
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
-        self.frame_Table = ttk.Treeview(self.Frame_stack, height=23)
+        self.frame_Table = ttk.Treeview(self.Stack_scroll, height=23)
         self.frame_Table['columns'] = ("ID", "Name",  "Date Purchased")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=100, stretch=NO)
-        self.frame_Table.column("Name", anchor=W, width=600, stretch=NO)
-
+        self.frame_Table.column("Name", anchor=W,width=720,stretch=NO)
         self.frame_Table.column("Date Purchased", anchor=CENTER, width=200, stretch=NO)
         # Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID", text="Invoice No.", anchor=W)
         self.frame_Table.heading("Name", text="Attending Cashier", anchor=W)
-
         self.frame_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
-        self.frame_Table.config(selectmode="browse")
-        self.frame_Table.place(x=0, y=30)
+        scrollbar = ttk.Scrollbar(self.Stack_scroll, orient="vertical", command=self.frame_Table.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.frame_Table.configure(yscrollcommand=scrollbar.set)    
+        self.frame_Table.pack()
+
+
         m1 = Manager.Manager()
         result = m1.productSales()
         count = 0
@@ -718,25 +723,31 @@ class InvortoryGUI:
         self.Label_title = Label(self.Frame_Del, text="Delivery Page", font=("Arial", 15)).place(x=0, y=0)
         self.Button_Receive=Button(self.Frame_Del,text="Receive",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command= self.ClickDelivery_onClick)
         self.Button_Receive.place(x=945,y=0)
+        self.DeliverY_scroll1=Frame(self.Frame_Del)
+        self.DeliverY_scroll1.place(x=0, y=30)
+
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
-        self.frame_Table = ttk.Treeview(self.Frame_Del, height=23)
+        self.frame_Table = ttk.Treeview(self.DeliverY_scroll1, height=23)
         self.frame_Table['columns'] = ("ID", "Name", "Detail", "Price", "Arrival")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=100, stretch=NO)
         self.frame_Table.column("Name", anchor=W, width=550, stretch=NO)
         self.frame_Table.column("Detail", anchor=W, width=150, stretch=NO)
         self.frame_Table.column("Price", anchor=CENTER, width=91, stretch=NO)
-        self.frame_Table.column("Arrival", anchor=E, width=140, stretch=OFF)
+        self.frame_Table.column("Arrival", anchor=CENTER, width=130, stretch=OFF)
         # Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID", text="Batch Code", anchor=W)
         self.frame_Table.heading("Name", text="Vendor Name", anchor=W)
         self.frame_Table.heading("Detail", text="Detail", anchor=W)
         self.frame_Table.heading("Price", text="Total Cost", anchor=CENTER)
-        self.frame_Table.heading("Arrival", text="Arrival Day", anchor=W)
-        self.frame_Table.place(x=0, y=30)
+        self.frame_Table.heading("Arrival", text="Arrival Day", anchor=CENTER)
+        scrollbar = ttk.Scrollbar(self.DeliverY_scroll1, orient="vertical", command=self.frame_Table.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.frame_Table.configure(yscrollcommand=scrollbar.set)    
+        self.frame_Table.pack()
 
         def PO():
             if self.frame_Table.selection()==():
@@ -944,18 +955,20 @@ class InvortoryGUI:
         self.Label_title = Label(self.Frame_Empl, text="Employee Page", font=("Arial", 15)).place(x=0, y=0)
         self.Button_Emplo=Button(self.Frame_Empl,text="Employee Page",padx=5,pady=2,width=10,height=0,bg='#54FA9B',command=self.View_onClick)
         self.Button_Emplo.place(x=945,y=0)
+        self.Employ_scroll1=Frame(self.Frame_Empl)
+        self.Employ_scroll1.place(x=0, y=30)
 
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview")
 
-        self.frame_Table = ttk.Treeview(self.Frame_Empl, height=23)
+        self.frame_Table = ttk.Treeview(self.Employ_scroll1, height=23)
         self.frame_Table['columns'] = ("ID", "Name", "Username", "Detail")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=98, stretch=NO)
         self.frame_Table.column("Name", anchor=W, width=420, stretch=NO)
         self.frame_Table.column("Username", anchor=W, width=280, stretch=NO)
-        self.frame_Table.column("Detail", anchor=CENTER, width=230, stretch=NO)
+        self.frame_Table.column("Detail", anchor=CENTER, width=220, stretch=NO)
 
         # Table Head
         self.frame_Table.heading("#0")
@@ -963,7 +976,10 @@ class InvortoryGUI:
         self.frame_Table.heading("Name", text="Name", anchor=W)
         self.frame_Table.heading("Username", text="Username", anchor=W)
         self.frame_Table.heading("Detail", text="Role", anchor=CENTER)
-        self.frame_Table.place(x=0, y=30)
+        scrollbar = ttk.Scrollbar(self.Employ_scroll1, orient="vertical", command=self.frame_Table.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.frame_Table.configure(yscrollcommand=scrollbar.set)    
+        self.frame_Table.pack()
 
         m1 = Manager.Manager()
         result = m1.viewEMPList()
@@ -1934,9 +1950,8 @@ class InvortoryGUI:
             self.export_Table.heading("Total Price", text="Total Price", anchor=W)
             self.export_Table.heading("Discount", text="Discount", anchor=W)
             self.export_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
-            scrollbar = ttk.Scrollbar(Table_BOX, orient="vertical", command=self.export_Table)
+            scrollbar = ttk.Scrollbar(Table_BOX, orient="vertical", command=self.export_Table.yview)
             scrollbar.pack(side="right", fill="y")
-
             self.export_Table.configure(yscrollcommand=scrollbar.set)    
             self.export_Table.pack()
 

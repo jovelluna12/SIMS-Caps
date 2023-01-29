@@ -66,19 +66,25 @@ class GUI():
         self.dashboardGUI.resizable(False,False)
         self.employeePage = Label(self.dashboardGUI, text=f"Employee Page", font=("Arial", 40)).place(x=230, y=12)
 
-        self.tv = Treeview(self.dashboardGUI, height= 20)
+        self.scroll_CP=Frame(self.dashboardGUI)
+        self.scroll_CP.place(x=230, y=90)
+        
+        self.tv = Treeview(self.scroll_CP, height= 20)
         self.tv['columns']=('ID','Name', 'Date', 'Working Time')
         self.tv.column('#0', width=0, stretch=NO)
         self.tv.column('ID', anchor=CENTER, width=190)
         self.tv.column('Name', anchor=CENTER, width=190)
         self.tv.column('Date', anchor=CENTER, width=190)
-        self.tv.column('Working Time', anchor=CENTER, width=190)
+        self.tv.column('Working Time', anchor=CENTER, width=180)
         self.tv.heading('#0', text='', anchor=CENTER)
         self.tv.heading('ID', text='ID', anchor=CENTER)
         self.tv.heading('Name', text='Name', anchor=CENTER)
         self.tv.heading('Date', text='Date', anchor=CENTER)
         self.tv.heading('Working Time', text='Working Time', anchor=CENTER)
-        self.tv.place(x=230, y=90)
+        scrollbar = ttk.Scrollbar(self.scroll_CP, orient="vertical", command=self.tv.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.tv.configure(yscrollcommand=scrollbar.set)    
+        self.tv.pack()
 
         self.logoutButton = Button(self.dashboardGUI, text="Logout", command=self.logout, width=10, font=("Arial", 15), bg='#54FA9B').place(x=50, y=535) 
         
