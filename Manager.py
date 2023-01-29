@@ -190,15 +190,30 @@ class Manager (Employee.Employee):
         result = dbcursor.fetchall()
         return result
 
+    def check_hasReturnGoods(self,id):
+        query="SELECT * FROM return_to_sender WHERE BatchCode=%s;"
+        dbcursor = self.dbcursor
+        dbcursor.execute(query,(id[0],))
+        result = dbcursor.fetchall()
+        
+        return result
 
-    
 
     def getPO_Items(self,id):
         # query="SELECT delivery_items.id, products.ProductName, products.price, delivery_items.qty, delivery_items.qty_in, delivery_items.qty_out, delivery_items.remark FROM delivery_items,products WHERE delivery_items.list=%s AND delivery_items.list=products.batch_code;"
         # query="SELECT products.ProductID, products.ProductName, products.price, products.quantity, delivery_items.qty_in, delivery_items.qty_out, return_to_sender.remarks FROM products,delivery_items,return_to_sender,deliverylist WHERE products.ProductID=return_to_sender.ProductID AND products.batch_code=%s and products.batch_code=return_to_sender.BatchCode GROUP BY products.ProductID;"
         query="SELECT products.ProductID, products.ProductName, products.price, delivery_items.qty, delivery_items.qty_in, delivery_items.qty_out, return_to_sender.remarks FROM products,delivery_items,return_to_sender,deliverylist WHERE products.ProductID=return_to_sender.ProductID AND products.batch_code=%s and products.batch_code=return_to_sender.BatchCode AND delivery_items.Product_Id=products.ProductID GROUP BY delivery_items.Product_Id;"
+        query2="SELECT products.ProductID, products.ProductName, products.price, delivery_items.qty, delivery_items.qty_in, delivery_items.qty_out FROM products,delivery_items,return_to_sender,deliverylist WHERE  products.batch_code=237 and delivery_items.Product_Id=products.ProductID and deliverylist.BatchCode=delivery_items.list"
+        query3="SELECT ProductID,ProductName,price,quantity,delivery_items.qty_in,delivery_items.qty_out,delivery_items.remark FROM products,deliverylist,delivery_items WHERE products.batch_code=%s AND deliverylist.BatchCode=products.batch_code AND products.batch_code=delivery_items.list GROUP BY ProductID;"
         dbcursor = self.dbcursor
-        dbcursor.execute(query,(id[0],))
+        # que=self.check_hasReturnGoods(id)
+        # if que==0:
+        #     print('if')
+        #     dbcursor.execute(query2,(id[0],))
+        # else:
+        #     print('else')
+        dbcursor.execute(query3,(id[0],))
+
         result = dbcursor.fetchall()
         return result
 
