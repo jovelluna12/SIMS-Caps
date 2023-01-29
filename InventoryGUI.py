@@ -233,24 +233,24 @@ class InvortoryGUI:
         global filter_from, filter_to,filter,batch,StackFilterList
         StackFilterList=Toplevel(self.InvorVal)
         StackFilterList.title("Filter out Results")
-        StackFilterList.geometry("480x340")
+        StackFilterList.geometry("480x220")
         StackFilterList.resizable(False,False)
         StackFilterList.protocol("WM_DELETE_WINDOW",self.Stack_Filter_close)
         StackFilterList.grab_set()
 
         Label(StackFilterList,text="LIST FILTER",font=("Arial", 35, "bold")).place(x=10,y=10)
-        Label(StackFilterList,text="Use the following settings to Filter out the Results by Date.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=33,y=80)
+        Label(StackFilterList,text="Use the following settings to Filter out the Results by Date.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=10,y=80)
 
-        Label(StackFilterList,text="Recorded From :").place(x=33,y=230)
+        Label(StackFilterList,text="Recorded From :").place(x=10,y=140)
         filter_from = DateEntry(StackFilterList) 
-        filter_from.place(x=140, y=230)
+        filter_from.place(x=100, y=140)
 
-        Label(StackFilterList,text="Recorded To :").place(x=33,y=260)
+        Label(StackFilterList,text="Recorded To :").place(x=210,y=140)
         filter_to = DateEntry(StackFilterList) 
-        filter_to.place(x=140, y=260)
+        filter_to.place(x=290, y=140)
             
-        Button(StackFilterList,text="Filter",bg="green",command=self.Stack_Filter).place(x=340,y=300)
-        Button(StackFilterList,text="Cancel",command=self.Stack_Filter_close).place(x=390,y=300)
+        Button(StackFilterList,text="Filter",bg="green",command=self.Stack_Filter).place(x=340,y=175)
+        Button(StackFilterList,text="Cancel",command=self.Stack_Filter_close).place(x=390,y=175)
         
     def Click_Stack(self):
         self.button_List.config(state="normal")
