@@ -458,11 +458,13 @@ class InvortoryGUI:
                             qtyIN.append(qtyyy)
                             item_names.append(name)
                             price_list.append(priceeee)
-                            remainBal=prod.getRemainingBal(id)
-                            if remainBal==0:
+                            remainBal=prod.getRemainingBal(name)
+                            if remainBal is None:
                                 remainBal=qtyyy
                             else:
-                                remain.append(remainBal)
+                                remainBal=remainBal[i][0]+qtyyy
+                                # remain.append(remainBal[i][0]+qtyyy)
+
                             date_list.append(datee)
                             prod.editDelivery(id, name, priceeee, qtyyy, datee)
                             today=datetime.now().strftime("%Y-%m-%d")
@@ -470,9 +472,7 @@ class InvortoryGUI:
                             prod.Inventory(ite,'Inventory')
                             prod.delivery_qtyIN(qtyyy,batch)
 
-
                             i+=1
-
 
                             return_goods=list(zip(idd_list,batch_list,ref_list,QtyDif_list,remark_list))
                             return2=list(zip(QtyDif_list,batch_list))
@@ -1890,7 +1890,7 @@ class InvortoryGUI:
             btn = self.btn_Notification
             frame = self.Add_Notify
             self.Add_Notify.protocol("WM_DELETE_WINDOW", self.Add_Notify_on_close)
-            self.Add_Notify.title("Export to Spreadsheet")
+            self.Add_Notify.title("View")
             self.Add_Notify.geometry("1000x583")
             self.Add_Notify.resizable(False,False)
             self.Add_Notify.wm_attributes("-topmost", 1)
@@ -1906,6 +1906,7 @@ class InvortoryGUI:
             Label(self.Add_Notify, text="Select What to View").place(x=20, y=90)
             reports = ttk.Combobox(self.Add_Notify, width=20)
             reports.place(x=20, y=110)
+            
             reports['values'] = ("Inventory")
             
             # Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)

@@ -79,8 +79,10 @@ class VDL:
         res=emp.getPO_Items(id)
 
         count=0
+        total1=[]
         for item in range(len(res)):
             total=res[item][3]-res[item][5]
+            total1.append(res[item][2]*total)
             QTYIN_Table.insert('',index='end', iid=count,values=(res[item][0],res[item][1],res[item][2],res[item][3],res[item][4],res[item][5],res[item][6],res[item][3]-res[item][5],res[item][2]*total))
             count+=1
 
@@ -89,7 +91,7 @@ class VDL:
         GLabel_450=tk.Label(root,text="Purchase Details: ",font=('Arial',15),justify=LEFT)
         GLabel_450.place(x=600,y=440)
 
-        GLabel_170=tk.Label(root,text="Gross Amount: PHP {:.2f}".format(res[0]),font=('Arial',10),justify=LEFT)
+        GLabel_170=tk.Label(root,text="Gross Amount: PHP {:.2f}".format(sum(total1)),font=('Arial',10),justify=LEFT)
         GLabel_170.place(x=600,y=470)
         
         GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(res[1]),font=('Arial',10),justify=LEFT)
@@ -119,11 +121,10 @@ class VDL:
         Vendor_Email.place(x=10,y=530)
 
         Vendor_Ship=tk.Label(root,text="Shipping Fee: "+str(res1[4]),font=('Arial',10),justify=LEFT)
-        Vendor_Ship.place(x=600,y=550)
+        Vendor_Ship.place(x=600,y=530)
 
-
-        GLabel_524=tk.Label(root,text="NET Amount: PHP {:.2f}".format(res[3]-res1[4]),font=('Arial',10),justify=LEFT)
-        GLabel_524.place(x=600,y=530)
+        GLabel_524=tk.Label(root,text="NET Amount: PHP {:.2f}".format(float(sum(total1))-float(res[2])-float(res1[4])),font=('Arial',10),justify=LEFT)
+        GLabel_524.place(x=600,y=550)
 
 
 # if __name__=="__main__":

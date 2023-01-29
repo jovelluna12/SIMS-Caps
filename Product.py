@@ -98,10 +98,8 @@ class product:
         dbcursor.execute(query,(id,))
         result=dbcursor.fetchall()
         res=dbcursor.rowcount
-        if res==0:
-            return 0
-        else:
-            return result
+        print(result)
+        return result
 
     def Inventory(self,items,InventType):
         dbcursor = self.dbcursor
