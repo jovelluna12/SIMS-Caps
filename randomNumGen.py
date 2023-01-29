@@ -17,6 +17,21 @@ def generateNum():
             continue
     return PurchaseID, InvoiceNumber
 
+def generateInvoice():
+    InvoiceNumber = random.randint(1, 9999)
+    query = "SELECT salestransaction.InvoiceNumber from salestransaction"
+    dbcursor = dbConnector.db.cursor()
+    dbcursor.execute(query)
+    result = dbcursor.fetchall()
+
+    for x in result:
+        if InvoiceNumber==x:
+            InvoiceNumber = random.randint(1, 9999)
+            break
+        else:
+            continue
+    return InvoiceNumber
+    
 def generateID():
     ID = random.randint(1, 9999)
     query = "SELECT ProductCode from productsindelivery"

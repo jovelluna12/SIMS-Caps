@@ -59,12 +59,12 @@ class Employee:
         return result
 
 
-    def addNewTransaction(self,TotalPrice,discount_SC_PWD,Discount,cash,change,attendedBy,items):
+    def addNewTransaction(self,TotalPrice,discount_SC_PWD,Discount,cash,change,attendedBy,items,invoice):
         PurchaseID, InvoiceNumber = randomNumGen.generateNum()
 
         dbcursor=self.cursor
         query1="insert into salestransaction (InvoiceNumber,TotalPrice,PWD_SC_Disc,Custom_Discount,Cash,calculated_change,attendedBy) values (%s,%s,%s,%s,%s,%s,%s)"
-        values=(InvoiceNumber,TotalPrice,discount_SC_PWD,Discount,cash,change,attendedBy)
+        values=(invoice,TotalPrice,discount_SC_PWD,Discount,cash,change,attendedBy)
         dbcursor.execute(query1,values)
 
         query2="insert into purchasedproducts values (%s,%s,%s,%s,%s)"
@@ -78,7 +78,7 @@ class Employee:
         query3="update products set quantity=quantity-%s where ProductName LIKE %s and ProductID=%s"
         for x in range(len(item)):
             PurchaseID=randomNumGen.generatePurchaseID()
-            items=(PurchaseID,item[x],quantity[x],InvoiceNumber,id[x])
+            items=(PurchaseID,item[x],quantity[x],invoice,id[x])
             dbcursor.execute(query2,items)
             query3val=(quantity[x],item[x],id[x])
             dbcursor.execute(query3,query3val)

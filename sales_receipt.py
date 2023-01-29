@@ -8,6 +8,7 @@ import Employee, Product
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+import randomNumGen
 
 class App:
     def __init__(self,discount,custom_discount,user_id, item_tuple):
@@ -40,6 +41,11 @@ class App:
 
         GLabel_459=tk.Label(root,text="Date Ordered: "+str(datetime.today().strftime('%Y-%m-%d')),font=('Arial',15),justify=LEFT)
         GLabel_459.place(x=20,y=120)
+        
+        global invo
+        invo=randomNumGen.generateInvoice()
+        GLabel_459=tk.Label(root,text="Invoice: "+str(invo),font=('Arial',15),justify=LEFT)
+        GLabel_459.place(x=400,y=120)
 
         style=ttk.Style()
         style.theme_use("default")
@@ -77,10 +83,7 @@ class App:
             count+=1
             subtotal=subtotal+float(item_tuple[item][2])*float(item_tuple[item][1])
 
-
-        print(total1)
-        
-       
+         
         emp=Employee.Employee()
         CashName=emp.getEmployee_Name(user_id)
         GLabel_450=tk.Label(root,text="Cashier: "+str(CashName[0]),font=('Arial',15),justify=LEFT)
@@ -121,7 +124,7 @@ class App:
         e = Employee.Employee()
         p=Product.product()
         discount_SC_PWD=disc1
-        e.addNewTransaction(finalprice, discount_SC_PWD,disc,amount,change, u_id, items)
+        e.addNewTransaction(finalprice, discount_SC_PWD,disc,amount,change, u_id, items,invo)
         ite=frame_Table.get_children()
         for i in range(len(ite)):
             rem=p.getRemainingBal(items[i][0])
