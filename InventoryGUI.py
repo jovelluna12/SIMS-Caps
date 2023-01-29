@@ -209,7 +209,7 @@ class InvortoryGUI:
         fromm=datetime.strptime(filter_from.get_date().strftime("%Y-%m-%d"), "%Y-%m-%d")
         to=datetime.strptime(filter_to.get_date().strftime("%Y-%m-%d"), "%Y-%m-%d")
         for item in self.frame_Table.get_children():
-            item_date=datetime.strptime(self.frame_Table.item(item)['values'][3], "%Y-%m-%d")
+            item_date=datetime.strptime(self.frame_Table.item(item)['values'][2], "%Y-%m-%d")
             if item_date<fromm or item_date>to:
                 self.frame_Table.delete(item)
 
@@ -269,17 +269,17 @@ class InvortoryGUI:
         style.theme_use("default")
         style.configure("Treeview")
         self.frame_Table = ttk.Treeview(self.Frame_stack, height=23)
-        self.frame_Table['columns'] = ("ID", "Name",  "Sales", "Date Purchased")
+        self.frame_Table['columns'] = ("ID", "Name",  "Date Purchased")
         self.frame_Table.column("#0", width=0, stretch=NO)
         self.frame_Table.column("ID", anchor=W, width=100, stretch=NO)
         self.frame_Table.column("Name", anchor=W, width=600, stretch=NO)
-        self.frame_Table.column("Sales", anchor=E, width=130, stretch=NO)
+
         self.frame_Table.column("Date Purchased", anchor=CENTER, width=200, stretch=NO)
         # Table Head
         self.frame_Table.heading("#0")
         self.frame_Table.heading("ID", text="Invoice No.", anchor=W)
         self.frame_Table.heading("Name", text="Attending Cashier", anchor=W)
-        self.frame_Table.heading("Sales", text="Sales", anchor=W)
+
         self.frame_Table.heading("Date Purchased", text="Date Purchased", anchor=W)
         self.frame_Table.config(selectmode="browse")
         self.frame_Table.place(x=0, y=30)

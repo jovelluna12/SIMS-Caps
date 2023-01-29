@@ -58,7 +58,9 @@ class App:
         res=emp.get_itemsSold(invoice_id)
         count=0
         subtotal=float(0)
+        total1=[]
         for item in res:
+            total1.append(item[-1])
             frame_Table.insert('',index='end',iid=count,text=item, values=item)
             count+=1
             subtotal+=float(item[-1])
@@ -73,7 +75,7 @@ class App:
 
         VAT=0.12*subtotal
 
-        GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(subtotal),font=('Arial',10),justify=LEFT)
+        GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(sum(total1)),font=('Arial',10),justify=LEFT)
         GLabel_170.place(x=350,y=460)
         
         GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(VAT),font=('Arial',10),justify=LEFT)
@@ -87,7 +89,7 @@ class App:
         GLabel_523=tk.Label(root,text="LESS: Other Discounts: PHP {:.2f}".format(details[0][2]),font=('Arial',10),justify=LEFT)
         GLabel_523.place(x=350,y=520)
 
-        GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}".format(details[0][0]),font=('Arial',10),justify=LEFT)
+        GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}".format(sum(total1)-details[0][1]-details[0][2]),font=('Arial',10),justify=LEFT)
         GLabel_524.place(x=350,y=540)
 
         GLabel_525=tk.Label(root,text="Cash: PHP {:.2f}".format(details[0][4]),font=('Arial',10),justify=LEFT)
