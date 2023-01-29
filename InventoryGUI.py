@@ -1070,7 +1070,9 @@ class InvortoryGUI:
 
     def Add_Deliveries(self):
         global PageOpen
+        self.CVendor.wm_attributes("-topmost", 0)
         self.Add_Delivery.wm_attributes("-topmost", 0)
+        self.Frame_Del.pack_forget()
         if messagebox.askokcancel('Confirm', 'Save?'):
             if 'batch_code' not in locals():
                 batch_code = randomNumGen.generateBatchCode()
@@ -1124,7 +1126,7 @@ class InvortoryGUI:
             self.Add_Del['bg']='#54FA9B'
             PageOpen=1
             self.Add_Delivery.destroy()
-            
+            self.Frame_Del.pack()
         else:
             self.Add_Delivery.wm_attributes("-topmost", 1)
 
