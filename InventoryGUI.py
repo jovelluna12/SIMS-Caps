@@ -204,6 +204,26 @@ class InvortoryGUI:
         for x in result:
             count += 1
             self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+    def Stack_Filter(self):
+        fromm=datetime.strptime(filter_from.get_date().strftime("%Y-%m-%d"), "%Y-%m-%d")
+        to=datetime.strptime(filter_to.get_date().strftime("%Y-%m-%d"), "%Y-%m-%d")
+        for item in self.frame_Table.get_children():
+            item_date=datetime.strptime(self.frame_Table.item(item)['values'][3], "%Y-%m-%d")
+            if item_date<fromm or item_date>to:
+                self.frame_Table.delete(item)
+
+
+    def Stack_clearFilter(self):
+        self.frame_Table.delete(*self.frame_Table.get_children())
+        m1 = Manager.Manager()
+        result = m1.productSales()
+        count = 0
+        for x in result:
+            count += 1
+            self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
+
+
     
     def Stack_Filter_close(self):
         self.InvorVal.grab_release()
@@ -219,48 +239,18 @@ class InvortoryGUI:
         StackFilterList.grab_set()
 
         Label(StackFilterList,text="LIST FILTER",font=("Arial", 35, "bold")).place(x=10,y=10)
-        Label(StackFilterList,text="Use the following settings to Filter out the Results.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=33,y=80)
-        Label(StackFilterList,text="Select Filter:").place(x=33,y=150)
-        filter = ttk.Combobox(StackFilterList,width=10,state='readonly')
-        filter.place(x=100, y=150)
-        filter.set("None")
-        filter["values"]=("None","In Transit","On Hand")
-
-        Label(StackFilterList,text="Select Batch:").place(x=277,y=150)
-        batch = ttk.Combobox(StackFilterList,width=10,state='readonly')
-        batch.place(x=350, y=150)
-
-        prod=Product.product()
-        res=prod.get_batch_Codes()
-        batch_list=[x[0] for x in res]
-        batch_list.insert(0,"None")
-        batch.set("None")
-        batch["values"]=(batch_list)
-
-        def no_sel():
-            filter_from.config(state='disabled')
-            filter_to.config(state='disabled')
-
-        def sel():
-            filter_from.config(state='normal')
-            filter_to.config(state='normal')
-
-        var=IntVar()
-        var.set(0)
-        Label(StackFilterList,text="Configure Date Parameters").place(x=33,y=180)
-        Radiobutton(StackFilterList,text="No Parameters",variable=var,value=0,command=no_sel).place(x=100,y=200)
-        Radiobutton(StackFilterList,text="Allow Date",variable=var,value=1,command=sel).place(x=230,y=200)
+        Label(StackFilterList,text="Use the following settings to Filter out the Results by Date.\nYou can clear this settings Later on.",font=("Arial", 12, "bold")).place(x=33,y=80)
 
         Label(StackFilterList,text="Recorded From :").place(x=33,y=230)
-        filter_from = DateEntry(StackFilterList,state='disabled') 
+        filter_from = DateEntry(StackFilterList) 
         filter_from.place(x=140, y=230)
 
         Label(StackFilterList,text="Recorded To :").place(x=33,y=260)
-        filter_to = DateEntry(StackFilterList,state='disabled') 
+        filter_to = DateEntry(StackFilterList) 
         filter_to.place(x=140, y=260)
             
-        Button(StackFilterList,text="Filter",bg="green",command=self.filter_results).place(x=340,y=300)
-        Button(StackFilterList,text="Cancel",command=self.Filter_close).place(x=390,y=300)
+        Button(StackFilterList,text="Filter",bg="green",command=self.Stack_Filter).place(x=340,y=300)
+        Button(StackFilterList,text="Cancel",command=self.Stack_Filter_close).place(x=390,y=300)
         
     def Click_Stack(self):
         self.button_List.config(state="normal")
@@ -331,17 +321,7 @@ class InvortoryGUI:
         btn_filter1=Button(self.Frame_stack,text="Filters",bg="green",command=self.Stack_filter_GUI)
         btn_filter1.place(x=830, y=0)
 
-        def clear_filter():
-            # m1 = Manager.Manager()
-            # result = m1.inventoryList()
-            # self.frame_Table.delete(*self.frame_Table.get_children())
-            # count = 0
-            # for x in result:
-            #     count += 1
-            #     self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
-            print("this")
-
-        btn_filter_clear=Button(self.Frame_stack,text="Clear Filters",command=lambda: clear_filter())
+        btn_filter_clear=Button(self.Frame_stack,text="Clear Filters",command= self.Stack_clearFilter)
         btn_filter_clear.place(x=880, y=0)
 
         View_button=Button(self.Frame_stack,text="View",command=lambda: view_sales()).place(x=980,y=0)
