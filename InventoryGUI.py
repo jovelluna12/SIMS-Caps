@@ -458,11 +458,14 @@ class InvortoryGUI:
                             qtyIN.append(qtyyy)
                             item_names.append(name)
                             price_list.append(priceeee)
+                            print(name)
                             remainBal=prod.getRemainingBal(name)
                             if remainBal is None:
                                 remainBal=qtyyy
                             else:
+                                print(remainBal)
                                 remainBal=remainBal[i][0]+qtyyy
+
                                 # remain.append(remainBal[i][0]+qtyyy)
 
                             date_list.append(datee)
@@ -1076,7 +1079,7 @@ class InvortoryGUI:
             NETamount=GrossAmount-Discount
 
             values = (batch_code, VendID,ShipMean,GrossAmount,VAT,Discount,NETamount,order_date, arrival_date, 'In Transit')
-            print(item_tuple)
+
             # delivery_item_tuple = list(
                 # zip(batch_code_list,ProductID_list,quantity_list,"-","-","-"))
             
