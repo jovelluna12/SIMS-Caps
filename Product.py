@@ -70,8 +70,6 @@ class product:
         query = "INSERT INTO products (ProductID,ProductName,Quantity,price,batch_code,status) VALUES(%s,%s,%s,%s,%s,%s)"
 
         vals=tuple(list(vals))
-        print(type(vals))
-        print(vals)
 
         dbcursor.executemany(query, vals)
         dbConnector.db.commit()
@@ -96,13 +94,10 @@ class product:
 
     def getRemainingBal(self,id):
         dbcursor = self.dbcursor
-        print(id)
         query="SELECT qty FROM products_onhand WHERE item=%s;"
         dbcursor.execute(query,(id,))
         result=dbcursor.fetchall()
         res=dbcursor.rowcount
-        print(result)
-        print(res)
         if res==0:
             return 0
         else:
@@ -121,9 +116,7 @@ class product:
         print(result)
 
         if result !=0 and InventType=='Sale':
-            print('s')
             query="UPDATE products_onhand SET qty=qty-%s WHERE item=%s"
-            print(items[4],items[0])
             dbcursor.execute(query, (items[5],items[0]))
         elif result !=0 and InventType=='Inventory':
             query="UPDATE products_onhand SET qty=qty+%s WHERE item=%s"
@@ -167,7 +160,7 @@ class product:
     def addto_DeliveryItems(self,items):
         dbcursor = self.dbcursor
         query="INSERT INTO delivery_items (list,Product_Id,	qty,qty_in,	qty_out,remark) VALUES(%s,%s,%s,%s,%s,%s)"
-        dbcursor.executemany(query,items)
+        dbcursor.execute(query,items)
         dbConnector.db.commit()
 
     def addMany_Del(self,vals):

@@ -191,7 +191,9 @@ class Manager (Employee.Employee):
         return result
 
     def getPO_Items(self,id):
-        query="SELECT delivery_items.id, products.ProductName, products.price, delivery_items.qty, delivery_items.qty_in, delivery_items.qty_out, delivery_items.remark FROM delivery_items,products WHERE delivery_items.list=%s AND delivery_items.list=products.batch_code;"
+        # query="SELECT delivery_items.id, products.ProductName, products.price, delivery_items.qty, delivery_items.qty_in, delivery_items.qty_out, delivery_items.remark FROM delivery_items,products WHERE delivery_items.list=%s AND delivery_items.list=products.batch_code;"
+        # query="SELECT products.ProductID, products.ProductName, products.price, products.quantity, delivery_items.qty_in, delivery_items.qty_out, return_to_sender.remarks FROM products,delivery_items,return_to_sender,deliverylist WHERE products.ProductID=return_to_sender.ProductID AND products.batch_code=%s and products.batch_code=return_to_sender.BatchCode GROUP BY products.ProductID;"
+        query="SELECT products.ProductID, products.ProductName, products.price, delivery_items.qty, delivery_items.qty_in, delivery_items.qty_out, return_to_sender.remarks FROM products,delivery_items,return_to_sender,deliverylist WHERE products.ProductID=return_to_sender.ProductID AND products.batch_code=%s and products.batch_code=return_to_sender.BatchCode AND delivery_items.Product_Id=products.ProductID GROUP BY delivery_items.Product_Id;"
         dbcursor = self.dbcursor
         dbcursor.execute(query,(id[0],))
         result = dbcursor.fetchall()

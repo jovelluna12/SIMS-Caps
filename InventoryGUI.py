@@ -979,6 +979,7 @@ class InvortoryGUI:
         order_date_list.append(order_date)
         status_list.append("In Transit")
         ref_id_list.append(ref_id[0])
+        print(ProdName)
 
         self.frame_Table.insert(parent='', index='end', iid=ProductIDD,
                                 text=(ProductIDD, ProdName, price, quantity, date, expiry_date),
@@ -1022,16 +1023,18 @@ class InvortoryGUI:
             NETamount=GrossAmount-Discount
 
             values = (batch_code, VendID,ShipMean,GrossAmount,VAT,Discount,NETamount,order_date, arrival_date, 'In Transit')
-
-            delivery_item_tuple = list(
-                zip(batch_code_list,ProductID_list,quantity_list,"-","-","-"))
-
+            print(item_tuple)
+            # delivery_item_tuple = list(
+                # zip(batch_code_list,ProductID_list,quantity_list,"-","-","-"))
+            
             # inventoryTUPLE=list(zip(ProdName_list,price_list,date_list,'-',quantity_list,'-','-'))
 
             b = Product.product()
             b.add_deliveryBatch(values)
             b.addMany_Del(item_tuple)
-            b.addto_DeliveryItems(delivery_item_tuple)
+            # print(delivery_item_tuple)
+            for item in item_tuple:
+                b.addto_DeliveryItems((item[6],item[0],item[3],"-","-","-"))
             # b.Inventory(inventoryTUPLE)
 
             self.frame_Table.delete(*self.frame_Table.get_children())
