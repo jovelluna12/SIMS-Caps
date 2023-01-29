@@ -1853,8 +1853,8 @@ class InvortoryGUI:
             reports['values'] = ("Inventory")
             
             # Label(self.Add_Notify, text="Click this Button to Start Exporting").place(x=550, y=100)
-            export = Button(self.Add_Notify, text="View Inventory", state='disabled')
-            export.place(x=890, y=105)
+            # export = Button(self.Add_Notify, text="View Inventory", state='disabled')
+            # export.place(x=890, y=105)
 
             Table_BOX=Frame(self.Add_Notify,highlightbackground="black", highlightthickness=3)
             Table_BOX.place(x=0,y=140,relwidth=1.0,relheight=0.76)
@@ -1974,7 +1974,7 @@ class InvortoryGUI:
 
             
             def reports_callback(event):
-                export.config(state='normal',command=lambda:export_report())
+                # export.config(state='normal',command=lambda:export_report())
                 self.export_Table.delete(*self.export_Table.get_children())
                 report_type = reports.get()
 
@@ -2019,6 +2019,7 @@ class InvortoryGUI:
                     self.export_Table.pack()
 
                 elif report_type == 'Inventory':
+                    global filterrT
                     try:
                         Filterbutton.place_forget()
                         Clear_Filterbutton.place_forget()
@@ -2035,12 +2036,12 @@ class InvortoryGUI:
                     filterrT.set("None")
                     filterrT["values"]=[x[1] for x in res]
 
-                    Button(self.Add_Notify,text="Filter",bg="green",command=self.Inven_filter_results).place(x=540,y=110)
+                    # Button(self.Add_Notify,text="Filter",bg="green",command=self.Inven_filter_results).place(x=540,y=110)
 
-                    Inven_Filterbutton=Button(self.Add_Notify,text="Inventory Filter",command=self.Inven_Filter_GUI)
-                    Inven_Filterbutton.place(x=700, y=105)
+                    Inven_Filterbutton=Button(self.Add_Notify,text="Inventory Filter",bg="green",command=self.Inven_filter_results)
+                    Inven_Filterbutton.place(x=525, y=105)
                     Inven_Clear_Filterbutton=Button(self.Add_Notify,text="Clear Filters",command=self.Del_ClearFilter)
-                    Inven_Clear_Filterbutton.place(x=810, y=105)
+                    Inven_Clear_Filterbutton.place(x=630, y=105)
                     self.export_Table['columns'] = ('Reference ID', "Item", "Price","DATEIN","DATEOUT","QTYIN","QTYOUT","Remaining Quantity")
                     self.export_Table.column("#0", width=0, stretch=NO)
                     self.export_Table.column("Reference ID", anchor=W,width=30)
