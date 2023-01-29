@@ -314,7 +314,7 @@ class InvortoryGUI:
                     self.frame_Table.insert(parent='', index='end', iid=count, text=x, values=x)
 
 
-        Search=Label(self.Frame_stack,text="Receipt ID:").place(x=500,y=4)
+        Search=Label(self.Frame_stack,text="Invoice No:").place(x=500,y=4)
         Search_Entry=Entry(self.Frame_stack,width=30)
         Search_Entry.place(x=580,y=4)
         Search_button=Button(self.Frame_stack,text="Search",command=lambda: search_sales()).place(x=780,y=0)

@@ -7,6 +7,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import sales_receipt
 
+
 def start(m,id,user,time):
     if time=="Not Yet Timed In":
         messagebox.showerror("Not Timed In!","Please Time In First")
@@ -564,25 +565,32 @@ def payment():
             Discount_LBL.place(x=25,y=50)
             Event_LBL.place(x=25,y=120)
             Discount_Entry.place(x=25,y=140)
-
+    
             def conclude_sales():
+                frame_Table.delete(*frame_Table.get_children())
+
                 global PageOpen
                 PageOpen=1
                 windowASK.grab_release()
                 disc_entry=Discount_Entry.get()
                 windowASK.destroy()
                 new_Item_Tuple=list(zip(itemsLIST, quantityLIST,priceList,ProdCodee))
+                itemsLIST.clear()
+                quantityLIST.clear()
+                priceList.clear()
+                ProdCodee.clear()
                 sales_receipt.App( disc_StringVar.get(),disc_entry,user_id, new_Item_Tuple)
-                
-            # Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
-            # Entry_Amount.place(x=25,y=90)
+                new_Item_Tuple()
+                    # Entry_Amount = Entry(windowPay, width=30, borderwidth=3,state="disabled")
+                    # Entry_Amount.place(x=25,y=90)
+
             global button_Quantity
             button_Quantity = Button(windowPay, text="Enter", padx=5, pady=5, command= lambda: conclude_sales())
             button_Quantity.place(x=88,y=172)
             
         else:
             messagebox.showerror("Payment", "No Item Selected")
-        PageOpen+=1
+            PageOpen+=1
     else:
         messagebox.showinfo("Error","The Window already Open!")
 

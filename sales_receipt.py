@@ -9,8 +9,6 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 
-
-
 class App:
     def __init__(self,discount,custom_discount,user_id, item_tuple):
         global root,u_id,items, discounted,discounted_custom,disc1,disc,sub,amount
@@ -20,6 +18,7 @@ class App:
         discounted_custom=custom_discount
         sub=self.computeSubtotal()
         disc1,disc=self.determineDiscount()
+        # amount,change=self.Payment_GUI(sub)
         amount,change=self.calculate(sub)
 
         root = tk.Tk()
@@ -67,14 +66,19 @@ class App:
         scrollbar.place(relx=1.0, rely=0.0, anchor="ne")
         frame_Table.configure(yscrollcommand=scrollbar.set)
         frame_Table.place(x=0,y=0,width=530,height=300)
-        
+
         global subtotal
         count=0
         subtotal=0
+        total1=[]
         for item in range(len(item_tuple)):
+            total1.append(float(item_tuple[item][2])*int(item_tuple[item][1]))
             frame_Table.insert('',index='end',iid=count,values=(item_tuple[item][0],item_tuple[item][2],item_tuple[item][1],float(item_tuple[item][2])*int(item_tuple[item][1])))
             count+=1
             subtotal=subtotal+float(item_tuple[item][2])*float(item_tuple[item][1])
+
+
+        print(total1)
         
        
         emp=Employee.Employee()
@@ -82,10 +86,10 @@ class App:
         GLabel_450=tk.Label(root,text="Cashier: "+str(CashName[0]),font=('Arial',15),justify=LEFT)
         GLabel_450.place(x=20,y=470)
 
-        GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(subtotal),font=('Arial',10),justify=LEFT)
+        GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(sum(total1)),font=('Arial',10),justify=LEFT)
         GLabel_170.place(x=350,y=470)
 
-        VAT=int(os.getenv('VAT'))/100*subtotal
+        VAT=int(os.getenv('VAT'))/100*sum(total1)
         
         GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(VAT),font=('Arial',10),justify=LEFT)
         GLabel_139.place(x=350,y=490)
@@ -99,7 +103,7 @@ class App:
         global finalprice
         finalprice=subtotal-disc1-disc
 
-        GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}".format(finalprice),font=('Arial',10),justify=LEFT)
+        GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}".format(sum(total1)-disc1-disc),font=('Arial',10),justify=LEFT)
         GLabel_524.place(x=350,y=550)
 
         GLabel_525=tk.Label(root,text="Cash: PHP {:.2f}".format(amount),font=('Arial',10),justify=LEFT)
@@ -112,6 +116,7 @@ class App:
 
         root.mainloop()
 
+
     def close(self):
         e = Employee.Employee()
         p=Product.product()
@@ -119,13 +124,17 @@ class App:
         e.addNewTransaction(finalprice, discount_SC_PWD,disc,amount,change, u_id, items)
         ite=frame_Table.get_children()
         for i in range(len(ite)):
-        # print(ite)
-            # print(items)
-            # code=items[i][0]
             rem=p.getRemainingBal(items[i][0])
             rem=[x[0] for x in rem]
             InventItems=(items[i][0],items[i][2],'-',datetime.today().strftime('%Y-%m-%d'),'-',items[i][1],rem[0]-items[i][1])
             p.Inventory(InventItems,'Sale')
+
+            itemlist=list(items)
+            itemlist.clear()
+            
+        # itemlist=list(items)
+        # itemlist=[]
+        # items=tuple(itemlist)
 
         frame_Table.delete(*frame_Table.get_children())
         
@@ -157,13 +166,13 @@ class App:
 
         return disc1, disc
 
-    def Payment_GUI(self):
+    def Payment_GUI(self,sub):
         self.Payment_G = Toplevel()
         self.Payment_G.title("Amount Tendered")
         width=300
         height=200
-        screenwidth = root.winfo_screenwidth()
-        screenheight = root.winfo_screenheight()
+        screenwidth = self.Payment_G.winfo_screenwidth()
+        screenheight = self.Payment_G.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
         self.Payment_G.geometry(alignstr)
         self.Payment_G.protocol("WM_DELETE_WINDOW",self.pay_on_closing)
@@ -173,7 +182,7 @@ class App:
         Total_=Label(self.Payment_G,text=" ",font=('Arial',10))
         Total_.pack()
 
-        Total_pay=Label(self.Payment_G,text="Total Price is "+str(finalprice),font=('Arial',20,"bold"))
+        Total_pay=Label(self.Payment_G,text="Total Price is "+str(sub),font=('Arial',20,"bold"))
         Total_pay.pack()
 
         Total_EAT=Label(self.Payment_G,text="Enter Amount Tendered ",font=('Arial',15))
@@ -185,7 +194,8 @@ class App:
         Total_1=Label(self.Payment_G,text=" ",font=('Arial',10))
         Total_1.pack()
 
-        Payment_Button=Button(self.Payment_G,text="Enter",width=20,borderwidth=5,bg="green")
+        
+        Payment_Button=Button(self.Payment_G,text="Enter",width=20,borderwidth=5,bg="green",command= self.calculate(amount))
         Payment_Button.pack()
 
         Total_2=Label(self.Payment_G,text=" ",font=('Arial',10))
@@ -194,6 +204,10 @@ class App:
     def pay_on_closing(self):
         self.Payment_G.wm_attributes("-topmost", 0)
         if messagebox.askyesno("Warning","Closing this Window this Transaction.\nContinue Closing?"):
+            frame_Table.delete(*frame_Table.get_children())
+            itemlist=list(items)
+            itemlist=[]
+            items=tuple(itemlist)
             root.destroy()
 
 
@@ -206,6 +220,7 @@ class App:
                 messagebox.showinfo("Closed","Closed Without Saving")
             elif amount<finalprice and amount is not None:
                 messagebox.showerror("Error","Amount Less than Actual Price")
+                
             else:
                 change=float(amount-finalprice)
         except(ValueError):
@@ -214,8 +229,11 @@ class App:
 
     def on_Closing(self):
         if messagebox.askyesno("Warning","Warning! Closing this Window will not Save this Transaction.\nContinue Closing?"):
+            frame_Table.delete(*frame_Table.get_children())
+            global items
             root.destroy()
+            items = []
 
- 
+
 # if __name__ == "__main__":
 #     app = App()
