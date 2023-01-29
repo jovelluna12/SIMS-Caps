@@ -226,7 +226,7 @@ class Manager (Employee.Employee):
     def productSales(self):
         dbcursor = self.dbcursor
         # query = "SELECT purchasedproducts.PurchaseID,purchasedproducts.Item,purchasedproducts.Quantity,products.price, products.price*purchasedproducts.Quantity, salestransaction.DatePurchased FROM purchasedproducts,products,salestransaction WHERE purchasedproducts.InvoiceNumber=salestransaction.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID GROUP BY purchasedproducts.PurchaseID;"
-        query="SELECT salestransaction.InvoiceNumber, employees.name, salestransaction.DatePurchased FROM salestransaction, employees, products,purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID AND salestransaction.attendedBy=employees.EmpID ORDER BY salestransaction.DatePurchased DESC;"
+        query="SELECT salestransaction.InvoiceNumber, employees.name, salestransaction.DatePurchased FROM salestransaction, employees, products,purchasedproducts WHERE salestransaction.InvoiceNumber=purchasedproducts.InvoiceNumber AND purchasedproducts.ProductID=products.ProductID AND salestransaction.attendedBy=employees.EmpID GROUP BY salestransaction.InvoiceNumber ORDER BY salestransaction.DatePurchased DESC;"
         dbcursor.execute(query)
         result = dbcursor.fetchall()
         return result
