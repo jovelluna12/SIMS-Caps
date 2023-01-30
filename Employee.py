@@ -65,6 +65,7 @@ class Employee:
         dbcursor=self.cursor
         query1="insert into salestransaction (InvoiceNumber,TotalPrice,PWD_SC_Disc,Custom_Discount,Cash,calculated_change,attendedBy) values (%s,%s,%s,%s,%s,%s,%s)"
         values=(invoice,TotalPrice,discount_SC_PWD,Discount,cash,change,attendedBy)
+        print(values)
         dbcursor.execute(query1,values)
 
         query2="insert into purchasedproducts values (%s,%s,%s,%s,%s)"

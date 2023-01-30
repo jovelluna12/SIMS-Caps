@@ -95,10 +95,10 @@ class App:
                 total_disc.append(total)
             else: 
                 price=item_tuple[item][1]
-                total=price
+                total=0
                 total1.append(float(item_tuple[item][2])*int(item_tuple[item][1])) 
                 total_disc.append(total)
-                
+
             print(price,int(item_tuple[item][1]))
         
             frame_Table.insert('',index='end',iid=count,values=(item_tuple[item][0],item_tuple[item][2],item_tuple[item][1],float(item_tuple[item][2])*int(item_tuple[item][1])-total))
