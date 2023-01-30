@@ -4,7 +4,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import simpledialog
 import tkinter.font as tkFont
-import Employee, Product
+import Employee, Product, Manager
 from datetime import datetime
 import os
 from dotenv import load_dotenv
@@ -20,7 +20,7 @@ class App:
         sub=self.computeSubtotal()
         disc1,disc=self.determineDiscount()
         # amount,change=self.Payment_GUI(sub)
-        amount,change=self.calculate(sub)
+        # amount,change=self.calculate(sub)
 
         root = tk.Tk()
         root.title("Sales Summary")
@@ -73,31 +73,52 @@ class App:
         frame_Table.configure(yscrollcommand=scrollbar.set)
         frame_Table.place(x=0,y=0,width=530,height=300)
 
-        global subtotal
+        man=Manager.Manager()
+
+        global subtotal,total1
         count=0
         subtotal=0
         total1=[]
+        sub_tot=[]
+        total_disc=[]
+        essentials=[]
+
+        percent=os.getenv('SC_DISCOUNT')
         for item in range(len(item_tuple)):
-            total1.append(float(item_tuple[item][2])*int(item_tuple[item][1]))
-            frame_Table.insert('',index='end',iid=count,values=(item_tuple[item][0],item_tuple[item][2],item_tuple[item][1],float(item_tuple[item][2])*int(item_tuple[item][1])))
+            print(item_tuple[item][0])
+            ess=man.check_ifEssential(item_tuple[item][0])
+            sub_tot.append(float(item_tuple[item][2])*int(item_tuple[item][1]))
+            if ess[0]=='Yes' and discounted=="Senior Citizen 20%" or discounted=="PWD 20%":
+                price=int(percent)/100*float(item_tuple[item][2])
+                total=price*int(item_tuple[item][1])
+                total1.append(float(item_tuple[item][2])*int(item_tuple[item][1])-total) 
+                total_disc.append(total)
+            else: 
+                price=item_tuple[item][1]
+                total=price
+                total1.append(float(item_tuple[item][2])*int(item_tuple[item][1])) 
+                total_disc.append(total)
+                
+            print(price,int(item_tuple[item][1]))
+        
+            frame_Table.insert('',index='end',iid=count,values=(item_tuple[item][0],item_tuple[item][2],item_tuple[item][1],float(item_tuple[item][2])*int(item_tuple[item][1])-total))
             count+=1
             subtotal=subtotal+float(item_tuple[item][2])*float(item_tuple[item][1])
-
-         
+                     
         emp=Employee.Employee()
         CashName=emp.getEmployee_Name(user_id)
         GLabel_450=tk.Label(root,text="Cashier: "+str(CashName[0]),font=('Arial',15),justify=LEFT)
         GLabel_450.place(x=20,y=470)
 
-        GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(sum(total1)),font=('Arial',10),justify=LEFT)
+        GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(sum(sub_tot)),font=('Arial',10),justify=LEFT)
         GLabel_170.place(x=350,y=470)
 
-        VAT=int(os.getenv('VAT'))/100*sum(total1)
+        VAT=int(os.getenv('VAT'))/100*sum(sub_tot)
         
         GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(VAT),font=('Arial',10),justify=LEFT)
         GLabel_139.place(x=350,y=490)
 
-        GLabel_522=tk.Label(root,text="Senior/PWD Discount: PHP {:.2f}".format(disc1),font=('Arial',10),justify=LEFT)
+        GLabel_522=tk.Label(root,text="Senior/PWD Discount: PHP {:.2f}".format(sum(total_disc)),font=('Arial',10),justify=LEFT)
         GLabel_522.place(x=350,y=510)
 
         GLabel_523=tk.Label(root,text="LESS: Other Discounts: PHP {:.2f}".format(disc),font=('Arial',10),justify=LEFT)
@@ -106,8 +127,10 @@ class App:
         global finalprice
         finalprice=subtotal-disc1-disc
 
-        GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}".format(sum(total1)-disc1-disc),font=('Arial',10),justify=LEFT)
+        GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}".format(sum(total1)),font=('Arial',10),justify=LEFT)
         GLabel_524.place(x=350,y=550)
+
+        amount,change=self.calculate(sub)
 
         GLabel_525=tk.Label(root,text="Cash: PHP {:.2f}".format(amount),font=('Arial',10),justify=LEFT)
         GLabel_525.place(x=350,y=570)            
@@ -154,6 +177,7 @@ class App:
     def determineDiscount(self):
         if discounted=="Senior Citizen 20%":
             percent=os.getenv('SC_DISCOUNT')
+
             disc1=float(int(percent)/100*sub)
 
         elif discounted =="PWD 20%":
@@ -218,14 +242,14 @@ class App:
         global finalprice,change
         finalprice=sub-disc1-disc
         try:
-            amount=simpledialog.askfloat("Enter Amount Tendered","Total Price is "+str(finalprice)+"\nEnter Amount Tendered")
+            amount=simpledialog.askfloat("Enter Amount Tendered","Total Price is "+str(sum(total1))+"\nEnter Amount Tendered")
             if amount is None:
                 messagebox.showinfo("Closed","Closed Without Saving")
-            elif amount<finalprice and amount is not None:
+            elif amount<sum(total1) and amount is not None:
                 messagebox.showerror("Error","Amount Less than Actual Price")
                 
             else:
-                change=float(amount-finalprice)
+                change=float(amount-sum(total1))
         except(ValueError):
             messagebox.showerror("Input Error","Enter a Valid Number")
         return amount, change

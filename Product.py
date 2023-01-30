@@ -29,9 +29,10 @@ class product:
 
     def addReference(self,vals):
         dbcursor = self.dbcursor
-        query = "INSERT INTO products_directory (ref_id,product_name,price) VALUES(%s,%s,%s)"
+        query = "INSERT INTO products_directory (ref_id,product_name,price,essential_not) VALUES(%s,%s,%s,%s)"
 
         vals=tuple(list(vals))
+        print(vals)
         dbcursor.executemany(query, vals)
         dbConnector.db.commit()
 

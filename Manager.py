@@ -198,6 +198,14 @@ class Manager (Employee.Employee):
         
         return result
 
+    def check_ifEssential(self,name):
+        dbcursor = self.dbcursor
+        query='SELECT essential_not FROM products_directory WHERE product_name =%s'
+        dbcursor.execute(query,(name,))
+        result = dbcursor.fetchone()
+            
+        return result
+
 
     def getPO_Items(self,id):
         # query="SELECT delivery_items.id, products.ProductName, products.price, delivery_items.qty, delivery_items.qty_in, delivery_items.qty_out, delivery_items.remark FROM delivery_items,products WHERE delivery_items.list=%s AND delivery_items.list=products.batch_code;"

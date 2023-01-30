@@ -2538,12 +2538,25 @@ class InvortoryGUI:
             self.Frame_Add_St = Frame(self.Add_Stack_ADD, width=700, height=350, )
             self.Frame_Add_St.grid(row=0, column=0)
 
-            self.Frma = Label(self.Frame_Add_St, text="Add Product!!", width=20, font=("Arial", 40), anchor=W)
+            self.Frma = Label(self.Frame_Add_St, text="Add Product", width=20, font=("Arial", 40), anchor=W)
             self.Frma.place(x=20, y=10)
 
             self.Stack_Product_Name_Label = Label(self.Frame_Add_St, text="Product Name:").place(x=30, y=90)
             self.Stack_Product_Name_EN = Entry(self.Frame_Add_St, width=70, borderwidth=5)
             self.Stack_Product_Name_EN.place(x=30, y=110)
+
+            # def submit():
+                # selection = combobox.get()
+                # print("The product is", selection)
+
+            label = ttk.Label(self.Add_Stack_ADD, text="Is the product essential?")
+            label.place(x=10, y=150)
+
+            global combobox
+
+            combobox = ttk.Combobox(self.Add_Stack_ADD, values=["Yes", "No"])
+            combobox.place(x=150, y=150)
+            combobox.current(0)
 
             global price_entry
             price_entry = tk.StringVar()
@@ -2587,6 +2600,8 @@ class InvortoryGUI:
             messagebox.showinfo("Error","The Window is already Open!")
 
     def reference_Done(self):
+        selection = combobox.get()
+
         ProductName = self.Stack_Product_Name_EN.get()
         price = self.Stack_Product_Price_EN.get()
         id = randomNumGen.generateProductID()
@@ -2603,6 +2618,10 @@ class InvortoryGUI:
         name = []
         price = []
 
+        if 'essential' not in locals():
+            essential=[]
+        essential.append(selection)
+
         if 'count' not in globals():
             count = 0
         else:
@@ -2618,13 +2637,14 @@ class InvortoryGUI:
             name.append(val[1])
             price.append(val[2])
 
-            vals = list(zip(id, name, price))
+            vals = list(zip(id, name, price, essential))
 
         self.button_Finish.config(state='normal', command=self.AddReference)
 
     def AddReference(self):
         self.frame_Table.delete(*self.frame_Table.get_children())
         Prod = Product.product()
+        print(vals)
         Prod.addReference(vals)
 
     def Click_List(self):
