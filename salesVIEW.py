@@ -75,34 +75,37 @@ class App:
 
         VAT=0.12*subtotal
 
-        GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(sum(total1)),font=('Arial',10),justify=LEFT)
+        GLabel_170=tk.Label(root,text="Subtotal w/out VAT: PHP {:.2f}".format(float(sum(total1))-VAT),font=('Arial',10),justify=LEFT)
         GLabel_170.place(x=350,y=460)
+
+        GLabel_170=tk.Label(root,text="Subtotal w/ VAT: PHP {:.2f}".format(sum(total1)),font=('Arial',10),justify=LEFT)
+        GLabel_170.place(x=350,y=480)
+
+        # GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(sum(total1)),font=('Arial',10),justify=LEFT)
+        # GLabel_170.place(x=350,y=460)
         
         GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(VAT),font=('Arial',10),justify=LEFT)
-        GLabel_139.place(x=350,y=480)
+        GLabel_139.place(x=350,y=500)
 
         details=emp.get_Transaction_Details(invoice_id)
 
         GLabel_522=tk.Label(root,text="Senior/PWD Discount: PHP {:.2f}".format(details[0][1]),font=('Arial',10),justify=LEFT)
-        GLabel_522.place(x=350,y=500)
+        GLabel_522.place(x=350,y=520)
 
         GLabel_523=tk.Label(root,text="LESS: Other Discounts: PHP {:.2f}".format(details[0][2]),font=('Arial',10),justify=LEFT)
-        GLabel_523.place(x=350,y=520)
+        GLabel_523.place(x=350,y=540)
 
         GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}".format(sum(total1)-details[0][1]-details[0][2]),font=('Arial',10),justify=LEFT)
-        GLabel_524.place(x=350,y=540)
+        GLabel_524.place(x=350,y=560)
 
         GLabel_525=tk.Label(root,text="Cash: PHP {:.2f}".format(details[0][4]),font=('Arial',10),justify=LEFT)
-        GLabel_525.place(x=350,y=560)            
+        GLabel_525.place(x=350,y=580)            
 
         GLabel_526=tk.Label(root,text="Change: PHP {:.2f}".format(details[0][5]),font=('Arial',10),justify=LEFT)
-        GLabel_526.place(x=350,y=580)
+        GLabel_526.place(x=350,y=600)
 
         Close=Button(root,text="Close",font=('Arial',10),command=root.destroy)
-        Close.place(x=260,y=610)
+        Close.place(x=260,y=630)
 
         root.mainloop()
 
-
-# if __name__ == "__main__":
-#     app = App()

@@ -18,7 +18,6 @@ class App:
         discounted=discount
         discounted_custom=custom_discount
         sub=self.computeSubtotal()
-        disc1,disc=self.determineDiscount()
         # amount,change=self.Payment_GUI(sub)
         # amount,change=self.calculate(sub)
 
@@ -99,7 +98,6 @@ class App:
                 total1.append(float(item_tuple[item][2])*int(item_tuple[item][1])) 
                 total_disc.append(total)
 
-            print(price,int(item_tuple[item][1]))
         
             frame_Table.insert('',index='end',iid=count,values=(item_tuple[item][0],item_tuple[item][2],item_tuple[item][1],float(item_tuple[item][2])*int(item_tuple[item][1])-total))
             count+=1
@@ -110,33 +108,41 @@ class App:
         GLabel_450=tk.Label(root,text="Cashier: "+str(CashName[0]),font=('Arial',15),justify=LEFT)
         GLabel_450.place(x=20,y=470)
 
-        GLabel_170=tk.Label(root,text="Subtotal: PHP {:.2f}".format(sum(sub_tot)),font=('Arial',10),justify=LEFT)
+        VAT=int(os.getenv('VAT'))/100*sum(sub_tot)
+
+        GLabel_170=tk.Label(root,text="Subtotal w/out VAT: PHP {:.2f}".format(sum(sub_tot)-VAT),font=('Arial',10),justify=LEFT)
         GLabel_170.place(x=350,y=470)
 
-        VAT=int(os.getenv('VAT'))/100*sum(sub_tot)
+        GLabel_170=tk.Label(root,text="Subtotal w/ VAT: PHP {:.2f}".format(sum(sub_tot)),font=('Arial',10),justify=LEFT)
+        GLabel_170.place(x=350,y=490)
         
         GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(VAT),font=('Arial',10),justify=LEFT)
-        GLabel_139.place(x=350,y=490)
+        GLabel_139.place(x=350,y=510)
 
-        GLabel_522=tk.Label(root,text="Senior/PWD Discount: PHP {:.2f}".format(sum(total_disc)),font=('Arial',10),justify=LEFT)
-        GLabel_522.place(x=350,y=510)
+        global sub_withoutVAT 
+        sub_withoutVAT=sum(sub_tot)-VAT
+
+        disc1,disc=self.determineDiscount()
+        
+        GLabel_522=tk.Label(root,text="Senior/PWD Discount: PHP {:.2f}".format(disc1),font=('Arial',10),justify=LEFT)
+        GLabel_522.place(x=350,y=530)
 
         GLabel_523=tk.Label(root,text="LESS: Other Discounts: PHP {:.2f}".format(disc),font=('Arial',10),justify=LEFT)
-        GLabel_523.place(x=350,y=530)
+        GLabel_523.place(x=350,y=550)
 
         global finalprice
-        finalprice=subtotal-disc1-disc
+        finalprice=sum(sub_tot)-disc1-disc
 
-        GLabel_524=tk.Label(root,text="Total Amount Due {:.2f}".format(sum(total1)),font=('Arial',10),justify=LEFT)
-        GLabel_524.place(x=350,y=550)
+        GLabel_524=tk.Label(root,text="Total Amount Due "+str(finalprice),font=('Arial',10),justify=LEFT)
+        GLabel_524.place(x=350,y=570)
 
         amount,change=self.calculate(sub)
 
         GLabel_525=tk.Label(root,text="Cash: PHP {:.2f}".format(amount),font=('Arial',10),justify=LEFT)
-        GLabel_525.place(x=350,y=570)            
+        GLabel_525.place(x=350,y=590)            
 
         GLabel_526=tk.Label(root,text="Change: PHP {:.2f}".format(change),font=('Arial',10),justify=LEFT)
-        GLabel_526.place(x=350,y=590)
+        GLabel_526.place(x=350,y=610)
 
         Button(root,text="Close and Conclude Transaction",bg="green",borderwidth=3,command=lambda: self.close()).place(x=190,y=640)
 
@@ -178,11 +184,11 @@ class App:
         if discounted=="Senior Citizen 20%":
             percent=os.getenv('SC_DISCOUNT')
 
-            disc1=float(int(percent)/100*sub)
+            disc1=float(int(percent)/100*sub_withoutVAT)
 
         elif discounted =="PWD 20%":
             percent=os.getenv('PWD_DISCOUNT')
-            disc1=float(int(percent)/100*sub)
+            disc1=float(int(percent)/100*sub_withoutVAT)
         else: 
             disc1=0
 
@@ -242,14 +248,19 @@ class App:
         global finalprice,change
         finalprice=sub-disc1-disc
         try:
-            amount=simpledialog.askfloat("Enter Amount Tendered","Total Price is "+str(sum(total1))+"\nEnter Amount Tendered")
-            if amount is None:
-                messagebox.showinfo("Closed","Closed Without Saving")
-            elif amount<sum(total1) and amount is not None:
-                messagebox.showerror("Error","Amount Less than Actual Price")
-                
-            else:
-                change=float(amount-sum(total1))
+            run=True
+            while run:
+                amount=simpledialog.askfloat("Enter Amount Tendered","Total Price is "+str(finalprice)+"\nEnter Amount Tendered")
+                if amount is None:
+                    messagebox.showinfo("Closed","Closed Without Saving")
+                    run=False
+                    root.destroy()
+                elif amount<finalprice and amount is not None:
+                    messagebox.showerror("Error","Amount Less than Actual Price")
+                    run=True
+                else:
+                    change=amount-float(finalprice)
+                    run=False
         except(ValueError):
             messagebox.showerror("Input Error","Enter a Valid Number")
         return amount, change
