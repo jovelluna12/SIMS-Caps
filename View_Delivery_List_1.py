@@ -91,13 +91,13 @@ class VDL:
         # GLabel_450=tk.Label(root,text="Purchase Details: ",font=('Arial',15),justify=LEFT)
         # GLabel_450.place(x=600,y=440)
 
-        GLabel_170=tk.Label(root,text="Gross Amount w/out VAT: PHP {:.2f}".format(float(sum(total1))-float(res[1])),font=('Arial',10),justify=LEFT)
+        GLabel_170=tk.Label(root,text="Gross Amount w/out VAT: PHP {:.2f}".format(float(sum(total1))),font=('Arial',10),justify=LEFT)
         GLabel_170.place(x=600,y=450)
         
         GLabel_139=tk.Label(root,text="12% VAT: PHP {:.2f}".format(res[1]),font=('Arial',10),justify=LEFT)
         GLabel_139.place(x=600,y=470)
 
-        GLabel_170=tk.Label(root,text="Gross Amount w/VAT: PHP {:.2f}".format(float(sum(total1))),font=('Arial',10),justify=LEFT)
+        GLabel_170=tk.Label(root,text="Gross Amount w/VAT: PHP {:.2f}".format(float(sum(total1))-float(res[1])),font=('Arial',10),justify=LEFT)
         GLabel_170.place(x=600,y=490)
 
         GLabel_523=tk.Label(root,text="Discount: {:.2f}".format(res[2]),font=('Arial',10),justify=LEFT)
