@@ -82,12 +82,18 @@ class App:
         total_disc=[]
         essentials=[]
 
-        percent=os.getenv('SC_DISCOUNT')
         for item in range(len(item_tuple)):
-            print(item_tuple[item][0])
             ess=man.check_ifEssential(item_tuple[item][0])
             sub_tot.append(float(item_tuple[item][2])*int(item_tuple[item][1]))
-            if ess[0]=='Yes' and discounted=="Senior Citizen 20%" or discounted=="PWD 20%":
+            if ess[0]=='Yes' and discounted=="Senior Citizen 20%":
+                percent=os.getenv('SC_DISCOUNT')
+                price=int(percent)/100*float(item_tuple[item][2])
+                total=price*int(item_tuple[item][1])
+                total1.append(float(item_tuple[item][2])*int(item_tuple[item][1])-total) 
+                total_disc.append(total)
+
+            elif ess[0]=='Yes' and discounted=="PWD 20%":
+                percent=os.getenv('PWD_DISCOUNT')
                 price=int(percent)/100*float(item_tuple[item][2])
                 total=price*int(item_tuple[item][1])
                 total1.append(float(item_tuple[item][2])*int(item_tuple[item][1])-total) 
