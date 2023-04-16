@@ -1,4 +1,5 @@
-# SIMS: Smart Inventory Management System with Forecasting Feature
+# SIMS: An Inventory Management System for CRESDEL Pharmacy <br> 
+<h3>A Capstone Project</h3>
 
 Devs: <br> 
 Jovel Christer Luna  <br>
